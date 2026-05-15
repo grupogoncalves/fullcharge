@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Portal de vendas FullCharge — orçamentos, propostas e gestão de acessos.">
+    <meta name="description" content="Portal de vendas e gestão FullCharge.">
     <meta name="theme-color" content="#000b18">
-    <title>FullCharge | Portal de Vendas</title>
+    <title>FullCharge | Portal de Negócios</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -420,7 +421,7 @@
         <main class="main-content" id="main-app">
             <div id="screen-form" class="screen active">
                 <div class="card no-print">
-                    <h2 class="page-title">Gerar orçamento </h2>
+                    <h2 class="page-title">Gerar orçamento E-Mobility</h2>
                     <div class="form-grid-2">
                         <div class="field">
                             <label for="f-id">Nº proposta</label>
@@ -465,7 +466,12 @@
                     </div>
                     <div class="field">
                         <label for="f-obs">Observações Comerciais</label>
-                        <textarea id="f-obs" rows="3" placeholder="Condições comerciais, prazos, etc."></textarea>
+                        <textarea id="f-obs" rows="7" placeholder="Condições comerciais, prazos, etc.">Condições Comerciais e Técnicas:
+• Validade da proposta: 
+• Serviços Inclusos: O valor desta proposta já contempla a mão de obra de instalação e as melhorias necessárias na rede elétrica.
+• Exclusões (Não inclusos): Obras civis (abertura de valas, concretagem, recomposição de asfalto/piso) e laudos de engenharia estrutural, salvo se expressamente descritos nos itens desta proposta.
+• Garantia: 
+• Condições de pagamento: </textarea>
                     </div>
 
                     <div class="items-table-wrap">
@@ -546,11 +552,10 @@
                                 <table class="p-table">
                                     <thead>
                                         <tr>
-                                            <th scope="col" style="text-align:center; width: 130px;">Imagem</th>
-                                            <th scope="col" style="text-align:center; width: 50px;">Qtd</th>
+                                            <th scope="col" style="text-align:center; width: 170px;">Imagem do Equipamento</th>
+                                            <th scope="col" style="text-align:center; width: 60px;">Qtd</th>
                                             <th scope="col">Produto / Modelo</th>
-                                            <th scope="col">Especificações</th>
-                                            <th scope="col" style="text-align:right; width: 110px;">Preço Un.</th>
+                                            <th scope="col">Especificações Técnicas</th>
                                         </tr>
                                     </thead>
                                     <tbody id="p-items"></tbody>
@@ -567,9 +572,8 @@
                                 <div class="p-obs-box" id="p-obs"></div>
                             </section>
                             <footer class="p-doc-footer">
-                                <span><strong>FullCharge</strong> · Novas tecnologias para um futuro
-mais veloz e sustentável .</span>
-                                <span class="p-doc-footer-note">Os valores e prazos apresentados estão sujeitos a alteração até o aceite da proposta.</span>
+                                <span><strong>FullCharge</strong> · Soluções de Recarga E-Mobility</span>
+                                <span class="p-doc-footer-note">Valores e prazos sujeitos a confirmação formal da proposta.</span>
                             </footer>
                         </div>
                     </article>
@@ -947,7 +951,7 @@ mais veloz e sustentável .</span>
         }
 
         window.openStreetViewPopup = function(lat, lng) {
-            window.open(`http://googleusercontent.com/maps.google.com/6{lat},${lng}`, 'StreetView', 'width=900,height=600');
+            window.open(`http://googleusercontent.com/maps.google.com/7{lat},${lng}`, 'StreetView', 'width=900,height=600');
         }
 
         window.generateMapPDF = function() {
