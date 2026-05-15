@@ -308,6 +308,32 @@
             .p-table tbody tr:nth-child(even) td { background: transparent !important; }
             .p-table tbody tr:hover td { background: transparent !important; }
             @page { size: A4; margin: 12mm; }
+            /* Adicione isto ao final do seu bloco <style> */
+@media print {
+    tr, .card, .total-section, .investment-item {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+}
+
+/* Força o html2pdf a respeitar as quebras em elementos específicos */
+.avoid-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    display: block; /* Garante que a regra seja aplicada */
+}
+
+/* Evita que tabelas grandes quebrem de forma estranha */
+table {
+    page-break-inside: auto;
+}
+thead {
+    display: table-header-group;
+}
+tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+}
         }
     </style>
 </head>
