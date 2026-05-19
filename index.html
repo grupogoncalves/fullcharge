@@ -178,7 +178,7 @@
 
         .p-section-title { margin: 0 0 12px; font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--p-doc-muted); }
 
-        /* CORREÇÃO CSS DA TABELA DE VISUALIZAÇÃO - AGORA O PREÇO NÃO CORTA! */
+        /* Tabela de visualização */
         .p-table-wrap { margin-bottom: 28px; border: 1px solid var(--p-doc-line); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05); }
         .p-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; table-layout: fixed; }
         .p-table th, .p-table td { word-wrap: break-word; overflow: hidden; }
@@ -274,7 +274,7 @@
         .loading-msg { text-align: center; padding: 40px 20px; color: #64748b; font-weight: 600; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         
-        .station-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; font-size: 13px; }
+        .station-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; font-size: 13px; }
         .station-card:hover { border-color: var(--primary); background: #f0fdf4; }
         .select-box { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
         .mini-icon { width: 30px; height: 30px; object-fit: contain; }
@@ -282,8 +282,29 @@
         .potencia-blink { color: var(--primary); font-weight: 800; font-size: 11px; display: block; margin-top: 3px; animation: flash 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         
-        .map-sidebar-footer { padding: 15px; border-top: 1px solid var(--border); background: var(--white); }
+        .map-sidebar-footer { padding: 15px; border-top: 1px solid var(--border); background: var(--surface); }
         .btn-popup { border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; color: white; width: 100%; text-align: center; background: var(--primary); margin-top: 8px;}
+
+        /* Estilos Integrados de Venda e Efeito Radar do Mapa */
+        .card-vendida { border-left: 4px solid var(--success) !important; }
+        .card-disponivel { border-left: 4px solid var(--accent) !important; }
+
+        .badge-status { font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; }
+        .badge-vendida { background: #dcfce7; color: var(--success); }
+        .badge-disponivel { background: #dbeafe; color: var(--accent); }
+
+        .btn-cart { background: transparent; border: none; padding: 5px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .btn-cart:hover { transform: scale(1.15); }
+        .cart-vendida { color: var(--success); }
+        .cart-disponivel { color: var(--accent); }
+
+        .piscar-verde { animation: radar-verde 1.5s infinite; }
+        @keyframes radar-verde {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .custom-div-icon { background: transparent; border: none; }
 
         /* Estilos PDF de Estações (Oculto) */
         #pdf-template { display: none; width: 1122px; padding: 40px; background: #0f172a; color: white; }
@@ -380,15 +401,15 @@
         <div class="modal-box">
             <h3 style="margin: 0 0 10px 0; color: var(--primary); font-size: 1.25rem;">Autorização Necessária</h3>
             <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 20px;">
-                Digite a sua senha de administrador para excluir o orçamento <strong id="del-modal-id-text"></strong>.
+                Digite a senha de autorização para prosseguir com a operação no registro <strong id="del-modal-id-text"></strong>.
             </p>
             <input type="hidden" id="del-modal-id">
             <div class="field">
-                <input type="password" id="del-modal-pass" placeholder="Senha de Administrador">
+                <input type="password" id="del-modal-pass" placeholder="Senha Requerida">
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
                 <button type="button" class="btn btn-secondary" style="width: auto;" onclick="window.fecharModalDelete()">Cancelar</button>
-                <button type="button" class="btn btn-primary" style="width: auto; background: var(--danger); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);" onclick="window.confirmarExclusaoModal()">Confirmar Exclusão</button>
+                <button type="button" class="btn btn-primary" id="btn-confirm-modal-action" style="width: auto; background: var(--danger); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);" onclick="window.confirmarExclusaoModal()">Confirmar Operação</button>
             </div>
         </div>
     </div>
@@ -430,7 +451,7 @@
         <main class="main-content" id="main-app">
             <div id="screen-form" class="screen active">
                 <div class="card no-print">
-                    <h2 class="page-title">Gerar orçamento </h2>
+                    <h2 class="page-title">Gerar orçamento E-Mobility</h2>
                     <div class="form-grid-2">
                         <div class="field">
                             <label for="f-id">Nº proposta</label>
@@ -582,8 +603,7 @@
                                 <div class="p-obs-box" id="p-obs"></div>
                             </section>
                             <footer class="p-doc-footer">
-                                <span><strong>FullCharge</strong> · Novas tecnologias para um futuro
-mais veloz e sustentável . </span>
+                                <span><strong>FullCharge</strong> · Soluções de Recarga E-Mobility</span>
                                 <span class="p-doc-footer-note">Valores e prazos sujeitos a confirmação formal da proposta.</span>
                             </footer>
                         </div>
@@ -648,8 +668,8 @@ mais veloz e sustentável . </span>
                             <div class="search-container">
                                 <input type="text" id="searchInput" placeholder="Procurar estação ou cidade..." onkeyup="window.filterStations()">
                                 <div class="actions-bar">
-                                    <button class="btn-action" style="color: var(--primary);" onclick="window.toggleAllStations(true)">✓ Marcar Todos</button>
-                                    <button class="btn-action" style="color: var(--danger);" onclick="window.toggleAllStations(false)">✕ Limpar</button>
+                                    <button type="button" class="btn-action" style="color: var(--success);" onclick="window.toggleAllStations(true)">✓ Marcar Todos</button>
+                                    <button type="button" class="btn-action" style="color: var(--danger);" onclick="window.toggleAllStations(false)">✕ Limpar</button>
                                 </div>
                             </div>
                     
@@ -658,7 +678,7 @@ mais veloz e sustentável . </span>
                             </div>
                             
                             <div class="map-sidebar-footer">
-                                <button class="btn btn-primary" onclick="window.generateMapPDF()"><i class="fa fa-file-pdf"></i> Gerar Relatório PDF</button>
+                                <button type="button" class="btn btn-primary" onclick="window.generateMapPDF()"><i class="fa fa-file-pdf"></i> Gerar Relatório PDF</button>
                             </div>
                         </div>
                         
@@ -693,7 +713,8 @@ mais veloz e sustentável . </span>
                     <h2 class="page-title">Catálogo de Produtos e Preços</h2>
                     <p style="color:var(--text-muted); font-size: 0.875rem; margin-bottom: 20px;">Cadastre os produtos, preços e o link da foto para exibição e cálculo automático nas propostas.</p>
                     
-                    <input type="hidden" id="cat-old-key"> <div class="form-grid-4">
+                    <input type="hidden" id="cat-old-key"> 
+                    <div class="form-grid-4">
                         <div class="field">
                             <label for="cat-nome">Modelo / Nome</label>
                             <input type="text" id="cat-nome" placeholder="Ex: Full Charge Swift 20 kW">
@@ -776,7 +797,6 @@ mais veloz e sustentável . </span>
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, get, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         
-        // BANCO FULLCHARGE ATUALIZADO
         const firebaseConfig = { 
             apiKey: "AIzaSyDoOu_leOVOLft7NyGHtCRr1cJDGPHfH3g", 
             authDomain: "fullcharge-c5615.firebaseapp.com", 
@@ -795,12 +815,10 @@ mais veloz e sustentável . </span>
         window.dbRemove = remove;
         window.dbUpdate = update;
 
-        // PROTEÇÃO CONTRA FALHAS DO FIREBASE E INICIALIZAÇÃO
         try {
             onValue(ref(db, 'propostas'), snap => window.renderHistory(snap.val()));
             onValue(ref(db, 'usuarios'), snap => window.renderUsers(snap.val()));
             
-            // Listener do Catálogo Dinâmico
             onValue(ref(db, 'produtos'), snap => {
                 if (!snap.exists()) {
                     window.seedInitialProducts();
@@ -808,7 +826,10 @@ mais veloz e sustentável . </span>
                 }
                 window.produtosCatalogo = snap.val() || {};
                 window.renderCatalog(window.produtosCatalogo);
-                window.atualizarDropdownProdutos();
+                
+                if (typeof window.atualizarDropdownProdutos === 'function') {
+                    window.atualizarDropdownProdutos();
+                }
             });
         } catch(e) {
             console.error("Firebase Error:", e);
@@ -816,17 +837,21 @@ mais veloz e sustentável . </span>
     </script>
 
     <script>
-        // VARIAVEIS GLOBAIS
+        // VARIAVEIS GLOBAIS E CONFIGURAÇÕES DO PORTAL
         window.produtosCatalogo = {};
         window.todasPropostas = {};
-        
-        // VARIAVEIS GLOBAIS - MAPA DE ESTAÇÕES
+
+        // VARIAVEIS GLOBAIS - MAPA DE ESTAÇÕES INTEGRADO
         let mapaEstacoes = null;
+        let mapMarkers = [];
         let allStationsData = [];
-        const API_MAPA_URL = "https://script.google.com/macros/s/AKfycbzM55m75duq8ySSFf9lpzeh-0IGwTQTHw8Xz8zDgANwJHaWYoEXrF3qN_gh7ZSLz4A/exec";
+        let currentStationIndex = null;
+        let targetStatusAction = ''; 
+
+        const API_MAPA_URL = "https://script.google.com/macros/s/AKfycbwnHSAXTEWayEi7JMOABZ-zCIhLnfPeghrvPgxX-Xaw-b55Qt32q3FgO0PLn-I6RYaA/exec";
         const mapIconUrl = "https://lh3.googleusercontent.com/d/1ywz6_yQYzvAhd3lMx3R4Q1UvniyBuBwx";
 
-        // MÁSCARA GLOBAL
+        // MÁSCARAS E AUXILIARES GLOBAIS
         window.maskMoney = function(i) {
             let v = i.value.replace(/\D/g, '');
             v = (v / 100).toFixed(2) + '';
@@ -834,7 +859,22 @@ mais veloz e sustentável . </span>
             i.value = "R$ " + v;
         }
 
-        // FUNÇÃO DE CÁLCULO AUTOMÁTICO DO TOTAL
+        window.maskCpfCnpj = function(i) {
+            let v = i.value.replace(/\D/g, '');
+            if (v.length <= 11) {
+                v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            } else {
+                v = v.substring(0, 14);
+                v = v.replace(/^(\d{2})(\d)/, '$1.$2');
+                v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                v = v.replace(/(\d{4})(\d)/, '$1-$2');
+            }
+            i.value = v;
+        }
+
         window.calcularTotal = function() {
             let totalGeral = 0;
             document.querySelectorAll('#items-body tr').forEach(tr => {
@@ -851,7 +891,6 @@ mais veloz e sustentável . </span>
             if(fTotal) fTotal.value = "R$ " + v;
         }
 
-        /* CORREÇÃO DO ERRO DE SINTAXE QUE TRAVAVA O LOGIN: */
         window.escapeHtml = function(s) {
             if (s == null) return '';
             return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -862,22 +901,16 @@ mais veloz e sustentável . </span>
         }
 
         window.currentLoggedUser = function() { return (sessionStorage.getItem('saj_user') || '').toLowerCase(); }
-
-        window.userPerfilFromRecord = function(d, username) {
-            const login = String(username || '').toLowerCase();
-            const p = d && d.perfil;
-            if (p === 'administrador' || p === 'operador') return p;
-            return 'operador';
-        }
-
+        window.userPerfilFromRecord = function(d, username) { return d && d.perfil === 'administrador' ? 'administrador' : 'operador'; }
         window.isAdministrator = function() { return sessionStorage.getItem('saj_perfil') === 'administrador'; }
-
-        window.normProposalStatus = function(s) { return s === 'aprovado' ? 'aprovado' : 'pendente'; }
+        window.normProposalStatus = function(s) { return s && String(s).trim().toLowerCase() === 'aprovado' ? 'aprovado' : 'pendente'; }
 
         window._previewOrigin = 'form';
         window._previewPropostaId = null;
 
-        /* ——— MAPA DE ESTAÇÕES (LÓGICA INTEGRADA) ——— */
+        // =========================================================================
+        // 🌐 INTERFACE E CONTROLES INTEGRADOS DO MAPA DE ESTAÇÕES
+        // =========================================================================
         window.initMap = function() {
             if (mapaEstacoes) return; 
             mapaEstacoes = L.map('map-view').setView([-23.5505, -46.6333], 12);
@@ -900,34 +933,102 @@ mais veloz e sustentável . </span>
             }
         }
 
+        window.saveStatusToSheet = function(stationName, newStatus) {
+            const urlComDados = API_MAPA_URL + "?action=updateStatus&name=" + encodeURIComponent(stationName) + "&status=" + encodeURIComponent(newStatus);
+            const ping = new Image();
+            ping.src = urlComDados;
+            console.log("Comando enviado via ping: Estação '" + stationName + "' -> '" + newStatus + "'");
+        }
+
+        window.toggleStationStatus = function(index, event) {
+            if(event) event.stopPropagation(); 
+
+            const s = allStationsData[index];
+            const statusValue = (s.status || s.Status || s.situacao || s.Situacao || s.venda || "").toString().toLowerCase();
+            const isCurrentlyVendida = statusValue.includes('vendid');
+
+            currentStationIndex = index;
+            
+            document.getElementById('del-modal-id').value = "MAP-STATUS";
+            document.getElementById('del-modal-id-text').textContent = s.name;
+            document.getElementById('del-modal-pass').value = '';
+            
+            const tituloModal = document.querySelector('#modal-delete-pass h3');
+            const descModal = document.querySelector('#modal-delete-pass p');
+            const btnModal = document.getElementById('btn-confirm-modal-action');
+            
+            if(btnModal) btnModal.style.background = isCurrentlyVendida ? 'var(--accent)' : 'var(--success)';
+
+            if (isCurrentlyVendida) {
+                targetStatusAction = ''; 
+                if(tituloModal) tituloModal.innerText = "Remover Venda";
+                if(descModal) descModal.innerHTML = `Digite a senha tradicional para deixar a estação <strong>${window.escapeHtml(s.name)}</strong> como Disponível.`;
+            } else {
+                targetStatusAction = 'Vendida'; 
+                if(tituloModal) tituloModal.innerText = "Confirmar Venda";
+                if(descModal) descModal.innerHTML = `Digite a senha específica de inclusão para marcar <strong>${window.escapeHtml(s.name)}</strong> como Vendida.`;
+            }
+            
+            document.getElementById('modal-delete-pass').style.display = 'flex';
+            setTimeout(() => document.getElementById('del-modal-pass').focus(), 100);
+        }
+
         window.updateMapUI = function(stations) {
             const list = document.getElementById('stationList');
+            if(!list) return;
             list.innerHTML = '';
+            
+            mapMarkers.forEach(marker => mapaEstacoes.removeLayer(marker));
+            mapMarkers = [];
             
             stations.forEach((s, index) => {
                 const lat = parseFloat(s.lat);
                 const lng = parseFloat(s.lng);
                 const valorPotencia = (s.potencia || s.Potencia || "").toString().trim();
 
-                if(!isNaN(lat) && !isNaN(lng)) {
+                const statusValue = (s.status || s.Status || s.situacao || s.Situacao || s.venda || "").toString().toLowerCase();
+                const isVendida = statusValue.includes('vendid');
+
+                if(!isNaN(lat) && !isNaN(lng) && mapaEstacoes) {
                     const popupHTML = `
                         <div style="text-align:center; min-width:140px; font-family: 'Inter', sans-serif;">
-                            <strong style="color:var(--primary); font-size:14px;">${window.escapeHtml(s.name)}</strong><br>
-                            ${valorPotencia ? `<small>Potência: ${window.escapeHtml(valorPotencia)}</small><br>` : ''}<br>
-                            <button class="btn-popup" onclick="window.openStreetViewPopup(${lat}, ${lng})">Ver no Street View</button>
+                            <strong style="color:${isVendida ? 'var(--success)' : 'var(--accent)'}; font-size:14px;">${window.escapeHtml(s.name)}</strong><br>
+                            ${valorPotencia ? `<small>Trafo: ${window.escapeHtml(valorPotencia)}</small><br>` : ''}
+                            <span class="badge-status ${isVendida ? 'badge-vendida' : 'badge-disponivel'}">
+                                ${isVendida ? '🟢 Vendida' : '🔵 Disponível'}
+                            </span><br><br>
+                            <button class="btn-popup" style="background:${isVendida ? 'var(--success)' : 'var(--accent)'};" onclick="window.openStreetViewPopup(${lat}, ${lng})">Ver no Street View</button>
                         </div>`;
 
-                    L.marker([lat, lng], { 
-                        icon: L.icon({ iconUrl: mapIconUrl, iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40] }) 
-                    }).addTo(mapaEstacoes).bindPopup(popupHTML);
+                    const colorCircleMarker = L.divIcon({
+                        className: 'custom-div-icon',
+                        html: `<div class="${isVendida ? 'piscar-verde' : ''}" style="
+                            background-color: ${isVendida ? 'var(--success)' : 'var(--accent)'}; 
+                            width: 44px; height: 44px; 
+                            border-radius: 50%; 
+                            display: flex; align-items: center; justify-content: center;
+                            border: 3px solid white;
+                            ${isVendida ? '' : 'box-shadow: 0 3px 6px rgba(0,0,0,0.3);'}
+                        ">
+                            <img src="${mapIconUrl}" style="width: 26px; height: 26px; object-fit: contain; filter: brightness(0) invert(1);">
+                        </div>`,
+                        iconSize: [44, 44],
+                        iconAnchor: [22, 44],
+                        popupAnchor: [0, -44]
+                    });
+
+                    const marker = L.marker([lat, lng], { icon: colorCircleMarker }).addTo(mapaEstacoes).bindPopup(popupHTML);
+                    mapMarkers.push(marker);
                 }
 
                 const card = document.createElement('div');
-                card.className = 'station-card';
+                card.className = `station-card ${isVendida ? 'card-vendida' : 'card-disponivel'}`;
                 card.setAttribute('data-name', s.name.toLowerCase());
                 card.setAttribute('data-municipio', (s.municipio || "").toLowerCase());
                 
                 const htmlPotencia = valorPotencia ? `<span class="potencia-blink">${window.escapeHtml(valorPotencia)}</span>` : '';
+                const htmlStatus = `<span class="badge-status ${isVendida ? 'badge-vendida' : 'badge-disponivel'}">${isVendida ? 'Vendida' : 'Disponível'}</span>`;
+                const cartIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>`;
 
                 card.innerHTML = `
                     <input type="checkbox" class="select-box" data-index="${index}">
@@ -936,10 +1037,14 @@ mais veloz e sustentável . </span>
                         <strong style="color:var(--primary);">${window.escapeHtml(s.name)}</strong><br>
                         <small style="color:var(--text-muted);">${window.escapeHtml(s.municipio || '')}</small>
                         ${htmlPotencia}
-                    </div>`;
+                        ${htmlStatus}
+                    </div>
+                    <button type="button" class="btn-cart ${isVendida ? 'cart-vendida' : 'cart-disponivel'}" onclick="window.toggleStationStatus(${index}, event)" title="Alternar status de venda">
+                        ${cartIcon}
+                    </button>`;
                 
                 card.onclick = (e) => { 
-                    if(e.target.type !== 'checkbox' && !isNaN(lat) && !isNaN(lng)) {
+                    if(e.target.type !== 'checkbox' && !e.target.closest('.btn-cart') && !isNaN(lat) && !isNaN(lng) && mapaEstacoes) {
                         mapaEstacoes.flyTo([lat, lng], 16); 
                     }
                 };
@@ -963,7 +1068,7 @@ mais veloz e sustentável . </span>
         }
 
         window.openStreetViewPopup = function(lat, lng) {
-            window.open(`http://googleusercontent.com/maps.google.com/7{lat},${lng}`, 'StreetView', 'width=900,height=600');
+            window.open(`http://maps.google.com/maps?q=&layer=c&cbll=${lat},${lng}`, 'StreetView', 'width=900,height=600');
         }
 
         window.generateMapPDF = function() {
@@ -987,8 +1092,94 @@ mais veloz e sustentável . </span>
                 .from(element).save().then(() => { element.style.display = 'none'; });
         }
 
+        // =========================================================================
+        // 🔒 SISTEMA DE AUTORIZAÇÃO INTEGRADO (MODAL DE DUPLA FINALIDADE)
+        // =========================================================================
+        window.fecharModalDelete = function() {
+            document.getElementById('modal-delete-pass').style.display = 'none'; 
+            currentStationIndex = null;
+            targetStatusAction = '';
+        }
 
-        /* ——— FUNÇÕES DO NOVO CATÁLOGO DE PRODUTOS ——— */
+        window.confirmarExclusaoModal = async function() {
+            const id = document.getElementById('del-modal-id').value;
+            const passwordDigitada = document.getElementById('del-modal-pass').value.trim();
+            
+            if (!passwordDigitada) {
+                alert('A senha é obrigatória.');
+                return;
+            }
+
+            // Tratamento especial se a requisição originou-se do painel do Mapa
+            if (id === 'MAP-STATUS') {
+                if (currentStationIndex === null) return;
+                const s = allStationsData[currentStationIndex];
+                let senhaCorreta = "";
+                
+                // 🔑 LÓGICA DE DUAS COLUNAS DE SENHA DISTINTAS
+                if (targetStatusAction === 'Vendida') {
+                    senhaCorreta = (s["senha incluir"] || s["Senha Incluir"] || s.senha_incluir || "").toString().trim();
+                } else {
+                    senhaCorreta = (s.senha || s.Senha || "").toString().trim();
+                }
+
+                if (passwordDigitada !== senhaCorreta) {
+                    alert("Senha incorreta! Operação cancelada.");
+                    return;
+                }
+
+                s.status = targetStatusAction; 
+                window.updateMapUI(allStationsData);
+                window.filterStations();
+                window.saveStatusToSheet(s.name, targetStatusAction); 
+                window.fecharModalDelete();
+                return;
+            }
+
+            // Fluxo tradicional de exclusão de propostas comerciais
+            const loggedUser = window.currentLoggedUser();
+            try {
+                const snap = await window.dbGet(window.dbRef(window.db, 'usuarios/' + loggedUser));
+                if (!snap.exists() || snap.val().pass !== passwordDigitada) {
+                    alert('Senha incorreta! Operação bloqueada.');
+                    return;
+                }
+            } catch(e) {
+                alert('Erro ao validar permissões com o banco de dados.');
+                return;
+            }
+
+            window.fecharModalDelete();
+            await window.dbRemove(window.dbRef(window.db, 'propostas/' + id));
+            window.showScreen('screen-history');
+        }
+
+        window.excluirProposta = function(id) {
+            if (!id || !window.isAdministrator()) return;
+            document.getElementById('del-modal-id').value = id;
+            document.getElementById('del-modal-id-text').textContent = '#' + id;
+            document.getElementById('del-modal-pass').value = '';
+            
+            const tituloModal = document.querySelector('#modal-delete-pass h3');
+            const descModal = document.querySelector('#modal-delete-pass p');
+            const btnModal = document.getElementById('btn-confirm-modal-action');
+            
+            if(tituloModal) tituloModal.innerText = "Autorização Necessária";
+            if(descModal) descModal.innerHTML = `Digite a sua senha de administrador para excluir o orçamento <strong>#${id}</strong>.`;
+            if(btnModal) btnModal.style.background = 'var(--danger)';
+
+            document.getElementById('modal-delete-pass').style.display = 'flex'; 
+            setTimeout(() => document.getElementById('del-modal-pass').focus(), 100);
+        }
+
+        window.excluirPropostaAtual = function() {
+            const id = window._previewPropostaId || document.getElementById('p-id').textContent;
+            window.excluirProposta(id);
+        }
+
+        // =========================================================================
+        // 📦 CATÁLOGO DE PRODUTOS E PREÇOS
+        // =========================================================================
         window.editarProdutoCatalogo = function(key) {
             const p = window.produtosCatalogo[key];
             if (!p) return;
@@ -1032,7 +1223,7 @@ mais veloz e sustentável . </span>
                 
                 alert('Produto salvo no catálogo com sucesso!');
             } catch(e) {
-                alert("Erro ao salvar no banco de dados. Verifique as permissões do Firebase.");
+                alert("Erro ao salvar no banco de dados.");
             }
         }
 
@@ -1047,6 +1238,7 @@ mais veloz e sustentável . </span>
 
         window.renderCatalog = function(obj) {
             const el = document.getElementById('catalog-list-render');
+            if(!el) return;
             if(!obj || Object.keys(obj).length === 0) { 
                 el.innerHTML = '<p style="padding: 20px; color: var(--text-muted);">Nenhum produto cadastrado no catálogo.</p>'; 
                 return; 
@@ -1063,8 +1255,8 @@ mais veloz e sustentável . </span>
                     <td><span style="font-size: 0.8125rem; color: var(--text-muted);">${window.escapeHtml(p.cat)}</span></td>
                     <td><strong style="color:var(--primary);">${window.escapeHtml(p.preco || '-')}</strong></td>
                     <td style="text-align:center; white-space: nowrap;">
-                        <button class="btn-icon-edit" onclick="window.editarProdutoCatalogo('${window.escapeAttr(key)}')"><i class="fa fa-edit"></i></button>
-                        <button class="btn-icon-remove" onclick="window.excluirProdutoCatalogo('${window.escapeAttr(key)}')"><i class="fa fa-trash"></i></button>
+                        <button type="button" class="btn-icon-edit" onclick="window.editarProdutoCatalogo('${window.escapeAttr(key)}')"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn-icon-remove" onclick="window.excluirProdutoCatalogo('${window.escapeAttr(key)}')"><i class="fa fa-trash"></i></button>
                     </td>
                 </tr>`;
             });
@@ -1132,8 +1324,10 @@ mais veloz e sustentável . </span>
             });
             window.calcularTotal();
         }
-        /* —————————————————————————————————————— */
 
+        // =========================================================================
+        // 📋 SISTEMA DE ORÇAMENTOS E PREVIEW COMERCIAL
+        // =========================================================================
         window.fillPreviewFromData = function(data) {
             document.getElementById('p-id').textContent = data.id;
             document.getElementById('p-cli').textContent = data.cli || '';
@@ -1219,51 +1413,6 @@ mais veloz e sustentável . </span>
             await window.dbUpdate(window.dbRef(window.db, 'propostas/' + id), { propostaStatus: status });
         }
 
-        /* ——— EXCLUSÃO COM SENHA DE ADMIN (MODAL OCULTO) ——— */
-        window.excluirProposta = function(id) {
-            if (!id || !window.isAdministrator()) return;
-            document.getElementById('del-modal-id').value = id;
-            document.getElementById('del-modal-id-text').textContent = '#' + id;
-            document.getElementById('del-modal-pass').value = '';
-            document.getElementById('modal-delete-pass').style.display = 'flex'; 
-            setTimeout(() => document.getElementById('del-modal-pass').focus(), 100);
-        }
-
-        window.fecharModalDelete = function() {
-            document.getElementById('modal-delete-pass').style.display = 'none'; 
-        }
-
-        window.confirmarExclusaoModal = async function() {
-            const id = document.getElementById('del-modal-id').value;
-            const adminPass = document.getElementById('del-modal-pass').value.trim();
-            
-            if (!adminPass) {
-                alert('A senha é obrigatória.');
-                return;
-            }
-
-            const loggedUser = window.currentLoggedUser();
-            try {
-                const snap = await window.dbGet(window.dbRef(window.db, 'usuarios/' + loggedUser));
-                if (!snap.exists() || snap.val().pass !== adminPass) {
-                    alert('Senha incorreta! Exclusão bloqueada.');
-                    return;
-                }
-            } catch(e) {
-                alert('Erro ao validar permissões com o banco de dados.');
-                return;
-            }
-
-            window.fecharModalDelete();
-            await window.dbRemove(window.dbRef(window.db, 'propostas/' + id));
-            window.showScreen('screen-history');
-        }
-
-        window.excluirPropostaAtual = function() {
-            const id = window._previewPropostaId || document.getElementById('p-id').textContent;
-            window.excluirProposta(id);
-        }
-
         window.toggleLogin = function(box) {
             document.getElementById('box-login').hidden = box !== 'login';
             document.getElementById('box-register').hidden = box !== 'register';
@@ -1283,7 +1432,7 @@ mais veloz e sustentável . </span>
                 await window.dbSet(window.dbRef(window.db, 'usuarios/' + user), { user, pass, status: 'pendente', perfil: 'operador', permissoes: permissoesPadrao });
                 window.toggleLogin('wait');
             } catch(e) {
-                alert('Erro de conexão. Verifique as regras do seu Firebase (.read e .write).');
+                alert('Erro de conexão. Verifique o banco de dados.');
             }
         }
 
@@ -1301,9 +1450,7 @@ mais veloz e sustentável . </span>
                         if(!snap.exists()) {
                             await window.dbSet(window.dbRef(window.db, 'usuarios/lucas'), { user: 'lucas', pass: pass || '1234', status: 'aprovado', perfil: 'administrador', permissoes: permsMaster });
                         }
-                    } catch(e) {
-                        console.log("Ignorar erro de escrita/leitura para liberar o admin.");
-                    }
+                    } catch(e) {}
                     sessionStorage.setItem('saj_user', 'lucas');
                     sessionStorage.setItem('saj_perfil', 'administrador');
                     sessionStorage.setItem('fc_perms', JSON.stringify(permsMaster));
@@ -1333,12 +1480,13 @@ mais veloz e sustentável . </span>
                 sessionStorage.setItem('fc_perms', JSON.stringify(perms));
                 location.reload();
             } catch (error) {
-                alert("ERRO DE CONEXÃO: O Firebase bloqueou o acesso. Acesse o console do Firebase > Realtime Database > Regras e altere '.read' e '.write' para true.");
+                alert("ERRO DE CONEXÃO: Verifique as regras do console do Firebase.");
             }
         }
 
         window.renderUsers = function(obj) {
             const el = document.getElementById('users-list-complex');
+            if (!el) return;
             if (!obj) return el.innerHTML = 'Nenhum usuário cadastrado.';
             el.innerHTML = Object.values(obj).map(u => {
                 const pending = u.status === 'pendente';
@@ -1352,9 +1500,9 @@ mais veloz e sustentável . </span>
                     <span class="status-badge status-${u.status}">${u.status}</span>
                 </div>
                 <div class="user-row-actions">
-                    <button class="btn-edit-user" onclick="window.abrirEdicaoUsuario('${window.escapeAttr(u.user)}')">Editar Acessos</button>
-                    ${pending ? `<button class="btn-approve" onclick="window.f_aprovar_u('${window.escapeAttr(u.user)}')">Aprovar</button>` : ''}
-                    <button class="btn-delete-user" onclick="window.f_del_user('${window.escapeAttr(u.user)}')">Excluir</button>
+                    <button type="button" class="btn-edit-user" onclick="window.abrirEdicaoUsuario('${window.escapeAttr(u.user)}')">Editar Acessos</button>
+                    ${pending ? `<button type="button" class="btn-approve" onclick="window.f_aprovar_u('${window.escapeAttr(u.user)}')">Aprovar</button>` : ''}
+                    <button type="button" class="btn-delete-user" onclick="window.f_del_user('${window.escapeAttr(u.user)}')">Excluir</button>
                 </div>
             </div>`;
             }).join('');
@@ -1371,6 +1519,7 @@ mais veloz e sustentável . </span>
             const snap = await window.dbGet(window.dbRef(window.db, 'usuarios/' + login));
             const u = snap.val();
             const panel = document.getElementById('user-edit-panel');
+            if(!panel) return;
             panel.hidden = false;
             document.getElementById('edit-user-login').value = login;
             document.getElementById('edit-user-display').textContent = login.toUpperCase();
@@ -1385,7 +1534,7 @@ mais veloz e sustentável . </span>
             document.getElementById('perm-catalogo').checked = !!p.catalogo;
             document.getElementById('perm-equipe').checked = !!p.equipe;
 
-            panel.scrollIntoView();
+            panel.scrollIntoView({ behavior: 'smooth' });
         }
 
         window.fecharEdicaoUsuario = function() { document.getElementById('user-edit-panel').hidden = true; }
@@ -1422,7 +1571,7 @@ mais veloz e sustentável . </span>
                 const est = d.estabelecimento || {};
                 document.getElementById('f-end').value = [est.logradouro, est.numero].filter(Boolean).join(', ');
                 document.getElementById('f-bairro').value = est.bairro || '';
-                document.getElementById('f-cidade').value = d.estabelecimento.cidade.nome || '';
+                document.getElementById('f-cidade').value = est.cidade.nome || '';
             } catch (e) { alert('Erro ao buscar o CNPJ.'); }
         }
 
@@ -1495,7 +1644,6 @@ mais veloz e sustentável . </span>
             window.calcularTotal();
         }
 
-        /* COM TRATAMENTO DE ERROS DO FIREBASE PARA NÃO TRAVAR O SISTEMA */
         window.f_gerar_visual = async function() {
             const items = Array.from(document.querySelectorAll('#items-body tr')).map(tr => ({
                 q: tr.querySelector('.i-q').value,
@@ -1518,20 +1666,18 @@ mais veloz e sustentável . </span>
                 items, propostaStatus: 'pendente'
             };
 
-            // Tenta salvar na nuvem. Se falhar por regra do Firebase, a proposta continua sendo gerada na tela!
             try {
                 await window.dbSet(window.dbRef(window.db, 'propostas/' + data.id), data);
             } catch(e) {
-                alert("AVISO DE SISTEMA:\n\nA proposta foi gerada para impressão, mas NÃO FOI SALVA NA NUVEM porque as permissões do Firebase estão bloqueadas.\n\nAcesse o Console do Firebase > Realtime Database > Regras e ative .read e .write para true.");
+                alert("AVISO DE SISTEMA: Gerado localmente.");
             }
 
             window.fillPreviewFromData(data);
             window.showScreen('screen-preview');
         }
 
-        /* LÓGICA DO DASHBOARD E HISTORICO COM EDIÇÃO INSTANTÂNEA */
         window.renderHistory = function(obj) {
-            window.todasPropostas = obj || {}; // Salva globalmente para o relatório Excel e Edição instantânea
+            window.todasPropostas = obj || {}; 
             const hPend = document.getElementById('history-content');
             const hAppr = document.getElementById('approved-content');
             if (!obj) { 
@@ -1571,11 +1717,11 @@ mais veloz e sustentável . </span>
                         <td>${p.total || 'R$ 0,00'}</td>
                         <td><span class="status-badge status-${window.normProposalStatus(p.propostaStatus)}">${window.normProposalStatus(p.propostaStatus)}</span></td>
                         <td><div class="history-actions">
-                            <button class="btn-table btn-table--muted" onclick="window.reabrir('${p.id}')">Editar</button>
-                            <button class="btn-table" onclick="window.abrirGerenciar('${p.id}', '${type}')">Gerenciar</button>
-                            ${isAdmin && window.normProposalStatus(p.propostaStatus) === 'pendente' ? `<button class="btn-table btn-table--success" onclick="window.f_quick_status('${p.id}', 'aprovado')">Aprovar</button>` : ''}
-                            ${isAdmin && window.normProposalStatus(p.propostaStatus) === 'aprovado' ? `<button class="btn-table btn-table--danger" onclick="window.f_quick_status('${p.id}', 'pendente')">Retornar</button>` : ''}
-                            ${isAdmin ? `<button class="btn-table btn-table--danger" onclick="window.excluirProposta('${p.id}')"><i class="fa fa-trash"></i></button>` : ''}
+                            <button type="button" class="btn-table btn-table--muted" onclick="window.reabrir('${p.id}')">Editar</button>
+                            <button type="button" class="btn-table" onclick="window.abrirGerenciar('${p.id}', '${type}')">Gerenciar</button>
+                            ${isAdmin && window.normProposalStatus(p.propostaStatus) === 'pendente' ? `<button type="button" class="btn-table btn-table--success" onclick="window.f_quick_status('${p.id}', 'aprovado')">Aprovar</button>` : ''}
+                            ${isAdmin && window.normProposalStatus(p.propostaStatus) === 'aprovado' ? `<button type="button" class="btn-table btn-table--danger" onclick="window.f_quick_status('${p.id}', 'pendente')">Retornar</button>` : ''}
+                            ${isAdmin ? `<button type="button" class="btn-table btn-table--danger" onclick="window.excluirProposta('${p.id}')"><i class="fa fa-trash"></i></button>` : ''}
                         </div></td></tr>`).join('')}</tbody></table>`;
             };
 
@@ -1583,7 +1729,6 @@ mais veloz e sustentável . </span>
             if (hAppr) hAppr.innerHTML = buildT(aprovadas, 'approved');
         }
 
-        /* GERAÇÃO DE RELATÓRIO EXCEL (CSV) */
         window.parseBRDate = function(str) {
             if(!str) return 0;
             const parts = str.split('/');
@@ -1631,7 +1776,6 @@ mais veloz e sustentável . </span>
             document.body.removeChild(link);
         }
 
-        /* FUNÇÃO REABRIR APRIMORADA: INSTANTÂNEA E À PROVA DE FALHAS */
         window.reabrir = function(id) {
             try {
                 let p = window.todasPropostas && window.todasPropostas[id];
@@ -1660,7 +1804,6 @@ mais veloz e sustentável . </span>
 
         window.f_logout = function() { sessionStorage.clear(); location.reload(); }
 
-        // APLICAÇÃO DAS PERMISSÕES AO CARREGAR O SISTEMA
         window.onload = () => {
             const u = sessionStorage.getItem('saj_user');
             if (u) {
