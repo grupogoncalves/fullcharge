@@ -121,10 +121,12 @@
         .form-grid-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
         .form-grid-4 { display: grid; grid-template-columns: 2fr 1.5fr 1fr 2fr; gap: 16px; }
+        .form-grid-catalog { display: grid; grid-template-columns: 2fr 1.3fr repeat(3, minmax(120px, 1fr)) 2fr; gap: 16px; }
         
+        @media (max-width: 1200px) { .form-grid-catalog { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 1000px) { .form-grid-4 { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 900px) { .form-grid-3 { grid-template-columns: 1fr; } }
-        @media (max-width: 720px) { .form-grid-2, .form-grid-equal, .form-grid-4 { grid-template-columns: 1fr; } }
+        @media (max-width: 720px) { .form-grid-2, .form-grid-equal, .form-grid-4, .form-grid-catalog { grid-template-columns: 1fr; } }
 
         .items-table-wrap { width: 100%; overflow-x: auto; margin-bottom: 10px; border: 1px solid var(--border); border-radius: var(--radius-md); }
         .items-table { width: 100%; border-collapse: collapse; min-width: 700px; }
@@ -213,7 +215,7 @@
         /* ——— Modalidades de proposta ——— */
         .proposal-type-card { margin: 8px 0 22px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); }
         .proposal-type-title { margin: 0 0 12px; font-size: 0.8125rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); }
-        .proposal-type-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .proposal-type-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
         .proposal-type-option { position: relative; display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: #fff; cursor: pointer; transition: border-color var(--transition), box-shadow var(--transition), background var(--transition); }
         .proposal-type-option:hover { border-color: var(--accent); background: #f8fbff; }
         .proposal-type-option input { width: auto; margin: 3px 0 0; accent-color: var(--accent); }
@@ -231,6 +233,7 @@
         .p-investor-card span { display: block; margin-bottom: 4px; color: var(--p-doc-muted); font-size: 0.625rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
         .p-investor-disclaimer { margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: #f8fafc; border: 1px solid var(--p-doc-line); color: #475569; font-size: 0.75rem; line-height: 1.55; }
         .status-investidor { background: #dbeafe; color: #1d4ed8; }
+        .status-comodato { background: #ecfdf5; color: #047857; }
         .status-venda { background: #f1f5f9; color: #475569; }
         @media (max-width: 720px) { .proposal-type-options, .p-investor-grid { grid-template-columns: 1fr; } }
 
@@ -523,6 +526,10 @@
                                 <input type="radio" name="tipo-proposta" value="investidor" onchange="window.onTipoPropostaChange()">
                                 <span><strong>Proposta para investidores</strong>Simulação com rentabilidade mensal de 2,25% sobre o investimento.</span>
                             </label>
+                            <label class="proposal-type-option">
+                                <input type="radio" name="tipo-proposta" value="comodato" onchange="window.onTipoPropostaChange()">
+                                <span><strong>Proposta de comodato</strong>Utiliza o preço de comodato cadastrado no catálogo de produtos.</span>
+                            </label>
                         </div>
                     </div>
                     <div class="form-grid-2">
@@ -612,7 +619,7 @@
                                     <th scope="col" style="width:1%">Qtd</th>
                                     <th scope="col">Equipamento / Modelo</th>
                                     <th scope="col">Descrição Técnica</th>
-                                    <th scope="col" style="width:15%">Preço Unit.</th>
+                                    <th scope="col" style="width:15%" id="th-preco">Preço Unit.</th>
                                     <th scope="col" style="width:1%" aria-label="Remover"></th>
                                 </tr>
                             </thead>
@@ -687,7 +694,7 @@
                                             <th scope="col">Qtd</th>
                                             <th scope="col">Produto / Modelo</th>
                                             <th scope="col">Especificações Técnicas</th>
-                                            <th scope="col">Preço</th>
+                                            <th scope="col" id="p-th-preco">Preço</th>
                                         </tr>
                                     </thead>
                                     <tbody id="p-items"></tbody>
@@ -897,7 +904,7 @@
                     <h2 class="page-title">Catálogo de Produtos e Preços</h2>
                     <p style="color:var(--text-muted); font-size: 0.875rem; margin-bottom: 20px;">Cadastre os produtos, preços e o link da foto para exibição e cálculo automático nas propostas.</p>
                     
-                    <input type="hidden" id="cat-old-key"> <div class="form-grid-4">
+                    <input type="hidden" id="cat-old-key"> <div class="form-grid-catalog">
                         <div class="field">
                             <label for="cat-nome">Modelo / Nome</label>
                             <input type="text" id="cat-nome" placeholder="Ex: Full Charge Swift 20 kW">
@@ -907,8 +914,16 @@
                             <input type="text" id="cat-cat" placeholder="Ex: Linha Swift">
                         </div>
                         <div class="field">
-                            <label for="cat-preco">Preço (R$)</label>
-                            <input type="text" id="cat-preco" placeholder="R$ 0,00" oninput="window.maskMoney(this)">
+                            <label for="cat-preco-venda">Preço de venda (R$)</label>
+                            <input type="text" id="cat-preco-venda" placeholder="R$ 0,00" oninput="window.maskMoney(this)">
+                        </div>
+                        <div class="field">
+                            <label for="cat-preco-investimento">Preço de investimento (R$)</label>
+                            <input type="text" id="cat-preco-investimento" placeholder="R$ 0,00" oninput="window.maskMoney(this)">
+                        </div>
+                        <div class="field">
+                            <label for="cat-preco-comodato">Preço de comodato (R$)</label>
+                            <input type="text" id="cat-preco-comodato" placeholder="R$ 0,00" oninput="window.maskMoney(this)">
                         </div>
                         <div class="field">
                             <label for="cat-img">Link da Foto (URL)</label>
@@ -1050,7 +1065,9 @@
 
         window.calcularTotal = function() {
             let totalGeral = 0;
+            let totalLinhas = 0;
             document.querySelectorAll('#items-body tr').forEach(tr => {
+                totalLinhas += 1;
                 const q = parseFloat(tr.querySelector('.i-q').value) || 0;
                 const pInput = tr.querySelector('.i-p');
                 const pStr = pInput ? (pInput.value || '').replace(/\D/g, '') : '0';
@@ -1058,13 +1075,19 @@
                 totalGeral += (q * pFloat);
             });
             
-            let v = totalGeral.toFixed(2);
-            v = v.replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            const valorFormatado = window.formatBRL ? window.formatBRL(totalGeral) : ("R$ " + totalGeral.toFixed(2).replace('.', ','));
             const fTotal = document.getElementById('f-total');
-            if(fTotal) fTotal.value = "R$ " + v;
+            if(fTotal) fTotal.value = valorFormatado;
+
+            const tipo = typeof window.getTipoProposta === 'function' ? window.getTipoProposta() : 'venda';
+            if (tipo === 'investidor' && totalLinhas > 0) {
+                const investimentoInput = document.getElementById('f-investimento');
+                if (investimentoInput && document.activeElement !== investimentoInput) {
+                    investimentoInput.value = valorFormatado;
+                    if (typeof window.calcularInvestimento === 'function') window.calcularInvestimento(false);
+                }
+            }
         }
-
-
 
         window.INVESTOR_MONTHLY_RATE = 0.0225;
 
@@ -1084,7 +1107,32 @@
             return checked ? checked.value : 'venda';
         }
 
-        window.calcularInvestimento = function() {
+        window.getTipoPropostaLabel = function(tipo = window.getTipoProposta()) {
+            if (tipo === 'investidor') return 'Investidor';
+            if (tipo === 'comodato') return 'Comodato';
+            return 'Venda';
+        }
+
+        window.getTipoPropostaBadgeClass = function(tipo = window.getTipoProposta()) {
+            if (tipo === 'investidor') return 'status-investidor';
+            if (tipo === 'comodato') return 'status-comodato';
+            return 'status-venda';
+        }
+
+        window.getPrecoLabelTipoProposta = function(tipo = window.getTipoProposta()) {
+            if (tipo === 'investidor') return 'Preço Invest.';
+            if (tipo === 'comodato') return 'Preço Comodato';
+            return 'Preço Unit.';
+        }
+
+        window.getPrecoProdutoPorTipo = function(prod, tipo = window.getTipoProposta()) {
+            if (!prod) return '';
+            if (tipo === 'investidor') return prod.precoInvestimento || prod.preco || prod.precoVenda || '';
+            if (tipo === 'comodato') return prod.precoComodato || prod.preco || prod.precoVenda || '';
+            return prod.precoVenda || prod.preco || '';
+        }
+
+        window.calcularInvestimento = function(syncTotal = true) {
             const investimento = window.moneyToNumber(document.getElementById('f-investimento')?.value || '0');
             const meses = Math.max(1, parseInt(document.getElementById('f-invest-meses')?.value || '12', 10) || 12);
             const rendaMensal = investimento * window.INVESTOR_MONTHLY_RATE;
@@ -1094,7 +1142,7 @@
             if (rendaMensalInput) rendaMensalInput.value = window.formatBRL(rendaMensal);
             if (rendaPeriodoInput) rendaPeriodoInput.value = window.formatBRL(rendaPeriodo);
             const fTotal = document.getElementById('f-total');
-            if (window.getTipoProposta() === 'investidor' && fTotal) fTotal.value = window.formatBRL(investimento);
+            if (syncTotal && window.getTipoProposta() === 'investidor' && fTotal) fTotal.value = window.formatBRL(investimento);
         }
 
         window.defaultInvestorObs = function() {
@@ -1104,6 +1152,15 @@
 • Pagamento da rentabilidade: conforme contrato firmado entre as partes.
 • Prazo de projeção: informado na simulação desta proposta.
 • Observação: a efetivação do investimento depende de análise, aceite formal e assinatura dos instrumentos contratuais.`;
+        }
+
+        window.defaultComodatoObs = function() {
+            return `Condições Comerciais para Comodato:
+• Modalidade: disponibilização de equipamentos em comodato, conforme condições contratuais.
+• Validade da proposta: 
+• Serviços Inclusos: conforme escopo técnico e comercial descrito nesta proposta.
+• Responsabilidades: instalação, operação, manutenção e prazos dependem da formalização contratual entre as partes.
+• Condições de pagamento: `;
         }
 
         window.defaultVendaObs = function() {
@@ -1118,6 +1175,7 @@
         window.onTipoPropostaChange = function(forceDefaultObs = false) {
             const tipo = window.getTipoProposta();
             const isInvestidor = tipo === 'investidor';
+            const isComodato = tipo === 'comodato';
             const formTitle = document.getElementById('form-title-proposta');
             const totalField = document.getElementById('f-total-field');
             const totalLabel = document.getElementById('f-total-label');
@@ -1126,33 +1184,44 @@
             const addBtn = document.getElementById('btn-add-item-venda');
             const obs = document.getElementById('f-obs');
 
-            if (formTitle) formTitle.textContent = isInvestidor ? 'Gerar proposta para investidores' : 'Gerar proposta de venda E-Mobility';
+            if (formTitle) {
+                formTitle.textContent = isInvestidor ? 'Gerar proposta para investidores' : (isComodato ? 'Gerar proposta de comodato' : 'Gerar proposta de venda E-Mobility');
+            }
             if (investorFields) investorFields.hidden = !isInvestidor;
-            // No modo investidor, a tabela de equipamentos continua visível para selecionar o carregador correto.
             if (itemsWrap) itemsWrap.style.display = '';
             if (addBtn) {
                 addBtn.style.display = '';
-                addBtn.textContent = isInvestidor ? '+ Adicionar carregador ao investimento' : '+ Adicionar item';
+                addBtn.textContent = isInvestidor ? '+ Adicionar carregador ao investimento' : (isComodato ? '+ Adicionar item em comodato' : '+ Adicionar item');
             }
-            if (totalLabel) totalLabel.textContent = isInvestidor ? 'Valor calculado pelos carregadores (referência)' : 'Total Calculado (R$)';
-            if (totalField) totalField.style.display = isInvestidor ? 'none' : '';
+            if (totalLabel) {
+                totalLabel.textContent = isInvestidor ? 'Total calculado pelo preço de investimento (R$)' : (isComodato ? 'Total calculado pelo preço de comodato (R$)' : 'Total Calculado (R$)');
+            }
+            if (totalField) totalField.style.display = '';
 
             if (obs && (forceDefaultObs || !obs.value.trim())) {
-                obs.value = isInvestidor ? window.defaultInvestorObs() : window.defaultVendaObs();
+                obs.value = isInvestidor ? window.defaultInvestorObs() : (isComodato ? window.defaultComodatoObs() : window.defaultVendaObs());
             }
 
-            if (isInvestidor) window.calcularInvestimento();
+            const thPreco = document.getElementById('th-preco');
+            if (thPreco) {
+                thPreco.textContent = window.getPrecoLabelTipoProposta(tipo);
+                thPreco.style.display = '';
+            }
+            document.querySelectorAll('.td-preco').forEach(td => td.style.display = '');
+
+            if (typeof window.atualizarPrecosItensPorTipo === 'function') window.atualizarPrecosItensPorTipo();
+            else if (isInvestidor) window.calcularInvestimento();
             else window.calcularTotal();
         }
 
         window.setTipoProposta = function(tipo) {
-            const val = tipo === 'investidor' ? 'investidor' : 'venda';
+            const tiposPermitidos = ['venda', 'investidor', 'comodato'];
+            const val = tiposPermitidos.includes(tipo) ? tipo : 'venda';
             const input = document.querySelector(`input[name="tipo-proposta"][value="${val}"]`);
             if (input) input.checked = true;
             window.onTipoPropostaChange(false);
         }
 
-        // CORREÇÃO: Usando formatação segura de strings e escapamento HTML.
         window.escapeHtml = function(s) {
             if (s == null) return '';
             return String(s)
@@ -1164,6 +1233,7 @@
         }
 
         window.escapeAttr = function(s) {
+            if (s == null) return '';
             return String(s)
                 .replace(/&/g, '&amp;')
                 .replace(/"/g, '&quot;')
@@ -1399,7 +1469,6 @@
                 .from(element).save().then(() => { element.style.display = 'none'; });
         }
 
-
         /* ——— FUNÇÕES DO NOVO CATÁLOGO DE PRODUTOS ——— */
         window.editarProdutoCatalogo = function(key) {
             const p = window.produtosCatalogo[key];
@@ -1408,7 +1477,9 @@
             document.getElementById('cat-old-key').value = key; 
             document.getElementById('cat-nome').value = p.nome;
             document.getElementById('cat-cat').value = p.cat || '';
-            document.getElementById('cat-preco').value = p.preco || '';
+            document.getElementById('cat-preco-venda').value = p.precoVenda || p.preco || '';
+            document.getElementById('cat-preco-investimento').value = p.precoInvestimento || '';
+            document.getElementById('cat-preco-comodato').value = p.precoComodato || '';
             document.getElementById('cat-img').value = p.img || '';
             
             document.getElementById('btn-save-catalog').innerHTML = '<i class="fa fa-save"></i> Salvar Alterações';
@@ -1421,7 +1492,9 @@
 
             const nome = document.getElementById('cat-nome').value.trim();
             const cat = document.getElementById('cat-cat').value.trim() || 'Outros';
-            const preco = document.getElementById('cat-preco').value.trim();
+            const precoVenda = document.getElementById('cat-preco-venda').value.trim();
+            const precoInvestimento = document.getElementById('cat-preco-investimento').value.trim();
+            const precoComodato = document.getElementById('cat-preco-comodato').value.trim();
             const img = document.getElementById('cat-img').value.trim();
             const oldKey = document.getElementById('cat-old-key').value;
             
@@ -1433,11 +1506,13 @@
                     await window.dbRemove(window.dbRef(window.db, 'produtos/' + oldKey));
                 }
                 
-                await window.dbSet(window.dbRef(window.db, 'produtos/' + newKey), { nome, cat, preco, img });
+                await window.dbSet(window.dbRef(window.db, 'produtos/' + newKey), { nome, cat, preco: precoVenda, precoVenda, precoInvestimento, precoComodato, img });
                 
                 document.getElementById('cat-nome').value = '';
                 document.getElementById('cat-cat').value = '';
-                document.getElementById('cat-preco').value = '';
+                document.getElementById('cat-preco-venda').value = '';
+                document.getElementById('cat-preco-investimento').value = '';
+                document.getElementById('cat-preco-comodato').value = '';
                 document.getElementById('cat-img').value = '';
                 document.getElementById('cat-old-key').value = '';
                 document.getElementById('btn-save-catalog').innerHTML = 'Adicionar Equipamento ao Catálogo';
@@ -1465,7 +1540,7 @@
                 return; 
             }
 
-            let html = '<table class="items-table" style="min-width: 100%;"><thead><tr><th style="width:70px; text-align:center;">Foto</th><th>Equipamento</th><th>Categoria</th><th>Preço</th><th style="text-align:center; width:90px;">Ações</th></tr></thead><tbody>';
+            let html = '<table class="items-table" style="min-width: 980px;"><thead><tr><th style="width:70px; text-align:center;">Foto</th><th>Equipamento</th><th>Categoria</th><th>Preço venda</th><th>Preço investimento</th><th>Preço comodato</th><th style="text-align:center; width:90px;">Ações</th></tr></thead><tbody>';
             
             Object.entries(obj).forEach(([key, p]) => {
                 const imgSafe = p.img ? window.escapeAttr(p.img) : 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
@@ -1474,7 +1549,9 @@
                     <td style="text-align:center;"><img src="${imgSafe}" style="width: 40px; height: 40px; object-fit: contain; border: 1px solid #e2e8f0; border-radius: 4px;" onerror="this.style.display='none'"></td>
                     <td><strong>${window.escapeHtml(p.nome)}</strong></td>
                     <td><span style="font-size: 0.8125rem; color: var(--text-muted);">${window.escapeHtml(p.cat)}</span></td>
-                    <td><strong style="color:var(--primary);">${window.escapeHtml(p.preco || '-')}</strong></td>
+                    <td><strong style="color:var(--primary);">${window.escapeHtml(p.precoVenda || p.preco || '-')}</strong></td>
+                    <td><strong style="color:var(--primary);">${window.escapeHtml(p.precoInvestimento || '-')}</strong></td>
+                    <td><strong style="color:var(--primary);">${window.escapeHtml(p.precoComodato || '-')}</strong></td>
                     <td style="text-align:center; white-space: nowrap;">
                         <button class="btn-icon-edit" onclick="window.editarProdutoCatalogo('${window.escapeAttr(key)}')"><i class="fa fa-edit"></i></button>
                         <button class="btn-icon-remove" onclick="window.excluirProdutoCatalogo('${window.escapeAttr(key)}')"><i class="fa fa-trash"></i></button>
@@ -1488,18 +1565,18 @@
 
         window.seedInitialProducts = async function() {
             const iniciais = [
-                { nome: "Full Charge Portátil 3.7 kW", cat: "Linha Portátil e Residencial", preco: "", img: "" },
-                { nome: "Full Charge Smart 7,4 kW", cat: "Linha Portátil e Residencial", preco: "", img: "" },
-                { nome: "Full Charge Smart 7,4 kW 4G", cat: "Linha Portátil e Residencial", preco: "", img: "" },
-                { nome: "Full Charge Smart 22 kW", cat: "Linha Portátil e Residencial", preco: "", img: "" },
-                { nome: "Full Charge Swift 20 kW", cat: "Linha Swift (Comercial)", preco: "", img: "" },
-                { nome: "Full Charge Swift 30 kW", cat: "Linha Swift (Comercial)", preco: "", img: "" },
-                { nome: "Full Charge Swift 40 kW", cat: "Linha Swift (Comercial)", preco: "", img: "" },
-                { nome: "Full Charge Superport 60 kW", cat: "Linha Superport (Ultrarrápida)", preco: "", img: "" },
-                { nome: "Full Charge Superport 120 kW", cat: "Linha Superport (Ultrarrápida)", preco: "", img: "" },
-                { nome: "Full Charge Superport 150 kW", cat: "Linha Superport (Ultrarrápida)", preco: "", img: "" },
-                { nome: "Cabo com Conector Tipo 2", cat: "Acessórios", preco: "", img: "" },
-                { nome: "Mão de Obra de Instalação", cat: "Serviços", preco: "", img: "" }
+                { nome: "Full Charge Portátil 3.7 kW", cat: "Linha Portátil e Residencial", preco: "", precoVenda: "", precoInvestimento: "", precoComodato: "", img: "" },
+                { nome: "Full Charge Smart 7,4 kW", cat: "Linha Portátil e Residencial", preco: "", precoVenda: "", precoInvestimento: "", precoComodato: "", img: "" },
+                { nome: "Full Charge Smart 7,4 kW 4G", cat: "Linha Portátil e Residencial", preco: "", precoVenda: "", precoInvestimento: "", precoComodato: "", img: "" },
+                { nome: "Full Charge Smart 22 kW", cat: "Linha Portátil e Residencial", preco: "", precoVenda: "", precoInvestimento: "", precoComodato: "", img: "" },
+                { nome: "Full Charge Swift 20 kW", cat: "Linha Swift (Comercial)", preco: "", precoVenda: "", precoInvestimento: "", precoComodato: "", img: "" },
+                { nome: "Full Charge Swift 30 kW", cat: "Linha Swift (Comercial)", preco: "", precoVenda: "", precoInvestimento: "", precoComodato: "", img: "" },
+                { nome: "Full Charge Swift 40 kW", cat: "Linha Swift (Comercial)", preco: "", precoVenda: "", precoInvestimento: "", precoComodato: "", img: "" },
+                { nome: "Full Charge Superport 60 kW", cat: "Linha Superport (Ultrarrápida)", preco: "", precoVenda: "", precoInvestimento: "", precoComodato: "", img: "" },
+                { nome: "Full Charge Superport 120 kW", cat: "Linha Superport (Ultrarrápida)", preco: "", precoVenda: "", precoInvestimento: "", precoComodato: "", img: "" },
+                { nome: "Full Charge Superport 150 kW", cat: "Linha Superport (Ultrarrápida)", preco: "", precoVenda: "", precoInvestimento: "", precoComodato: "", img: "" },
+                { nome: "Cabo com Conector Tipo 2", cat: "Acessórios", preco: "", precoVenda: "", precoInvestimento: "", precoComodato: "", img: "" },
+                { nome: "Mão de Obra de Instalação", cat: "Serviços", preco: "", precoVenda: "", precoInvestimento: "", precoComodato: "", img: "" }
             ];
             for(let p of iniciais) {
                 const key = p.nome.replace(/[.#$\[\]]/g, '').replace(/\//g, '-');
@@ -1548,8 +1625,9 @@
         /* —————————————————————————————————————— */
 
         window.fillPreviewFromData = function(data) {
-            const tipo = data.tipoProposta === 'investidor' ? 'investidor' : 'venda';
+            const tipo = ['venda', 'investidor', 'comodato'].includes(data.tipoProposta) ? data.tipoProposta : 'venda';
             const isInvestidor = tipo === 'investidor';
+            const isComodato = tipo === 'comodato';
             const investimentoNumero = window.moneyToNumber(data.investimento || data.total || '0');
             const meses = Math.max(1, parseInt(data.prazoMeses || 12, 10) || 12);
             const rendaMensal = data.rendaMensal || window.formatBRL(investimentoNumero * window.INVESTOR_MONTHLY_RATE);
@@ -1558,9 +1636,9 @@
             document.getElementById('p-id').textContent = data.id;
             document.getElementById('p-cli').textContent = data.cli || '';
             document.getElementById('p-cnpj').textContent = data.cnpj || '';
-            document.getElementById('p-doc-eyebrow').textContent = isInvestidor ? 'Proposta para investidores' : 'Proposta comercial';
-            document.getElementById('p-doc-title').textContent = isInvestidor ? 'Investimento FullCharge' : 'Orçamento';
-            document.getElementById('p-total-label').textContent = isInvestidor ? 'Investimento Total' : 'Investimento Total';
+            document.getElementById('p-doc-eyebrow').textContent = isInvestidor ? 'Proposta para investidores' : (isComodato ? 'Proposta de comodato' : 'Proposta comercial');
+            document.getElementById('p-doc-title').textContent = isInvestidor ? 'Investimento FullCharge' : (isComodato ? 'Comodato FullCharge' : 'Orçamento');
+            document.getElementById('p-total-label').textContent = isInvestidor ? 'Investimento Total' : (isComodato ? 'Total do Comodato' : 'Investimento Total');
             
             const endCompleto = [data.end, data.bairro, data.cidade].filter(Boolean).join(', ');
             document.getElementById('p-end').textContent = endCompleto || '';
@@ -1580,6 +1658,12 @@
                 document.getElementById('p-rentabilidade').textContent = `${(window.INVESTOR_MONTHLY_RATE * 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% ao mês`;
                 document.getElementById('p-renda-mensal').textContent = rendaMensal;
                 document.getElementById('p-renda-periodo').textContent = `${rendaPeriodo} em ${meses} meses`;
+            }
+
+            const pThPreco = document.getElementById('p-th-preco');
+            if (pThPreco) {
+                pThPreco.textContent = window.getPrecoLabelTipoProposta(tipo).replace('Unit.', '');
+                pThPreco.style.display = '';
             }
 
             document.getElementById('p-items').innerHTML = itemsPreview.map(i => {
@@ -1699,7 +1783,6 @@
             const id = window._previewPropostaId || document.getElementById('p-id').textContent;
             window.excluirProposta(id);
         }
-
 
         window.defaultPermsForPerfil = function(perfil) {
             if (perfil === 'administrador') {
@@ -1879,7 +1962,6 @@
                 document.getElementById('f-cidade').value = d.estabelecimento.cidade.nome || '';
             } catch (e) { alert('Erro ao buscar o CNPJ.'); }
         }
-
 
         /* ——— Cadastro de Clientes ——— */
         window.onlyDigits = function(s) { return String(s || '').replace(/\\D/g, ''); }
@@ -2093,7 +2175,7 @@
                     <div class="client-history-card">
                         <h4>Propostas vinculadas</h4>
                         ${historico.length ? historico.map(h => `<div class="client-note-item">
-                            <span class="client-note-meta">#${window.escapeHtml(h.id)} · ${window.escapeHtml(h.data || '')} · ${window.escapeHtml(h.tipoProposta === 'investidor' ? 'Investidor' : 'Venda')}</span>
+                            <span class="client-note-meta">#${window.escapeHtml(h.id)} · ${window.escapeHtml(h.data || '')} · ${window.escapeHtml(window.getTipoPropostaLabel(h.tipoProposta || 'venda'))}</span>
                             <strong>${window.escapeHtml(h.total || 'R$ 0,00')}</strong> · <span class="status-badge status-${window.normProposalStatus(h.status)}">${window.normProposalStatus(h.status)}</span><br>
                             ${h.observacaoDaProposta ? `<span class="client-mini-muted">${window.escapeHtml(String(h.observacaoDaProposta).slice(0, 160))}</span>` : ''}
                         </div>`).join('') : '<p class="client-mini-muted">Nenhuma proposta vinculada ainda.</p>'}
@@ -2191,6 +2273,22 @@
             });
         }
 
+        window.atualizarPrecosItensPorTipo = function() {
+            document.querySelectorAll('#items-body tr').forEach(tr => {
+                const sel = tr.querySelector('.i-g-select');
+                const desc = tr.querySelector('.i-d');
+                const precoInput = tr.querySelector('.i-p');
+                if (!sel || !precoInput || !sel.value || sel.value === GRUPO_OUTRO || !window.produtosCatalogo) return;
+
+                const prod = Object.values(window.produtosCatalogo).find(p => p.nome === sel.value);
+                if (prod) {
+                    if (prod.cat && desc) desc.value = prod.cat;
+                    precoInput.value = window.getPrecoProdutoPorTipo(prod);
+                }
+            });
+            window.calcularTotal();
+        }
+
         window.toggleGrupoOutro = function(sel) {
             const tr = sel.closest('tr');
             const out = tr.querySelector('.i-g-outro');
@@ -2205,11 +2303,11 @@
                     const prod = Object.values(window.produtosCatalogo).find(p => p.nome === sel.value);
                     if(prod) {
                         if (prod.cat) desc.value = prod.cat;
-                        if (prod.preco) precoInput.value = prod.preco;
+                        if (precoInput) precoInput.value = window.getPrecoProdutoPorTipo(prod);
                     }
                 } else if (!sel.value) {
                     desc.value = '';
-                    precoInput.value = '';
+                    if (precoInput) precoInput.value = '';
                 }
             }
             window.calcularTotal();
@@ -2218,12 +2316,15 @@
         window.addItemRow = function(q = 1, g = '', d = '', p = '') {
             const tbody = document.getElementById('items-body');
             if(!tbody) return;
+            
+            const displayStyle = '';
+
             const tr = tbody.insertRow();
             tr.innerHTML = `<td><input type="number" class="i-q" value="${q}" style="width:64px; text-align:center;" oninput="window.calcularTotal()"></td>
                 <td><select class="i-g-select" onchange="window.toggleGrupoOutro(this)">${window.getGrupoSelectInnerHtml()}</select>
                     <input type="text" class="i-g-outro" style="display:none;margin-top:5px" placeholder="Qual equipamento?"></td>
                 <td><input type="text" class="i-d" value="${window.escapeAttr(d)}"></td>
-                <td><input type="text" class="i-p" value="${window.escapeAttr(p)}" oninput="window.maskMoney(this); window.calcularTotal()" placeholder="R$ 0,00"></td>
+                <td class="td-preco" style="${displayStyle}"><input type="text" class="i-p" value="${window.escapeAttr(p)}" oninput="window.maskMoney(this); window.calcularTotal()" placeholder="R$ 0,00"></td>
                 <td style="text-align:center;"><button type="button" class="btn-icon-remove" onclick="this.closest('tr').remove(); window.calcularTotal()"><i class="fa fa-times"></i></button></td>`;
             const sel = tr.querySelector('.i-g-select');
             if (g && Array.from(sel.options).some(o => o.value === g)) sel.value = g;
@@ -2327,7 +2428,7 @@
                     <thead><tr><th>#ID</th><th>Tipo</th><th>Cliente</th><th>Valor</th><th>Estado</th><th>Ações</th></tr></thead>
                     <tbody>${arr.map(p => `<tr>
                         <td><strong>#${p.id}</strong></td>
-                        <td><span class="status-badge ${p.tipoProposta === 'investidor' ? 'status-investidor' : 'status-venda'}">${p.tipoProposta === 'investidor' ? 'Investidor' : 'Venda'}</span></td>
+                        <td><span class="status-badge ${window.getTipoPropostaBadgeClass(p.tipoProposta || 'venda')}">${window.getTipoPropostaLabel(p.tipoProposta || 'venda')}</span></td>
                         <td>${window.escapeHtml(p.cli)}</td>
                         <td>${p.total || 'R$ 0,00'}</td>
                         <td><span class="status-badge status-${window.normProposalStatus(p.propostaStatus)}">${window.normProposalStatus(p.propostaStatus)}</span></td>
