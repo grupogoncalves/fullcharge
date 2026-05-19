@@ -91,8 +91,8 @@
         .auth-footer a { color: var(--accent); font-weight: 600; text-decoration: none; }
         .auth-footer a:hover { text-decoration: underline; }
 
-        /* ——— Modal Senha Exclusão ——— */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 11, 24, 0.8); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 9999; padding: 24px; }
+        /* ——— Modal Base ——— */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 11, 24, 0.8); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 24px; }
         .modal-box { background: var(--surface); width: 100%; max-width: 400px; padding: 32px 28px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); animation: fadeIn 0.2s ease; text-align: left; }
 
         /* ——— App layout ——— */
@@ -178,17 +178,16 @@
 
         .p-section-title { margin: 0 0 12px; font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--p-doc-muted); }
 
-        /* Tabela de visualização */
         .p-table-wrap { margin-bottom: 28px; border: 1px solid var(--p-doc-line); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05); }
         .p-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; table-layout: fixed; }
         .p-table th, .p-table td { word-wrap: break-word; overflow: hidden; }
         .p-table th { background: linear-gradient(180deg, #001f40 0%, #000b18 100%); color: #f8fafc; padding: 12px 14px; text-align: left; font-size: 0.625rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border: none; }
         
-        .p-table th:nth-child(1) { width: 150px; text-align: center; } /* Imagem */
-        .p-table th:nth-child(2) { width: 60px; text-align: center; }  /* Qtd */
-        .p-table th:nth-child(3) { width: auto; }                      /* Produto */
-        .p-table th:nth-child(4) { width: 150px; }                     /* Especificações */
-        .p-table th:nth-child(5) { width: 110px; text-align: right; }  /* Preço */
+        .p-table th:nth-child(1) { width: 150px; text-align: center; } 
+        .p-table th:nth-child(2) { width: 60px; text-align: center; }  
+        .p-table th:nth-child(3) { width: auto; }                      
+        .p-table th:nth-child(4) { width: 150px; }                     
+        .p-table th:nth-child(5) { width: 110px; text-align: right; }  
 
         .p-table td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; color: var(--p-doc-ink); line-height: 1.45; }
         .p-table tbody tr:nth-child(even) td { background: #fafbfc; }
@@ -254,13 +253,12 @@
         .skip-link { position: absolute; left: -9999px; z-index: 9999; padding: 12px 16px; background: var(--accent); color: #fff; font-weight: 600; border-radius: var(--radius-sm); }
         .skip-link:focus { left: 12px; top: 12px; }
 
-        /* Estilos do Dashboard ("Visão Geral") */
         .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
         .dash-card { background: #f8fafc; border: 1px solid var(--border); padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
         .dash-card-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
         .dash-card-value { font-size: 1.75rem; font-weight: 800; color: var(--primary); }
 
-        /* Estilos tela de Mapas */
+        /* Estilos tela de Mapas (Integrados do maps.html) */
         .map-wrapper { display: flex; gap: 20px; height: calc(100vh - 120px); min-height: 500px; }
         .map-sidebar { width: 340px; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
         #map-view { flex: 1; border-radius: var(--radius-md); border: 1px solid var(--border); z-index: 1; box-shadow: var(--shadow-sm); }
@@ -276,6 +274,28 @@
         
         .station-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; font-size: 13px; }
         .station-card:hover { border-color: var(--primary); background: #f0fdf4; }
+        
+        /* Modificadores de Venda da Estação */
+        .card-vendida { border-left: 4px solid var(--success); }
+        .card-disponivel { border-left: 4px solid var(--accent); }
+        
+        .badge-status-mapa { font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; }
+        .badge-vendida { background: #dcfce7; color: var(--success); }
+        .badge-disponivel { background: #dbeafe; color: var(--accent); }
+        
+        .btn-cart { background: transparent; border: none; padding: 5px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .btn-cart:hover { transform: scale(1.15); }
+        .cart-vendida { color: var(--success); }
+        .cart-disponivel { color: var(--accent); }
+        
+        .custom-div-icon { background: transparent; border: none; }
+        .piscar-verde { animation: radar-verde 1.5s infinite; }
+        @keyframes radar-verde {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
         .select-box { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
         .mini-icon { width: 30px; height: 30px; object-fit: contain; }
         
@@ -285,28 +305,6 @@
         .map-sidebar-footer { padding: 15px; border-top: 1px solid var(--border); background: var(--surface); }
         .btn-popup { border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; color: white; width: 100%; text-align: center; background: var(--primary); margin-top: 8px;}
 
-        /* Estilos Integrados de Venda e Efeito Radar do Mapa */
-        .card-vendida { border-left: 4px solid var(--success) !important; }
-        .card-disponivel { border-left: 4px solid var(--accent) !important; }
-
-        .badge-status { font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; }
-        .badge-vendida { background: #dcfce7; color: var(--success); }
-        .badge-disponivel { background: #dbeafe; color: var(--accent); }
-
-        .btn-cart { background: transparent; border: none; padding: 5px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
-        .btn-cart:hover { transform: scale(1.15); }
-        .cart-vendida { color: var(--success); }
-        .cart-disponivel { color: var(--accent); }
-
-        .piscar-verde { animation: radar-verde 1.5s infinite; }
-        @keyframes radar-verde {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
-        .custom-div-icon { background: transparent; border: none; }
-
-        /* Estilos PDF de Estações (Oculto) */
         #pdf-template { display: none; width: 1122px; padding: 40px; background: #0f172a; color: white; }
         .pdf-header { border-bottom: 2px solid #3b82f6; padding-bottom: 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
         .pdf-table-map { width: 100%; border-collapse: collapse; }
@@ -397,19 +395,31 @@
         </div>
     </div>
 
-    <div id="modal-delete-pass" class="modal-overlay" style="display: none;">
+    <div id="modal-delete-pass" class="modal-overlay">
         <div class="modal-box">
             <h3 style="margin: 0 0 10px 0; color: var(--primary); font-size: 1.25rem;">Autorização Necessária</h3>
             <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 20px;">
-                Digite a senha de autorização para prosseguir com a operação no registro <strong id="del-modal-id-text"></strong>.
+                Digite a sua senha de administrador para excluir o orçamento <strong id="del-modal-id-text"></strong>.
             </p>
             <input type="hidden" id="del-modal-id">
             <div class="field">
-                <input type="password" id="del-modal-pass" placeholder="Senha Requerida">
+                <input type="password" id="del-modal-pass" placeholder="Senha de Administrador">
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
                 <button type="button" class="btn btn-secondary" style="width: auto;" onclick="window.fecharModalDelete()">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="btn-confirm-modal-action" style="width: auto; background: var(--danger); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);" onclick="window.confirmarExclusaoModal()">Confirmar Operação</button>
+                <button type="button" class="btn btn-primary" style="width: auto; background: var(--danger); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);" onclick="window.confirmarExclusaoModal()">Confirmar Exclusão</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="passwordModal" class="modal-overlay">
+        <div class="modal-box" style="text-align: center; max-width: 320px; padding: 25px;">
+            <h3 id="modalTitle" style="margin: 0 0 10px 0; color: var(--text); font-size: 18px;">Confirmação Requerida</h3>
+            <p id="modalDescription" style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Digite a senha da estação para prosseguir.</p>
+            <input type="password" id="passwordInput" placeholder="Sua senha" style="text-align: center; margin-bottom: 20px;" onkeypress="if(event.key==='Enter') window.confirmPassword()">
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn btn-secondary" style="background: #e2e8f0; color: var(--text);" onclick="window.closeModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="window.confirmPassword()">Confirmar</button>
             </div>
         </div>
     </div>
@@ -451,7 +461,7 @@
         <main class="main-content" id="main-app">
             <div id="screen-form" class="screen active">
                 <div class="card no-print">
-                    <h2 class="page-title">Gerar orçamento </h2>
+                    <h2 class="page-title">Gerar orçamento E-Mobility</h2>
                     <div class="form-grid-2">
                         <div class="field">
                             <label for="f-id">Nº proposta</label>
@@ -603,8 +613,7 @@
                                 <div class="p-obs-box" id="p-obs"></div>
                             </section>
                             <footer class="p-doc-footer">
-                                <span><strong>FullCharge</strong> · Novas tecnologias para um futuro
-mais veloz e sustentável . </span>
+                                <span><strong>FullCharge</strong> · Soluções de Recarga E-Mobility</span>
                                 <span class="p-doc-footer-note">Valores e prazos sujeitos a confirmação formal da proposta.</span>
                             </footer>
                         </div>
@@ -661,7 +670,7 @@ mais veloz e sustentável . </span>
             </div>
             
             <div id="screen-map" class="screen">
-                <div class="card no-print" style="padding: 20px;">
+                <div class="card no-print" style="padding: 20px; display: flex; flex-direction: column;">
                     <h2 class="page-title" style="margin-bottom: 20px;">Mapa de Estações FullCharge</h2>
                     
                     <div class="map-wrapper">
@@ -669,8 +678,8 @@ mais veloz e sustentável . </span>
                             <div class="search-container">
                                 <input type="text" id="searchInput" placeholder="Procurar estação ou cidade..." onkeyup="window.filterStations()">
                                 <div class="actions-bar">
-                                    <button type="button" class="btn-action" style="color: var(--success);" onclick="window.toggleAllStations(true)">✓ Marcar Todos</button>
-                                    <button type="button" class="btn-action" style="color: var(--danger);" onclick="window.toggleAllStations(false)">✕ Limpar</button>
+                                    <button class="btn-action" style="color: var(--primary);" onclick="window.toggleAllStations(true)">✓ Marcar Todos</button>
+                                    <button class="btn-action" style="color: var(--danger);" onclick="window.toggleAllStations(false)">✕ Limpar</button>
                                 </div>
                             </div>
                     
@@ -679,7 +688,7 @@ mais veloz e sustentável . </span>
                             </div>
                             
                             <div class="map-sidebar-footer">
-                                <button type="button" class="btn btn-primary" onclick="window.generateMapPDF()"><i class="fa fa-file-pdf"></i> Gerar Relatório PDF</button>
+                                <button class="btn btn-primary" onclick="window.generateMapPDF()"><i class="fa fa-file-pdf"></i> Gerar Relatório PDF</button>
                             </div>
                         </div>
                         
@@ -714,8 +723,7 @@ mais veloz e sustentável . </span>
                     <h2 class="page-title">Catálogo de Produtos e Preços</h2>
                     <p style="color:var(--text-muted); font-size: 0.875rem; margin-bottom: 20px;">Cadastre os produtos, preços e o link da foto para exibição e cálculo automático nas propostas.</p>
                     
-                    <input type="hidden" id="cat-old-key"> 
-                    <div class="form-grid-4">
+                    <input type="hidden" id="cat-old-key"> <div class="form-grid-4">
                         <div class="field">
                             <label for="cat-nome">Modelo / Nome</label>
                             <input type="text" id="cat-nome" placeholder="Ex: Full Charge Swift 20 kW">
@@ -798,6 +806,7 @@ mais veloz e sustentável . </span>
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, get, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         
+        // BANCO FULLCHARGE
         const firebaseConfig = { 
             apiKey: "AIzaSyDoOu_leOVOLft7NyGHtCRr1cJDGPHfH3g", 
             authDomain: "fullcharge-c5615.firebaseapp.com", 
@@ -827,53 +836,35 @@ mais veloz e sustentável . </span>
                 }
                 window.produtosCatalogo = snap.val() || {};
                 window.renderCatalog(window.produtosCatalogo);
-                
                 if (typeof window.atualizarDropdownProdutos === 'function') {
                     window.atualizarDropdownProdutos();
                 }
             });
-        } catch(e) {
-            console.error("Firebase Error:", e);
-        }
+        } catch(e) { console.error("Firebase Error:", e); }
     </script>
 
     <script>
-        // VARIAVEIS GLOBAIS E CONFIGURAÇÕES DO PORTAL
+        // VARIAVEIS GLOBAIS
         window.produtosCatalogo = {};
         window.todasPropostas = {};
-
-        // VARIAVEIS GLOBAIS - MAPA DE ESTAÇÕES INTEGRADO
+        
+        // VARIAVEIS GLOBAIS - MAPA DE ESTAÇÕES
         let mapaEstacoes = null;
-        let mapMarkers = [];
         let allStationsData = [];
+        let mapMarkers = [];
         let currentStationIndex = null;
-        let targetStatusAction = ''; 
-
+        let targetStatusAction = '';
+        
+        // NOVA API DO MAPS.HTML
         const API_MAPA_URL = "https://script.google.com/macros/s/AKfycbwnHSAXTEWayEi7JMOABZ-zCIhLnfPeghrvPgxX-Xaw-b55Qt32q3FgO0PLn-I6RYaA/exec";
         const mapIconUrl = "https://lh3.googleusercontent.com/d/1ywz6_yQYzvAhd3lMx3R4Q1UvniyBuBwx";
 
-        // MÁSCARAS E AUXILIARES GLOBAIS
+        // MÁSCARA GLOBAL
         window.maskMoney = function(i) {
             let v = i.value.replace(/\D/g, '');
             v = (v / 100).toFixed(2) + '';
             v = v.replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
             i.value = "R$ " + v;
-        }
-
-        window.maskCpfCnpj = function(i) {
-            let v = i.value.replace(/\D/g, '');
-            if (v.length <= 11) {
-                v = v.replace(/(\d{3})(\d)/, '$1.$2');
-                v = v.replace(/(\d{3})(\d)/, '$1.$2');
-                v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-            } else {
-                v = v.substring(0, 14);
-                v = v.replace(/^(\d{2})(\d)/, '$1.$2');
-                v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
-                v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
-                v = v.replace(/(\d{4})(\d)/, '$1-$2');
-            }
-            i.value = v;
         }
 
         window.calcularTotal = function() {
@@ -892,26 +883,47 @@ mais veloz e sustentável . </span>
             if(fTotal) fTotal.value = "R$ " + v;
         }
 
+        // CORREÇÃO: Usando formatação segura de strings e escapamento HTML.
         window.escapeHtml = function(s) {
             if (s == null) return '';
-            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
         }
 
         window.escapeAttr = function(s) {
-            return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/`/g, '&#96;');
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/</g, '&lt;')
+                .replace(/`/g, '&#96;');
         }
 
         window.currentLoggedUser = function() { return (sessionStorage.getItem('saj_user') || '').toLowerCase(); }
-        window.userPerfilFromRecord = function(d, username) { return d && d.perfil === 'administrador' ? 'administrador' : 'operador'; }
+
+        window.userPerfilFromRecord = function(d, username) {
+            const login = String(username || '').toLowerCase();
+            const p = d && d.perfil;
+            if (p === 'administrador' || p === 'operador') return p;
+            return 'operador';
+        }
+
         window.isAdministrator = function() { return sessionStorage.getItem('saj_perfil') === 'administrador'; }
-        window.normProposalStatus = function(s) { return s && String(s).trim().toLowerCase() === 'aprovado' ? 'aprovado' : 'pendente'; }
+
+        window.normProposalStatus = function(s) { 
+            if (!s) return 'pendente';
+            const clean = String(s).trim().toLowerCase();
+            return clean === 'aprovado' ? 'aprovado' : 'pendente';
+        }
 
         window._previewOrigin = 'form';
         window._previewPropostaId = null;
 
-        // =========================================================================
-        // 🌐 INTERFACE E CONTROLES INTEGRADOS DO MAPA DE ESTAÇÕES
-        // =========================================================================
+        /* ——— MAPA DE ESTAÇÕES (LÓGICA INTEGRADA DO MAPS.HTML) ——— */
         window.initMap = function() {
             if (mapaEstacoes) return; 
             mapaEstacoes = L.map('map-view').setView([-23.5505, -46.6333], 12);
@@ -941,37 +953,59 @@ mais veloz e sustentável . </span>
             console.log("Comando enviado via ping: Estação '" + stationName + "' -> '" + newStatus + "'");
         }
 
-        window.toggleStationStatus = function(index, event) {
-            if(event) event.stopPropagation(); 
+        window.toggleStatus = function(index, event) {
+            event.stopPropagation(); 
 
             const s = allStationsData[index];
             const statusValue = (s.status || s.Status || s.situacao || s.Situacao || s.venda || "").toString().toLowerCase();
             const isCurrentlyVendida = statusValue.includes('vendid');
 
             currentStationIndex = index;
+            document.getElementById('passwordInput').value = '';
             
-            document.getElementById('del-modal-id').value = "MAP-STATUS";
-            document.getElementById('del-modal-id-text').textContent = s.name;
-            document.getElementById('del-modal-pass').value = '';
-            
-            const tituloModal = document.querySelector('#modal-delete-pass h3');
-            const descModal = document.querySelector('#modal-delete-pass p');
-            const btnModal = document.getElementById('btn-confirm-modal-action');
-            
-            if(btnModal) btnModal.style.background = isCurrentlyVendida ? 'var(--accent)' : 'var(--success)';
-
             if (isCurrentlyVendida) {
                 targetStatusAction = ''; 
-                if(tituloModal) tituloModal.innerText = "Remover Venda";
-                if(descModal) descModal.innerHTML = `Digite a senha tradicional para deixar a estação <strong>${window.escapeHtml(s.name)}</strong> como Disponível.`;
+                document.getElementById('modalTitle').innerText = "Remover Venda";
+                document.getElementById('modalDescription').innerText = `Digite a senha para deixar "${s.name}" como Disponível.`;
             } else {
                 targetStatusAction = 'Vendida'; 
-                if(tituloModal) tituloModal.innerText = "Confirmar Venda";
-                if(descModal) descModal.innerHTML = `Digite a senha específica de inclusão para marcar <strong>${window.escapeHtml(s.name)}</strong> como Vendida.`;
+                document.getElementById('modalTitle').innerText = "Confirmar Venda";
+                document.getElementById('modalDescription').innerText = `Digite a senha para marcar "${s.name}" como Vendida.`;
             }
             
-            document.getElementById('modal-delete-pass').style.display = 'flex';
-            setTimeout(() => document.getElementById('del-modal-pass').focus(), 100);
+            document.getElementById('passwordModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+        }
+
+        window.closeModal = function() {
+            document.getElementById('passwordModal').style.display = 'none';
+            currentStationIndex = null;
+            targetStatusAction = '';
+        }
+
+        window.confirmPassword = function() {
+            if (currentStationIndex === null) return;
+
+            const senhaDigitada = document.getElementById('passwordInput').value;
+            const s = allStationsData[currentStationIndex];
+            
+            let senhaCorreta = "";
+            if (targetStatusAction === 'Vendida') {
+                senhaCorreta = (s["senha incluir"] || s["Senha Incluir"] || s.senha_incluir || "").toString().trim();
+            } else {
+                senhaCorreta = (s.senha || s.Senha || "").toString().trim();
+            }
+
+            if (senhaDigitada !== senhaCorreta) {
+                alert("Senha incorreta! Operação cancelada.");
+                return;
+            }
+
+            s.status = targetStatusAction; 
+            window.updateMapUI(allStationsData);
+            window.filterStations();
+            window.saveStatusToSheet(s.name, targetStatusAction); 
+            window.closeModal();
         }
 
         window.updateMapUI = function(stations) {
@@ -994,8 +1028,8 @@ mais veloz e sustentável . </span>
                     const popupHTML = `
                         <div style="text-align:center; min-width:140px; font-family: 'Inter', sans-serif;">
                             <strong style="color:${isVendida ? 'var(--success)' : 'var(--accent)'}; font-size:14px;">${window.escapeHtml(s.name)}</strong><br>
-                            ${valorPotencia ? `<small>Trafo: ${window.escapeHtml(valorPotencia)}</small><br>` : ''}
-                            <span class="badge-status ${isVendida ? 'badge-vendida' : 'badge-disponivel'}">
+                            ${valorPotencia ? `<small>Potência: ${window.escapeHtml(valorPotencia)}</small><br>` : ''}
+                            <span class="badge-status-mapa ${isVendida ? 'badge-vendida' : 'badge-disponivel'}">
                                 ${isVendida ? '🟢 Vendida' : '🔵 Disponível'}
                             </span><br><br>
                             <button class="btn-popup" style="background:${isVendida ? 'var(--success)' : 'var(--accent)'};" onclick="window.openStreetViewPopup(${lat}, ${lng})">Ver no Street View</button>
@@ -1011,7 +1045,7 @@ mais veloz e sustentável . </span>
                             border: 3px solid white;
                             ${isVendida ? '' : 'box-shadow: 0 3px 6px rgba(0,0,0,0.3);'}
                         ">
-                            <img src="${mapIconUrl}" style="width: 26px; height: 26px; object-fit: contain; filter: brightness(0) invert(1);">
+                            <img src="${mapIconUrl}" style="width: 26px; height: 26px; object-fit: contain;">
                         </div>`,
                         iconSize: [44, 44],
                         iconAnchor: [22, 44],
@@ -1027,20 +1061,23 @@ mais veloz e sustentável . </span>
                 card.setAttribute('data-name', s.name.toLowerCase());
                 card.setAttribute('data-municipio', (s.municipio || "").toLowerCase());
                 
-                const htmlPotencia = valorPotencia ? `<span class="potencia-blink">${window.escapeHtml(valorPotencia)}</span>` : '';
-                const htmlStatus = `<span class="badge-status ${isVendida ? 'badge-vendida' : 'badge-disponivel'}">${isVendida ? 'Vendida' : 'Disponível'}</span>`;
+                const htmlPotencia = valorPotencia ? `<span class="potencia-blink" style="color:${isVendida ? 'var(--success)' : 'var(--accent)'};">${window.escapeHtml(valorPotencia)}</span>` : '';
+                const htmlStatus = `<span class="badge-status-mapa ${isVendida ? 'badge-vendida' : 'badge-disponivel'}">
+                                       ${isVendida ? 'Vendida' : 'Disponível'}
+                                    </span>`;
+
                 const cartIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>`;
 
                 card.innerHTML = `
                     <input type="checkbox" class="select-box" data-index="${index}">
                     <img src="${mapIconUrl}" class="mini-icon" onerror="this.src='https://placehold.co/30x30/f1f5f9/64748b?text=P'">
                     <div style="flex:1">
-                        <strong style="color:var(--primary);">${window.escapeHtml(s.name)}</strong><br>
+                        <strong style="color:var(--text);">${window.escapeHtml(s.name)}</strong><br>
                         <small style="color:var(--text-muted);">${window.escapeHtml(s.municipio || '')}</small>
                         ${htmlPotencia}
                         ${htmlStatus}
                     </div>
-                    <button type="button" class="btn-cart ${isVendida ? 'cart-vendida' : 'cart-disponivel'}" onclick="window.toggleStationStatus(${index}, event)" title="Alternar status de venda">
+                    <button class="btn-cart ${isVendida ? 'cart-vendida' : 'cart-disponivel'}" onclick="window.toggleStatus(${index}, event)" title="Alternar status de venda">
                         ${cartIcon}
                     </button>`;
                 
@@ -1069,7 +1106,7 @@ mais veloz e sustentável . </span>
         }
 
         window.openStreetViewPopup = function(lat, lng) {
-            window.open(`http://maps.google.com/maps?q=&layer=c&cbll=${lat},${lng}`, 'StreetView', 'width=900,height=600');
+            window.open(`http://googleusercontent.com/maps.google.com/7{lat},${lng}`, 'StreetView', 'width=900,height=600');
         }
 
         window.generateMapPDF = function() {
@@ -1093,94 +1130,8 @@ mais veloz e sustentável . </span>
                 .from(element).save().then(() => { element.style.display = 'none'; });
         }
 
-        // =========================================================================
-        // 🔒 SISTEMA DE AUTORIZAÇÃO INTEGRADO (MODAL DE DUPLA FINALIDADE)
-        // =========================================================================
-        window.fecharModalDelete = function() {
-            document.getElementById('modal-delete-pass').style.display = 'none'; 
-            currentStationIndex = null;
-            targetStatusAction = '';
-        }
 
-        window.confirmarExclusaoModal = async function() {
-            const id = document.getElementById('del-modal-id').value;
-            const passwordDigitada = document.getElementById('del-modal-pass').value.trim();
-            
-            if (!passwordDigitada) {
-                alert('A senha é obrigatória.');
-                return;
-            }
-
-            // Tratamento especial se a requisição originou-se do painel do Mapa
-            if (id === 'MAP-STATUS') {
-                if (currentStationIndex === null) return;
-                const s = allStationsData[currentStationIndex];
-                let senhaCorreta = "";
-                
-                // 🔑 LÓGICA DE DUAS COLUNAS DE SENHA DISTINTAS
-                if (targetStatusAction === 'Vendida') {
-                    senhaCorreta = (s["senha incluir"] || s["Senha Incluir"] || s.senha_incluir || "").toString().trim();
-                } else {
-                    senhaCorreta = (s.senha || s.Senha || "").toString().trim();
-                }
-
-                if (passwordDigitada !== senhaCorreta) {
-                    alert("Senha incorreta! Operação cancelada.");
-                    return;
-                }
-
-                s.status = targetStatusAction; 
-                window.updateMapUI(allStationsData);
-                window.filterStations();
-                window.saveStatusToSheet(s.name, targetStatusAction); 
-                window.fecharModalDelete();
-                return;
-            }
-
-            // Fluxo tradicional de exclusão de propostas comerciais
-            const loggedUser = window.currentLoggedUser();
-            try {
-                const snap = await window.dbGet(window.dbRef(window.db, 'usuarios/' + loggedUser));
-                if (!snap.exists() || snap.val().pass !== passwordDigitada) {
-                    alert('Senha incorreta! Operação bloqueada.');
-                    return;
-                }
-            } catch(e) {
-                alert('Erro ao validar permissões com o banco de dados.');
-                return;
-            }
-
-            window.fecharModalDelete();
-            await window.dbRemove(window.dbRef(window.db, 'propostas/' + id));
-            window.showScreen('screen-history');
-        }
-
-        window.excluirProposta = function(id) {
-            if (!id || !window.isAdministrator()) return;
-            document.getElementById('del-modal-id').value = id;
-            document.getElementById('del-modal-id-text').textContent = '#' + id;
-            document.getElementById('del-modal-pass').value = '';
-            
-            const tituloModal = document.querySelector('#modal-delete-pass h3');
-            const descModal = document.querySelector('#modal-delete-pass p');
-            const btnModal = document.getElementById('btn-confirm-modal-action');
-            
-            if(tituloModal) tituloModal.innerText = "Autorização Necessária";
-            if(descModal) descModal.innerHTML = `Digite a sua senha de administrador para excluir o orçamento <strong>#${id}</strong>.`;
-            if(btnModal) btnModal.style.background = 'var(--danger)';
-
-            document.getElementById('modal-delete-pass').style.display = 'flex'; 
-            setTimeout(() => document.getElementById('del-modal-pass').focus(), 100);
-        }
-
-        window.excluirPropostaAtual = function() {
-            const id = window._previewPropostaId || document.getElementById('p-id').textContent;
-            window.excluirProposta(id);
-        }
-
-        // =========================================================================
-        // 📦 CATÁLOGO DE PRODUTOS E PREÇOS
-        // =========================================================================
+        /* ——— FUNÇÕES DO NOVO CATÁLOGO DE PRODUTOS ——— */
         window.editarProdutoCatalogo = function(key) {
             const p = window.produtosCatalogo[key];
             if (!p) return;
@@ -1224,7 +1175,7 @@ mais veloz e sustentável . </span>
                 
                 alert('Produto salvo no catálogo com sucesso!');
             } catch(e) {
-                alert("Erro ao salvar no banco de dados.");
+                alert("Erro ao salvar no banco de dados. Verifique as permissões do Firebase.");
             }
         }
 
@@ -1256,8 +1207,8 @@ mais veloz e sustentável . </span>
                     <td><span style="font-size: 0.8125rem; color: var(--text-muted);">${window.escapeHtml(p.cat)}</span></td>
                     <td><strong style="color:var(--primary);">${window.escapeHtml(p.preco || '-')}</strong></td>
                     <td style="text-align:center; white-space: nowrap;">
-                        <button type="button" class="btn-icon-edit" onclick="window.editarProdutoCatalogo('${window.escapeAttr(key)}')"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn-icon-remove" onclick="window.excluirProdutoCatalogo('${window.escapeAttr(key)}')"><i class="fa fa-trash"></i></button>
+                        <button class="btn-icon-edit" onclick="window.editarProdutoCatalogo('${window.escapeAttr(key)}')"><i class="fa fa-edit"></i></button>
+                        <button class="btn-icon-remove" onclick="window.excluirProdutoCatalogo('${window.escapeAttr(key)}')"><i class="fa fa-trash"></i></button>
                     </td>
                 </tr>`;
             });
@@ -1325,10 +1276,8 @@ mais veloz e sustentável . </span>
             });
             window.calcularTotal();
         }
+        /* —————————————————————————————————————— */
 
-        // =========================================================================
-        // 📋 SISTEMA DE ORÇAMENTOS E PREVIEW COMERCIAL
-        // =========================================================================
         window.fillPreviewFromData = function(data) {
             document.getElementById('p-id').textContent = data.id;
             document.getElementById('p-cli').textContent = data.cli || '';
@@ -1414,6 +1363,51 @@ mais veloz e sustentável . </span>
             await window.dbUpdate(window.dbRef(window.db, 'propostas/' + id), { propostaStatus: status });
         }
 
+        /* ——— EXCLUSÃO COM SENHA DE ADMIN (MODAL OCULTO) ——— */
+        window.excluirProposta = function(id) {
+            if (!id || !window.isAdministrator()) return;
+            document.getElementById('del-modal-id').value = id;
+            document.getElementById('del-modal-id-text').textContent = '#' + id;
+            document.getElementById('del-modal-pass').value = '';
+            document.getElementById('modal-delete-pass').style.display = 'flex'; 
+            setTimeout(() => document.getElementById('del-modal-pass').focus(), 100);
+        }
+
+        window.fecharModalDelete = function() {
+            document.getElementById('modal-delete-pass').style.display = 'none'; 
+        }
+
+        window.confirmarExclusaoModal = async function() {
+            const id = document.getElementById('del-modal-id').value;
+            const adminPass = document.getElementById('del-modal-pass').value.trim();
+            
+            if (!adminPass) {
+                alert('A senha é obrigatória.');
+                return;
+            }
+
+            const loggedUser = window.currentLoggedUser();
+            try {
+                const snap = await window.dbGet(window.dbRef(window.db, 'usuarios/' + loggedUser));
+                if (!snap.exists() || snap.val().pass !== adminPass) {
+                    alert('Senha incorreta! Exclusão bloqueada.');
+                    return;
+                }
+            } catch(e) {
+                alert('Erro ao validar permissões com o banco de dados.');
+                return;
+            }
+
+            window.fecharModalDelete();
+            await window.dbRemove(window.dbRef(window.db, 'propostas/' + id));
+            window.showScreen('screen-history');
+        }
+
+        window.excluirPropostaAtual = function() {
+            const id = window._previewPropostaId || document.getElementById('p-id').textContent;
+            window.excluirProposta(id);
+        }
+
         window.toggleLogin = function(box) {
             document.getElementById('box-login').hidden = box !== 'login';
             document.getElementById('box-register').hidden = box !== 'register';
@@ -1433,7 +1427,7 @@ mais veloz e sustentável . </span>
                 await window.dbSet(window.dbRef(window.db, 'usuarios/' + user), { user, pass, status: 'pendente', perfil: 'operador', permissoes: permissoesPadrao });
                 window.toggleLogin('wait');
             } catch(e) {
-                alert('Erro de conexão. Verifique o banco de dados.');
+                alert('Erro de conexão. Verifique as regras do seu Firebase (.read e .write).');
             }
         }
 
@@ -1451,7 +1445,9 @@ mais veloz e sustentável . </span>
                         if(!snap.exists()) {
                             await window.dbSet(window.dbRef(window.db, 'usuarios/lucas'), { user: 'lucas', pass: pass || '1234', status: 'aprovado', perfil: 'administrador', permissoes: permsMaster });
                         }
-                    } catch(e) {}
+                    } catch(e) {
+                        console.log("Ignorar erro de escrita/leitura para liberar o admin.");
+                    }
                     sessionStorage.setItem('saj_user', 'lucas');
                     sessionStorage.setItem('saj_perfil', 'administrador');
                     sessionStorage.setItem('fc_perms', JSON.stringify(permsMaster));
@@ -1481,7 +1477,7 @@ mais veloz e sustentável . </span>
                 sessionStorage.setItem('fc_perms', JSON.stringify(perms));
                 location.reload();
             } catch (error) {
-                alert("ERRO DE CONEXÃO: Verifique as regras do console do Firebase.");
+                alert("ERRO DE CONEXÃO: O Firebase bloqueou o acesso. Acesse o console do Firebase > Realtime Database > Regras e altere '.read' e '.write' para true.");
             }
         }
 
@@ -1501,9 +1497,9 @@ mais veloz e sustentável . </span>
                     <span class="status-badge status-${u.status}">${u.status}</span>
                 </div>
                 <div class="user-row-actions">
-                    <button type="button" class="btn-edit-user" onclick="window.abrirEdicaoUsuario('${window.escapeAttr(u.user)}')">Editar Acessos</button>
-                    ${pending ? `<button type="button" class="btn-approve" onclick="window.f_aprovar_u('${window.escapeAttr(u.user)}')">Aprovar</button>` : ''}
-                    <button type="button" class="btn-delete-user" onclick="window.f_del_user('${window.escapeAttr(u.user)}')">Excluir</button>
+                    <button class="btn-edit-user" onclick="window.abrirEdicaoUsuario('${window.escapeAttr(u.user)}')">Editar Acessos</button>
+                    ${pending ? `<button class="btn-approve" onclick="window.f_aprovar_u('${window.escapeAttr(u.user)}')">Aprovar</button>` : ''}
+                    <button class="btn-delete-user" onclick="window.f_del_user('${window.escapeAttr(u.user)}')">Excluir</button>
                 </div>
             </div>`;
             }).join('');
@@ -1535,7 +1531,7 @@ mais veloz e sustentável . </span>
             document.getElementById('perm-catalogo').checked = !!p.catalogo;
             document.getElementById('perm-equipe').checked = !!p.equipe;
 
-            panel.scrollIntoView({ behavior: 'smooth' });
+            panel.scrollIntoView();
         }
 
         window.fecharEdicaoUsuario = function() { document.getElementById('user-edit-panel').hidden = true; }
@@ -1572,7 +1568,7 @@ mais veloz e sustentável . </span>
                 const est = d.estabelecimento || {};
                 document.getElementById('f-end').value = [est.logradouro, est.numero].filter(Boolean).join(', ');
                 document.getElementById('f-bairro').value = est.bairro || '';
-                document.getElementById('f-cidade').value = est.cidade.nome || '';
+                document.getElementById('f-cidade').value = d.estabelecimento.cidade.nome || '';
             } catch (e) { alert('Erro ao buscar o CNPJ.'); }
         }
 
@@ -1670,7 +1666,7 @@ mais veloz e sustentável . </span>
             try {
                 await window.dbSet(window.dbRef(window.db, 'propostas/' + data.id), data);
             } catch(e) {
-                alert("AVISO DE SISTEMA: Gerado localmente.");
+                alert("AVISO DE SISTEMA:\n\nA proposta foi gerada para impressão, mas NÃO FOI SALVA NA NUVEM porque as permissões do Firebase estão bloqueadas.\n\nAcesse o Console do Firebase > Realtime Database > Regras e ative .read e .write para true.");
             }
 
             window.fillPreviewFromData(data);
@@ -1718,11 +1714,11 @@ mais veloz e sustentável . </span>
                         <td>${p.total || 'R$ 0,00'}</td>
                         <td><span class="status-badge status-${window.normProposalStatus(p.propostaStatus)}">${window.normProposalStatus(p.propostaStatus)}</span></td>
                         <td><div class="history-actions">
-                            <button type="button" class="btn-table btn-table--muted" onclick="window.reabrir('${p.id}')">Editar</button>
-                            <button type="button" class="btn-table" onclick="window.abrirGerenciar('${p.id}', '${type}')">Gerenciar</button>
-                            ${isAdmin && window.normProposalStatus(p.propostaStatus) === 'pendente' ? `<button type="button" class="btn-table btn-table--success" onclick="window.f_quick_status('${p.id}', 'aprovado')">Aprovar</button>` : ''}
-                            ${isAdmin && window.normProposalStatus(p.propostaStatus) === 'aprovado' ? `<button type="button" class="btn-table btn-table--danger" onclick="window.f_quick_status('${p.id}', 'pendente')">Retornar</button>` : ''}
-                            ${isAdmin ? `<button type="button" class="btn-table btn-table--danger" onclick="window.excluirProposta('${p.id}')"><i class="fa fa-trash"></i></button>` : ''}
+                            <button class="btn-table btn-table--muted" onclick="window.reabrir('${p.id}')">Editar</button>
+                            <button class="btn-table" onclick="window.abrirGerenciar('${p.id}', '${type}')">Gerenciar</button>
+                            ${isAdmin && window.normProposalStatus(p.propostaStatus) === 'pendente' ? `<button class="btn-table btn-table--success" onclick="window.f_quick_status('${p.id}', 'aprovado')">Aprovar</button>` : ''}
+                            ${isAdmin && window.normProposalStatus(p.propostaStatus) === 'aprovado' ? `<button class="btn-table btn-table--danger" onclick="window.f_quick_status('${p.id}', 'pendente')">Retornar</button>` : ''}
+                            ${isAdmin ? `<button class="btn-table btn-table--danger" onclick="window.excluirProposta('${p.id}')"><i class="fa fa-trash"></i></button>` : ''}
                         </div></td></tr>`).join('')}</tbody></table>`;
             };
 
