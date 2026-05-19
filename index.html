@@ -208,6 +208,32 @@
         .p-doc-footer strong { color: var(--p-doc-ink); font-weight: 600; }
         .p-doc-footer-note { font-style: italic; opacity: 0.9; }
 
+
+
+        /* ——— Modalidades de proposta ——— */
+        .proposal-type-card { margin: 8px 0 22px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); }
+        .proposal-type-title { margin: 0 0 12px; font-size: 0.8125rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); }
+        .proposal-type-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .proposal-type-option { position: relative; display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: #fff; cursor: pointer; transition: border-color var(--transition), box-shadow var(--transition), background var(--transition); }
+        .proposal-type-option:hover { border-color: var(--accent); background: #f8fbff; }
+        .proposal-type-option input { width: auto; margin: 3px 0 0; accent-color: var(--accent); }
+        .proposal-type-option strong { display: block; color: var(--primary); font-size: 0.9375rem; margin-bottom: 2px; }
+        .proposal-type-option span { display: block; color: var(--text-muted); font-size: 0.8125rem; line-height: 1.4; }
+        .proposal-type-option:has(input:checked) { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-muted); background: #f8fbff; }
+        .investor-panel { margin: 6px 0 20px; padding: 18px; border: 1px solid rgba(0, 86, 255, 0.22); border-radius: var(--radius-md); background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%); }
+        .investor-panel h3 { margin: 0 0 12px; color: var(--primary); font-size: 1rem; letter-spacing: -0.01em; }
+        .readonly-highlight { background: #f8fafc; color: var(--primary); font-weight: 800; }
+        .proposal-note { margin: -4px 0 16px; color: var(--text-muted); font-size: 0.8125rem; }
+        .p-investor-section { margin: 0 0 28px; }
+        .p-investor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .p-investor-card { padding: 16px 18px; border: 1px solid var(--p-doc-line); border-radius: 10px; background: linear-gradient(180deg, #fafbfc 0%, #f4f7fa 100%); border-left: 3px solid var(--accent); }
+        .p-investor-card strong { display: block; color: var(--p-doc-ink); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+        .p-investor-card span { display: block; margin-bottom: 4px; color: var(--p-doc-muted); font-size: 0.625rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+        .p-investor-disclaimer { margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: #f8fafc; border: 1px solid var(--p-doc-line); color: #475569; font-size: 0.75rem; line-height: 1.55; }
+        .status-investidor { background: #dbeafe; color: #1d4ed8; }
+        .status-venda { background: #f1f5f9; color: #475569; }
+        @media (max-width: 720px) { .proposal-type-options, .p-investor-grid { grid-template-columns: 1fr; } }
+
         .status-badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
         .status-pendente { background: #fef3c7; color: #92400e; }
         .status-aprovado { background: #dcfce7; color: #166534; }
@@ -257,6 +283,27 @@
         .dash-card { background: #f8fafc; border: 1px solid var(--border); padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
         .dash-card-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
         .dash-card-value { font-size: 1.75rem; font-weight: 800; color: var(--primary); }
+
+
+        /* ——— Cadastro de Clientes ——— */
+        .client-layout { display: grid; grid-template-columns: minmax(320px, 0.9fr) minmax(360px, 1.1fr); gap: 20px; align-items: start; }
+        .client-form-box, .client-list-box { background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; }
+        .client-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 4px; }
+        .client-actions .btn { width: auto; min-width: 140px; }
+        .client-search-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
+        .client-search-bar input { margin: 0; }
+        .client-history-panel { margin-top: 20px; padding: 18px; border: 1px solid var(--border); border-radius: var(--radius-md); background: #ffffff; }
+        .client-history-title { margin: 0 0 12px; color: var(--primary); font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; }
+        .client-history-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .client-history-card { border: 1px solid var(--border); border-radius: var(--radius-sm); background: #f8fafc; padding: 12px; }
+        .client-history-card h4 { margin: 0 0 8px; color: var(--primary); font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.06em; }
+        .client-note-item { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
+        .client-note-item:last-child { border-bottom: none; }
+        .client-note-meta { display: block; color: var(--text-muted); font-size: 0.75rem; margin-bottom: 4px; }
+        .client-mini-muted { color: var(--text-muted); font-size: 0.8125rem; }
+        .btn-client-primary { background: var(--accent); color: #fff; }
+        .btn-client-muted { background: #e2e8f0; color: var(--primary); }
+        @media (max-width: 980px) { .client-layout, .client-history-grid { grid-template-columns: 1fr; } }
 
         /* Estilos tela de Mapas (Integrados do maps.html) */
         .map-wrapper { display: flex; gap: 20px; height: calc(100vh - 120px); min-height: 500px; }
@@ -442,6 +489,9 @@
                 <button type="button" class="nav-link" id="nav-approved" onclick="window.showScreen('screen-approved')">
                     <i class="fa fa-check-circle" aria-hidden="true"></i> Propostas Aprovadas
                 </button>
+                <button type="button" class="nav-link" id="menu-clients" hidden onclick="window.showScreen('screen-clients')">
+                    <i class="fa fa-address-book" aria-hidden="true"></i> Cadastro de Clientes
+                </button>
                 <button type="button" class="nav-link" id="menu-map" hidden onclick="window.showScreen('screen-map')">
                     <i class="fa fa-map-marked-alt" aria-hidden="true"></i> Mapa de Estações
                 </button>
@@ -461,7 +511,20 @@
         <main class="main-content" id="main-app">
             <div id="screen-form" class="screen active">
                 <div class="card no-print">
-                    <h2 class="page-title">Gerar orçamento E-Mobility</h2>
+                    <h2 class="page-title" id="form-title-proposta">Gerar proposta E-Mobility</h2>
+                    <div class="proposal-type-card" aria-label="Escolha do tipo de proposta">
+                        <p class="proposal-type-title">Tipo de proposta</p>
+                        <div class="proposal-type-options">
+                            <label class="proposal-type-option">
+                                <input type="radio" name="tipo-proposta" value="venda" checked onchange="window.onTipoPropostaChange()">
+                                <span><strong>Venda de carregadores</strong>Proposta comercial tradicional com equipamentos, instalação e valor total.</span>
+                            </label>
+                            <label class="proposal-type-option">
+                                <input type="radio" name="tipo-proposta" value="investidor" onchange="window.onTipoPropostaChange()">
+                                <span><strong>Proposta para investidores</strong>Simulação com rentabilidade mensal de 2,25% sobre o investimento.</span>
+                            </label>
+                        </div>
+                    </div>
                     <div class="form-grid-2">
                         <div class="field">
                             <label for="f-id">Nº proposta</label>
@@ -500,9 +563,37 @@
                             <input type="tel" id="f-tel" autocomplete="tel">
                         </div>
                     </div>
-                    <div class="field">
-                        <label for="f-total">Total Calculado (R$)</label>
-                        <input type="text" id="f-total" inputmode="decimal" oninput="window.maskMoney(this)" placeholder="R$ 0,00" style="font-size:1.2rem; font-weight:bold; color:var(--accent);">
+                    <div class="field" id="f-total-field">
+                        <label for="f-total" id="f-total-label">Total Calculado (R$)</label>
+                        <input type="text" id="f-total" inputmode="decimal" oninput="window.maskMoney(this); window.calcularTotal();" placeholder="R$ 0,00" style="font-size:1.2rem; font-weight:bold; color:var(--accent);">
+                    </div>
+                    <div class="investor-panel" id="investor-fields" hidden>
+                        <h3><i class="fa fa-chart-line" aria-hidden="true"></i> Simulação de investimento</h3>
+                        <p class="proposal-note">A rentabilidade mensal usada nesta proposta é fixa em <strong>2,25%</strong> sobre o valor investido.</p>
+                        <div class="form-grid-3">
+                            <div class="field">
+                                <label for="f-investimento">Valor do Investimento (R$)</label>
+                                <input type="text" id="f-investimento" inputmode="decimal" oninput="window.maskMoney(this); window.calcularInvestimento();" placeholder="R$ 0,00" style="font-size:1.2rem; font-weight:bold; color:var(--accent);">
+                            </div>
+                            <div class="field">
+                                <label for="f-invest-meses">Prazo para projeção</label>
+                                <input type="number" id="f-invest-meses" min="1" value="12" oninput="window.calcularInvestimento();" placeholder="12">
+                            </div>
+                            <div class="field">
+                                <label for="f-invest-rentab">Rentabilidade mensal</label>
+                                <input type="text" id="f-invest-rentab" value="2,25% ao mês" readonly aria-readonly="true" class="readonly-highlight">
+                            </div>
+                        </div>
+                        <div class="form-grid-equal">
+                            <div class="field">
+                                <label for="f-renda-mensal">Retorno mensal estimado</label>
+                                <input type="text" id="f-renda-mensal" readonly aria-readonly="true" class="readonly-highlight" placeholder="R$ 0,00">
+                            </div>
+                            <div class="field">
+                                <label for="f-renda-periodo">Retorno projetado no período</label>
+                                <input type="text" id="f-renda-periodo" readonly aria-readonly="true" class="readonly-highlight" placeholder="R$ 0,00">
+                            </div>
+                        </div>
                     </div>
                     <div class="field">
                         <label for="f-obs">Observações Comerciais</label>
@@ -514,7 +605,7 @@
 • Condições de pagamento: </textarea>
                     </div>
 
-                    <div class="items-table-wrap">
+                    <div class="items-table-wrap" id="itens-proposta-wrap">
                         <table class="items-table">
                             <thead>
                                 <tr>
@@ -528,7 +619,7 @@
                             <tbody id="items-body"></tbody>
                         </table>
                     </div>
-                    <button type="button" class="btn-add-item" onclick="window.addItemRow()">+ Adicionar item</button>
+                    <button type="button" class="btn-add-item" id="btn-add-item-venda" onclick="window.addItemRow()">+ Adicionar item</button>
                     <button type="button" class="btn btn-primary" onclick="window.f_gerar_visual()">Gerar visualização da proposta</button>
                 </div>
             </div>
@@ -553,8 +644,8 @@
                                     </div>
                                 </div>
                                 <div class="p-header-doc">
-                                    <span class="p-doc-eyebrow">Proposta comercial</span>
-                                    <h2 class="p-doc-title">Orçamento</h2>
+                                    <span class="p-doc-eyebrow" id="p-doc-eyebrow">Proposta comercial</span>
+                                    <h2 class="p-doc-title" id="p-doc-title">Orçamento</h2>
                                     <div class="p-doc-meta" role="group" aria-label="Identificação do documento">
                                         <span class="p-doc-num">Nº <strong id="p-id"></strong></span>
                                         <span class="p-doc-sep" aria-hidden="true"></span>
@@ -588,7 +679,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="p-table-wrap">
+                            <div class="p-table-wrap" id="p-items-wrap">
                                 <table class="p-table">
                                     <thead>
                                         <tr>
@@ -604,10 +695,20 @@
                             </div>
                             <div class="p-total-wrap">
                                 <div class="p-total-box">
-                                    <small>Investimento Total</small>
+                                    <small id="p-total-label">Investimento Total</small>
                                     <strong><span id="p-total"></span></strong>
                                 </div>
                             </div>
+                            <section class="p-investor-section" id="p-investor-section" hidden aria-labelledby="p-investor-heading">
+                                <h3 class="p-section-title" id="p-investor-heading">Resumo da Rentabilidade</h3>
+                                <div class="p-investor-grid">
+                                    <div class="p-investor-card"><span>Valor investido</span><strong id="p-investimento">R$ 0,00</strong></div>
+                                    <div class="p-investor-card"><span>Rentabilidade mensal</span><strong id="p-rentabilidade">2,25%</strong></div>
+                                    <div class="p-investor-card"><span>Retorno mensal estimado</span><strong id="p-renda-mensal">R$ 0,00</strong></div>
+                                    <div class="p-investor-card"><span>Retorno projetado</span><strong id="p-renda-periodo">R$ 0,00</strong></div>
+                                </div>
+                                <div class="p-investor-disclaimer">Projeção calculada com base em rentabilidade simples mensal de 2,25% sobre o investimento informado. Condições finais dependem de aprovação contratual e confirmação formal da operação.</div>
+                            </section>
                             <section class="p-obs-section" aria-labelledby="p-obs-heading">
                                 <h3 class="p-section-title" id="p-obs-heading">Observações e Condições</h3>
                                 <div class="p-obs-box" id="p-obs"></div>
@@ -669,6 +770,79 @@
                 </div>
             </div>
             
+
+            <div id="screen-clients" class="screen">
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:20px;">
+                        <div>
+                            <h2 class="page-title" style="margin-bottom:6px;">Cadastro de Clientes</h2>
+                            <p style="color:var(--text-muted); font-size:0.875rem; margin:0;">Cadastre clientes, consulte o histórico de propostas e registre observações manuais de acompanhamento.</p>
+                        </div>
+                        <button type="button" class="btn btn-secondary" style="width:auto;" onclick="window.showScreen('screen-form')"><i class="fa fa-arrow-left"></i> Voltar à proposta</button>
+                    </div>
+
+                    <div class="client-layout">
+                        <div class="client-form-box">
+                            <h3 class="user-edit-title" style="margin-bottom:16px;">Dados do cliente</h3>
+                            <input type="hidden" id="client-key">
+                            <div class="field">
+                                <label for="client-name">Razão social / Nome</label>
+                                <input type="text" id="client-name" placeholder="Nome do cliente">
+                            </div>
+                            <div class="field">
+                                <label for="client-doc">CNPJ / CPF</label>
+                                <input type="text" id="client-doc" placeholder="000.000.000-00 ou 00.000.000/0000-00" oninput="window.maskCpfCnpj(this)">
+                            </div>
+                            <div class="field">
+                                <label for="client-address">Local de Instalação / Endereço</label>
+                                <input type="text" id="client-address" placeholder="Rua, número, complemento">
+                            </div>
+                            <div class="form-grid-equal">
+                                <div class="field">
+                                    <label for="client-bairro">Bairro</label>
+                                    <input type="text" id="client-bairro">
+                                </div>
+                                <div class="field">
+                                    <label for="client-cidade">Cidade</label>
+                                    <input type="text" id="client-cidade">
+                                </div>
+                            </div>
+                            <div class="form-grid-equal">
+                                <div class="field">
+                                    <label for="client-email">E-mail</label>
+                                    <input type="email" id="client-email" placeholder="cliente@email.com">
+                                </div>
+                                <div class="field">
+                                    <label for="client-tel">Telefone</label>
+                                    <input type="tel" id="client-tel" placeholder="(00) 00000-0000">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="client-obs">Observação manual</label>
+                                <textarea id="client-obs" rows="5" placeholder="Registre aqui uma observação, follow-up, preferência do cliente, negociação, pendência, etc."></textarea>
+                            </div>
+                            <div class="client-actions">
+                                <button type="button" class="btn btn-primary" onclick="window.salvarClienteCadastro()"><i class="fa fa-save"></i> Salvar cliente</button>
+                                <button type="button" class="btn btn-secondary" style="background:#e2e8f0; color:var(--primary);" onclick="window.limparCadastroCliente()">Novo / limpar</button>
+                                <button type="button" class="btn btn-secondary" style="background:var(--success); color:#fff;" onclick="window.usarClienteSelecionadoNaProposta()"><i class="fa fa-file-signature"></i> Usar na proposta</button>
+                            </div>
+                        </div>
+
+                        <div class="client-list-box">
+                            <h3 class="user-edit-title" style="margin-bottom:12px;">Clientes cadastrados</h3>
+                            <div class="client-search-bar">
+                                <input type="search" id="client-search" placeholder="Buscar por nome, CNPJ/CPF, cidade ou e-mail" oninput="window.renderClientes(window.clientesCadastrados)">
+                                <button type="button" class="btn-table" onclick="window.renderClientes(window.clientesCadastrados)"><i class="fa fa-search"></i></button>
+                            </div>
+                            <div class="items-table-wrap" style="background:#fff; margin-bottom:0;">
+                                <div id="clients-list-render"></div>
+                            </div>
+                            <div id="client-detail-render" class="client-history-panel" hidden></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="screen-map" class="screen">
                 <div class="card no-print" style="padding: 20px; display: flex; flex-direction: column;">
                     <h2 class="page-title" style="margin-bottom: 20px;">Mapa de Estações FullCharge</h2>
@@ -784,6 +958,7 @@
                                 <label style="display:flex; align-items:center; gap:6px; text-transform:none; font-size:0.875rem; color:var(--text); cursor:pointer;"><input type="checkbox" id="perm-nova"> Nova Proposta</label>
                                 <label style="display:flex; align-items:center; gap:6px; text-transform:none; font-size:0.875rem; color:var(--text); cursor:pointer;"><input type="checkbox" id="perm-pendentes"> Pendentes</label>
                                 <label style="display:flex; align-items:center; gap:6px; text-transform:none; font-size:0.875rem; color:var(--text); cursor:pointer;"><input type="checkbox" id="perm-aprovadas"> Aprovadas (e BI)</label>
+                                <label style="display:flex; align-items:center; gap:6px; text-transform:none; font-size:0.875rem; color:var(--text); cursor:pointer;"><input type="checkbox" id="perm-clientes"> Cadastro de Clientes</label>
                                 <label style="display:flex; align-items:center; gap:6px; text-transform:none; font-size:0.875rem; color:var(--text); cursor:pointer;"><input type="checkbox" id="perm-mapa"> Mapa de Estações</label>
                                 <label style="display:flex; align-items:center; gap:6px; text-transform:none; font-size:0.875rem; color:var(--text); cursor:pointer;"><input type="checkbox" id="perm-catalogo"> Catálogo de Produtos</label>
                                 <label style="display:flex; align-items:center; gap:6px; text-transform:none; font-size:0.875rem; color:var(--text); cursor:pointer;"><input type="checkbox" id="perm-equipe"> Equipe / Permissões</label>
@@ -828,6 +1003,10 @@
         try {
             onValue(ref(db, 'propostas'), snap => window.renderHistory(snap.val()));
             onValue(ref(db, 'usuarios'), snap => window.renderUsers(snap.val()));
+            onValue(ref(db, 'clientes'), snap => {
+                window.clientesCadastrados = snap.val() || {};
+                if (typeof window.renderClientes === 'function') window.renderClientes(window.clientesCadastrados);
+            });
             
             onValue(ref(db, 'produtos'), snap => {
                 if (!snap.exists()) {
@@ -847,6 +1026,8 @@
         // VARIAVEIS GLOBAIS
         window.produtosCatalogo = {};
         window.todasPropostas = {};
+        window.clientesCadastrados = {};
+        window.clienteSelecionadoKey = null;
         
         // VARIAVEIS GLOBAIS - MAPA DE ESTAÇÕES
         let mapaEstacoes = null;
@@ -881,6 +1062,94 @@
             v = v.replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
             const fTotal = document.getElementById('f-total');
             if(fTotal) fTotal.value = "R$ " + v;
+        }
+
+
+
+        window.INVESTOR_MONTHLY_RATE = 0.0225;
+
+        window.moneyToNumber = function(v) {
+            if (v == null) return 0;
+            const clean = String(v).replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.');
+            const n = parseFloat(clean);
+            return isNaN(n) ? 0 : n;
+        }
+
+        window.formatBRL = function(n) {
+            return (Number(n) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        window.getTipoProposta = function() {
+            const checked = document.querySelector('input[name="tipo-proposta"]:checked');
+            return checked ? checked.value : 'venda';
+        }
+
+        window.calcularInvestimento = function() {
+            const investimento = window.moneyToNumber(document.getElementById('f-investimento')?.value || '0');
+            const meses = Math.max(1, parseInt(document.getElementById('f-invest-meses')?.value || '12', 10) || 12);
+            const rendaMensal = investimento * window.INVESTOR_MONTHLY_RATE;
+            const rendaPeriodo = rendaMensal * meses;
+            const rendaMensalInput = document.getElementById('f-renda-mensal');
+            const rendaPeriodoInput = document.getElementById('f-renda-periodo');
+            if (rendaMensalInput) rendaMensalInput.value = window.formatBRL(rendaMensal);
+            if (rendaPeriodoInput) rendaPeriodoInput.value = window.formatBRL(rendaPeriodo);
+            const fTotal = document.getElementById('f-total');
+            if (window.getTipoProposta() === 'investidor' && fTotal) fTotal.value = window.formatBRL(investimento);
+        }
+
+        window.defaultInvestorObs = function() {
+            return `Condições Comerciais para Investidores:
+• Modalidade: participação em projeto FullCharge para infraestrutura de recarga elétrica.
+• Rentabilidade mensal estimada: 2,25% sobre o valor investido.
+• Pagamento da rentabilidade: conforme contrato firmado entre as partes.
+• Prazo de projeção: informado na simulação desta proposta.
+• Observação: a efetivação do investimento depende de análise, aceite formal e assinatura dos instrumentos contratuais.`;
+        }
+
+        window.defaultVendaObs = function() {
+            return `Condições Comerciais e Técnicas:
+• Validade da proposta: 
+• Serviços Inclusos: O valor desta proposta já contempla a mão de obra de instalação e as melhorias necessárias na rede elétrica.
+• Exclusões (Não inclusos): Obras civis (abertura de valas, concretagem, recomposição de asfalto/piso) e laudos de engenharia estrutural, salvo se expressamente descritos nos itens desta proposta.
+• Garantia: 
+• Condições de pagamento: `;
+        }
+
+        window.onTipoPropostaChange = function(forceDefaultObs = false) {
+            const tipo = window.getTipoProposta();
+            const isInvestidor = tipo === 'investidor';
+            const formTitle = document.getElementById('form-title-proposta');
+            const totalField = document.getElementById('f-total-field');
+            const totalLabel = document.getElementById('f-total-label');
+            const investorFields = document.getElementById('investor-fields');
+            const itemsWrap = document.getElementById('itens-proposta-wrap');
+            const addBtn = document.getElementById('btn-add-item-venda');
+            const obs = document.getElementById('f-obs');
+
+            if (formTitle) formTitle.textContent = isInvestidor ? 'Gerar proposta para investidores' : 'Gerar proposta de venda E-Mobility';
+            if (investorFields) investorFields.hidden = !isInvestidor;
+            // No modo investidor, a tabela de equipamentos continua visível para selecionar o carregador correto.
+            if (itemsWrap) itemsWrap.style.display = '';
+            if (addBtn) {
+                addBtn.style.display = '';
+                addBtn.textContent = isInvestidor ? '+ Adicionar carregador ao investimento' : '+ Adicionar item';
+            }
+            if (totalLabel) totalLabel.textContent = isInvestidor ? 'Valor calculado pelos carregadores (referência)' : 'Total Calculado (R$)';
+            if (totalField) totalField.style.display = isInvestidor ? 'none' : '';
+
+            if (obs && (forceDefaultObs || !obs.value.trim())) {
+                obs.value = isInvestidor ? window.defaultInvestorObs() : window.defaultVendaObs();
+            }
+
+            if (isInvestidor) window.calcularInvestimento();
+            else window.calcularTotal();
+        }
+
+        window.setTipoProposta = function(tipo) {
+            const val = tipo === 'investidor' ? 'investidor' : 'venda';
+            const input = document.querySelector(`input[name="tipo-proposta"][value="${val}"]`);
+            if (input) input.checked = true;
+            window.onTipoPropostaChange(false);
         }
 
         // CORREÇÃO: Usando formatação segura de strings e escapamento HTML.
@@ -1279,18 +1548,41 @@
         /* —————————————————————————————————————— */
 
         window.fillPreviewFromData = function(data) {
+            const tipo = data.tipoProposta === 'investidor' ? 'investidor' : 'venda';
+            const isInvestidor = tipo === 'investidor';
+            const investimentoNumero = window.moneyToNumber(data.investimento || data.total || '0');
+            const meses = Math.max(1, parseInt(data.prazoMeses || 12, 10) || 12);
+            const rendaMensal = data.rendaMensal || window.formatBRL(investimentoNumero * window.INVESTOR_MONTHLY_RATE);
+            const rendaPeriodo = data.retornoProjetadoPeriodo || window.formatBRL(investimentoNumero * window.INVESTOR_MONTHLY_RATE * meses);
+
             document.getElementById('p-id').textContent = data.id;
             document.getElementById('p-cli').textContent = data.cli || '';
             document.getElementById('p-cnpj').textContent = data.cnpj || '';
+            document.getElementById('p-doc-eyebrow').textContent = isInvestidor ? 'Proposta para investidores' : 'Proposta comercial';
+            document.getElementById('p-doc-title').textContent = isInvestidor ? 'Investimento FullCharge' : 'Orçamento';
+            document.getElementById('p-total-label').textContent = isInvestidor ? 'Investimento Total' : 'Investimento Total';
             
             const endCompleto = [data.end, data.bairro, data.cidade].filter(Boolean).join(', ');
             document.getElementById('p-end').textContent = endCompleto || '';
             document.getElementById('p-contato').textContent = `${data.email || ''} | ${data.tel || ''}`;
-            document.getElementById('p-total').textContent = data.total || '';
+            document.getElementById('p-total').textContent = data.total || data.investimento || '';
             document.getElementById('p-data').textContent = data.data || '';
             document.getElementById('p-obs').textContent = data.obs || '';
             
-            document.getElementById('p-items').innerHTML = (data.items || []).map(i => {
+            const pItemsWrap = document.getElementById('p-items-wrap');
+            const pInvestorSection = document.getElementById('p-investor-section');
+            const itemsPreview = data.items || [];
+            if (pItemsWrap) pItemsWrap.hidden = itemsPreview.length === 0;
+            if (pInvestorSection) pInvestorSection.hidden = !isInvestidor;
+
+            if (isInvestidor) {
+                document.getElementById('p-investimento').textContent = data.investimento || data.total || window.formatBRL(investimentoNumero);
+                document.getElementById('p-rentabilidade').textContent = `${(window.INVESTOR_MONTHLY_RATE * 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% ao mês`;
+                document.getElementById('p-renda-mensal').textContent = rendaMensal;
+                document.getElementById('p-renda-periodo').textContent = `${rendaPeriodo} em ${meses} meses`;
+            }
+
+            document.getElementById('p-items').innerHTML = itemsPreview.map(i => {
                 let imgUrl = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'><rect x='3' y='3' width='18' height='18' rx='2' ry='2'></rect><circle cx='8.5' cy='8.5' r='1.5'></circle><polyline points='21 15 16 10 5 21'></polyline></svg>"; 
                 
                 if (window.produtosCatalogo) {
@@ -1299,7 +1591,7 @@
                 }
 
                 return `<tr>
-                    <td style="text-align:center; vertical-align:middle; padding:15px;"><img src="${window.escapeAttr(imgUrl)}" class="p-img-thumb" alt="${window.escapeAttr(i.g)}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'48\\' height=\\'48\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'%2364748b\\' stroke-width=\\'2\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\' ry=\\'2\\'></rect><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'></circle><polyline points=\\'21 15 16 10 5 21\\'></polyline></svg>'"></td>
+                    <td style="text-align:center; vertical-align:middle; padding:15px;"><img src="${window.escapeAttr(imgUrl)}" class="p-img-thumb" alt="${window.escapeAttr(i.g)}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'48\' height=\'48\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'></circle><polyline points=\'21 15 16 10 5 21\'></polyline></svg>'"></td>
                     <td style="text-align:center; font-weight:800; font-size: 1.2rem; font-variant-numeric: tabular-nums;">${window.escapeHtml(i.q)}</td>
                     <td><strong style="color:var(--primary); font-size: 1.1rem; display:block; margin-bottom: 4px;">${window.escapeHtml(i.g)}</strong></td>
                     <td style="color:#475569; font-size: 0.9rem;">${window.escapeHtml(i.d)}</td>
@@ -1408,6 +1700,19 @@
             window.excluirProposta(id);
         }
 
+
+        window.defaultPermsForPerfil = function(perfil) {
+            if (perfil === 'administrador') {
+                return { nova: true, pendentes: true, aprovadas: true, clientes: true, mapa: true, catalogo: true, equipe: true };
+            }
+            return { nova: true, pendentes: true, aprovadas: true, clientes: true, mapa: false, catalogo: false, equipe: false };
+        }
+
+        window.normalizePerms = function(perms, perfil = 'operador') {
+            const base = window.defaultPermsForPerfil(perfil);
+            return Object.assign({}, base, perms || {});
+        }
+
         window.toggleLogin = function(box) {
             document.getElementById('box-login').hidden = box !== 'login';
             document.getElementById('box-register').hidden = box !== 'register';
@@ -1423,7 +1728,7 @@
                 const snap = await window.dbGet(window.dbRef(window.db, 'usuarios/' + user));
                 if (snap.exists()) return alert('Este nome de usuário já existe.');
                 
-                const permissoesPadrao = { nova: false, pendentes: false, aprovadas: false, mapa: false, catalogo: false, equipe: false };
+                const permissoesPadrao = { nova: false, pendentes: false, aprovadas: false, clientes: false, mapa: false, catalogo: false, equipe: false };
                 await window.dbSet(window.dbRef(window.db, 'usuarios/' + user), { user, pass, status: 'pendente', perfil: 'operador', permissoes: permissoesPadrao });
                 window.toggleLogin('wait');
             } catch(e) {
@@ -1439,7 +1744,7 @@
                 if(!user) return alert("Informe um usuário válido.");
 
                 if(user === 'lucas') {
-                    const permsMaster = { nova: true, pendentes: true, aprovadas: true, mapa: true, catalogo: true, equipe: true };
+                    const permsMaster = { nova: true, pendentes: true, aprovadas: true, clientes: true, mapa: true, catalogo: true, equipe: true };
                     try {
                         const snap = await window.dbGet(window.dbRef(window.db, 'usuarios/lucas'));
                         if(!snap.exists()) {
@@ -1466,12 +1771,13 @@
                 let perms = d.permissoes;
                 if (!perms) {
                     if (perfilDef === 'administrador') {
-                        perms = { nova: true, pendentes: true, aprovadas: true, mapa: true, catalogo: true, equipe: true };
+                        perms = { nova: true, pendentes: true, aprovadas: true, clientes: true, mapa: true, catalogo: true, equipe: true };
                     } else {
-                        perms = { nova: true, pendentes: true, aprovadas: true, mapa: false, catalogo: false, equipe: false };
+                        perms = { nova: true, pendentes: true, aprovadas: true, clientes: true, mapa: false, catalogo: false, equipe: false };
                     }
                 }
 
+                perms = window.normalizePerms(perms, perfilDef);
                 sessionStorage.setItem('saj_user', user);
                 sessionStorage.setItem('saj_perfil', perfilDef);
                 sessionStorage.setItem('fc_perms', JSON.stringify(perms));
@@ -1506,7 +1812,7 @@
         }
 
         window.f_aprovar_u = async function(u) { 
-            const permissoesBase = { nova: true, pendentes: true, aprovadas: true, mapa: false, catalogo: false, equipe: false };
+            const permissoesBase = { nova: true, pendentes: true, aprovadas: true, clientes: true, mapa: false, catalogo: false, equipe: false };
             await window.dbUpdate(window.dbRef(window.db, 'usuarios/' + u), { status: 'aprovado', permissoes: permissoesBase }); 
         }
 
@@ -1523,10 +1829,11 @@
             document.getElementById('edit-user-status').value = u.status;
             document.getElementById('edit-user-perfil').value = window.userPerfilFromRecord(u, login);
             
-            const p = u.permissoes || (window.userPerfilFromRecord(u, login) === 'administrador' ? {nova:true, pendentes:true, aprovadas:true, mapa:true, catalogo:true, equipe:true} : {nova:true, pendentes:true, aprovadas:true, mapa:false, catalogo:false, equipe:false});
+            const p = u.permissoes || (window.userPerfilFromRecord(u, login) === 'administrador' ? {nova:true, pendentes:true, aprovadas:true, clientes:true, mapa:true, catalogo:true, equipe:true} : {nova:true, pendentes:true, aprovadas:true, clientes:true, mapa:false, catalogo:false, equipe:false});
             document.getElementById('perm-nova').checked = !!p.nova;
             document.getElementById('perm-pendentes').checked = !!p.pendentes;
             document.getElementById('perm-aprovadas').checked = !!p.aprovadas;
+            document.getElementById('perm-clientes').checked = !!p.clientes;
             document.getElementById('perm-mapa').checked = !!p.mapa;
             document.getElementById('perm-catalogo').checked = !!p.catalogo;
             document.getElementById('perm-equipe').checked = !!p.equipe;
@@ -1546,6 +1853,7 @@
                 nova: document.getElementById('perm-nova').checked,
                 pendentes: document.getElementById('perm-pendentes').checked,
                 aprovadas: document.getElementById('perm-aprovadas').checked,
+                clientes: document.getElementById('perm-clientes').checked,
                 mapa: document.getElementById('perm-mapa').checked,
                 catalogo: document.getElementById('perm-catalogo').checked,
                 equipe: document.getElementById('perm-equipe').checked
@@ -1572,6 +1880,287 @@
             } catch (e) { alert('Erro ao buscar o CNPJ.'); }
         }
 
+
+        /* ——— Cadastro de Clientes ——— */
+        window.onlyDigits = function(s) { return String(s || '').replace(/\\D/g, ''); }
+
+        window.slugCliente = function(s) {
+            return String(s || '')
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase().trim()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .slice(0, 60);
+        }
+
+        window.getClienteKeyFromData = function(doc, nome) {
+            const digits = window.onlyDigits(doc);
+            if (digits) return 'doc_' + digits;
+            const slug = window.slugCliente(nome);
+            return slug ? 'nome_' + slug : 'cliente_' + Date.now();
+        }
+
+        window.formatDateTimeBR = function(value) {
+            if (!value) return '';
+            const d = new Date(value);
+            if (isNaN(d.getTime())) return String(value);
+            return d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+        }
+
+        window.coletarClienteForm = function() {
+            return {
+                key: document.getElementById('client-key')?.value || '',
+                nome: document.getElementById('client-name')?.value.trim() || '',
+                cnpj: document.getElementById('client-doc')?.value.trim() || '',
+                end: document.getElementById('client-address')?.value.trim() || '',
+                bairro: document.getElementById('client-bairro')?.value.trim() || '',
+                cidade: document.getElementById('client-cidade')?.value.trim() || '',
+                email: document.getElementById('client-email')?.value.trim() || '',
+                tel: document.getElementById('client-tel')?.value.trim() || ''
+            };
+        }
+
+        window.preencherFormularioCliente = function(c, key) {
+            document.getElementById('client-key').value = key || c.key || '';
+            document.getElementById('client-name').value = c.nome || c.cli || '';
+            document.getElementById('client-doc').value = c.cnpj || '';
+            document.getElementById('client-address').value = c.end || '';
+            document.getElementById('client-bairro').value = c.bairro || '';
+            document.getElementById('client-cidade').value = c.cidade || '';
+            document.getElementById('client-email').value = c.email || '';
+            document.getElementById('client-tel').value = c.tel || '';
+        }
+
+        window.limparCadastroCliente = function() {
+            ['client-key','client-name','client-doc','client-address','client-bairro','client-cidade','client-email','client-tel','client-obs'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            window.clienteSelecionadoKey = null;
+            const detail = document.getElementById('client-detail-render');
+            if (detail) { detail.hidden = true; detail.innerHTML = ''; }
+        }
+
+        window.salvarClienteCadastro = async function() {
+            const dados = window.coletarClienteForm();
+            if (!dados.nome && !dados.cnpj) return alert('Informe pelo menos o nome ou o CNPJ/CPF do cliente.');
+
+            const key = dados.key || window.getClienteKeyFromData(dados.cnpj, dados.nome);
+            const atual = window.clientesCadastrados[key] || {};
+            const payload = Object.assign({}, atual, dados, {
+                key,
+                nome: dados.nome || atual.nome || '',
+                cnpj: dados.cnpj || atual.cnpj || '',
+                atualizadoEm: new Date().toISOString(),
+                criadoEm: atual.criadoEm || new Date().toISOString()
+            });
+            delete payload.observacoes;
+            delete payload.historicoPropostas;
+
+            try {
+                await window.dbUpdate(window.dbRef(window.db, 'clientes/' + key), payload);
+                const obs = document.getElementById('client-obs')?.value.trim();
+                if (obs) {
+                    const obsId = 'obs_' + Date.now();
+                    await window.dbSet(window.dbRef(window.db, 'clientes/' + key + '/observacoes/' + obsId), {
+                        texto: obs,
+                        data: new Date().toISOString(),
+                        usuario: window.currentLoggedUser() || 'sistema'
+                    });
+                    document.getElementById('client-obs').value = '';
+                }
+                document.getElementById('client-key').value = key;
+                window.clienteSelecionadoKey = key;
+                alert('Cliente salvo com sucesso.');
+                window.renderClienteDetalhe(key);
+            } catch(e) {
+                alert('Erro ao salvar o cliente. Verifique as permissões do Firebase.');
+            }
+        }
+
+        window.salvarClienteAPartirDaProposta = async function(data) {
+            const key = window.getClienteKeyFromData(data.cnpj, data.cli);
+            data.clienteKey = key;
+            const atual = window.clientesCadastrados[key] || {};
+            const payload = {
+                key,
+                nome: data.cli || atual.nome || '',
+                cnpj: data.cnpj || atual.cnpj || '',
+                end: data.end || atual.end || '',
+                bairro: data.bairro || atual.bairro || '',
+                cidade: data.cidade || atual.cidade || '',
+                email: data.email || atual.email || '',
+                tel: data.tel || atual.tel || '',
+                ultimaPropostaId: data.id,
+                ultimoValor: data.total || '',
+                atualizadoEm: new Date().toISOString(),
+                criadoEm: atual.criadoEm || new Date().toISOString()
+            };
+
+            await window.dbUpdate(window.dbRef(window.db, 'clientes/' + key), payload);
+            await window.dbSet(window.dbRef(window.db, 'clientes/' + key + '/historicoPropostas/' + data.id), {
+                id: data.id,
+                tipoProposta: data.tipoProposta || 'venda',
+                data: data.data || new Date().toLocaleDateString('pt-BR'),
+                total: data.total || '',
+                status: data.propostaStatus || 'pendente',
+                observacaoDaProposta: data.obs || ''
+            });
+            return key;
+        }
+
+        window.getHistoricoCliente = function(key) {
+            const c = (window.clientesCadastrados || {})[key] || {};
+            const byId = {};
+            Object.values(c.historicoPropostas || {}).forEach(h => { if (h && h.id) byId[h.id] = h; });
+
+            const doc = window.onlyDigits(c.cnpj);
+            const nome = String(c.nome || '').trim().toLowerCase();
+            Object.values(window.todasPropostas || {}).forEach(p => {
+                const sameKey = p.clienteKey && p.clienteKey === key;
+                const sameDoc = doc && window.onlyDigits(p.cnpj) === doc;
+                const sameName = nome && String(p.cli || '').trim().toLowerCase() === nome;
+                if ((sameKey || sameDoc || sameName) && p.id && !byId[p.id]) {
+                    byId[p.id] = {
+                        id: p.id,
+                        tipoProposta: p.tipoProposta || 'venda',
+                        data: p.data || '',
+                        total: p.total || '',
+                        status: window.normProposalStatus(p.propostaStatus),
+                        observacaoDaProposta: p.obs || ''
+                    };
+                }
+            });
+
+            return Object.values(byId).sort((a, b) => window.parseBRDate(b.data) - window.parseBRDate(a.data));
+        }
+
+        window.renderClientes = function(obj) {
+            window.clientesCadastrados = obj || {};
+            const el = document.getElementById('clients-list-render');
+            if (!el) return;
+
+            const q = (document.getElementById('client-search')?.value || '').toLowerCase().trim();
+            const list = Object.entries(window.clientesCadastrados).filter(([key, c]) => {
+                const hay = [c.nome, c.cnpj, c.email, c.tel, c.cidade, c.end, key].join(' ').toLowerCase();
+                return !q || hay.includes(q);
+            }).sort((a, b) => String(a[1].nome || '').localeCompare(String(b[1].nome || ''), 'pt-BR'));
+
+            if (!list.length) {
+                el.innerHTML = '<p style="padding:18px; color:var(--text-muted); margin:0;">Nenhum cliente cadastrado ainda.</p>';
+                return;
+            }
+
+            el.innerHTML = `<table class="items-table" style="min-width:860px;">
+                <thead><tr><th>Cliente</th><th>CNPJ / CPF</th><th>Contato</th><th>Histórico</th><th style="text-align:center; width:210px;">Ações</th></tr></thead>
+                <tbody>${list.map(([key, c]) => {
+                    const obs = Object.values(c.observacoes || {}).sort((a,b) => String(b.data || '').localeCompare(String(a.data || '')))[0];
+                    const histCount = window.getHistoricoCliente(key).length;
+                    return `<tr>
+                        <td><strong>${window.escapeHtml(c.nome || '-')}</strong><br><span class="client-mini-muted">${window.escapeHtml([c.end, c.bairro, c.cidade].filter(Boolean).join(', '))}</span></td>
+                        <td>${window.escapeHtml(c.cnpj || '-')}</td>
+                        <td>${window.escapeHtml([c.email, c.tel].filter(Boolean).join(' · ') || '-')}</td>
+                        <td><strong>${histCount}</strong> proposta(s)<br><span class="client-mini-muted">${obs ? window.escapeHtml((obs.texto || '').slice(0, 70)) : 'Sem observações manuais'}</span></td>
+                        <td style="text-align:center; white-space:nowrap;">
+                            <button class="btn-table" onclick="window.usarClienteNaProposta('${window.escapeAttr(key)}')">Usar</button>
+                            <button class="btn-table btn-table--muted" onclick="window.editarClienteCadastro('${window.escapeAttr(key)}')">Editar</button>
+                            <button class="btn-table" onclick="window.renderClienteDetalhe('${window.escapeAttr(key)}')">Histórico</button>
+                        </td>
+                    </tr>`;
+                }).join('')}</tbody></table>`;
+        }
+
+        window.editarClienteCadastro = function(key) {
+            const c = window.clientesCadastrados[key];
+            if (!c) return alert('Cliente não encontrado.');
+            window.clienteSelecionadoKey = key;
+            window.preencherFormularioCliente(c, key);
+            window.renderClienteDetalhe(key);
+            document.getElementById('client-name')?.focus();
+        }
+
+        window.renderClienteDetalhe = function(key) {
+            const c = window.clientesCadastrados[key];
+            const detail = document.getElementById('client-detail-render');
+            if (!c || !detail) return;
+            window.clienteSelecionadoKey = key;
+            const historico = window.getHistoricoCliente(key);
+            const observacoes = Object.values(c.observacoes || {}).sort((a,b) => String(b.data || '').localeCompare(String(a.data || '')));
+
+            detail.hidden = false;
+            detail.innerHTML = `<h3 class="client-history-title">Histórico de ${window.escapeHtml(c.nome || 'cliente')}</h3>
+                <div class="client-history-grid">
+                    <div class="client-history-card">
+                        <h4>Propostas vinculadas</h4>
+                        ${historico.length ? historico.map(h => `<div class="client-note-item">
+                            <span class="client-note-meta">#${window.escapeHtml(h.id)} · ${window.escapeHtml(h.data || '')} · ${window.escapeHtml(h.tipoProposta === 'investidor' ? 'Investidor' : 'Venda')}</span>
+                            <strong>${window.escapeHtml(h.total || 'R$ 0,00')}</strong> · <span class="status-badge status-${window.normProposalStatus(h.status)}">${window.normProposalStatus(h.status)}</span><br>
+                            ${h.observacaoDaProposta ? `<span class="client-mini-muted">${window.escapeHtml(String(h.observacaoDaProposta).slice(0, 160))}</span>` : ''}
+                        </div>`).join('') : '<p class="client-mini-muted">Nenhuma proposta vinculada ainda.</p>'}
+                    </div>
+                    <div class="client-history-card">
+                        <h4>Observações manuais</h4>
+                        <textarea id="client-detail-obs" rows="4" placeholder="Adicionar nova observação manual..."></textarea>
+                        <button type="button" class="btn-table btn-table--success" style="margin-top:8px;" onclick="window.adicionarObservacaoCliente('${window.escapeAttr(key)}')">Adicionar observação</button>
+                        <div style="margin-top:12px;">
+                            ${observacoes.length ? observacoes.map(o => `<div class="client-note-item">
+                                <span class="client-note-meta">${window.escapeHtml(window.formatDateTimeBR(o.data))} · ${window.escapeHtml(o.usuario || '')}</span>
+                                ${window.escapeHtml(o.texto || '')}
+                            </div>`).join('') : '<p class="client-mini-muted">Nenhuma observação manual registrada.</p>'}
+                        </div>
+                    </div>
+                </div>
+                <div class="client-actions" style="margin-top:14px;">
+                    <button type="button" class="btn-table" onclick="window.usarClienteNaProposta('${window.escapeAttr(key)}')"><i class="fa fa-file-signature"></i> Usar este cliente na proposta</button>
+                    <button type="button" class="btn-table btn-table--danger" onclick="window.excluirClienteCadastro('${window.escapeAttr(key)}')"><i class="fa fa-trash"></i> Excluir cliente</button>
+                </div>`;
+        }
+
+        window.adicionarObservacaoCliente = async function(key) {
+            const txt = document.getElementById('client-detail-obs')?.value.trim();
+            if (!txt) return alert('Digite uma observação para salvar.');
+            try {
+                const obsId = 'obs_' + Date.now();
+                await window.dbSet(window.dbRef(window.db, 'clientes/' + key + '/observacoes/' + obsId), {
+                    texto: txt,
+                    data: new Date().toISOString(),
+                    usuario: window.currentLoggedUser() || 'sistema'
+                });
+                document.getElementById('client-detail-obs').value = '';
+            } catch(e) {
+                alert('Erro ao salvar a observação.');
+            }
+        }
+
+        window.usarClienteNaProposta = function(key) {
+            const c = window.clientesCadastrados[key];
+            if (!c) return alert('Cliente não encontrado.');
+            document.getElementById('f-cli').value = c.nome || '';
+            document.getElementById('f-cnpj').value = c.cnpj || '';
+            document.getElementById('f-end').value = c.end || '';
+            document.getElementById('f-bairro').value = c.bairro || '';
+            document.getElementById('f-cidade').value = c.cidade || '';
+            document.getElementById('f-email').value = c.email || '';
+            document.getElementById('f-tel').value = c.tel || '';
+            window.showScreen('screen-form');
+        }
+
+        window.usarClienteSelecionadoNaProposta = function() {
+            const key = document.getElementById('client-key')?.value || window.clienteSelecionadoKey;
+            if (!key) return alert('Selecione ou salve um cliente primeiro.');
+            window.usarClienteNaProposta(key);
+        }
+
+        window.excluirClienteCadastro = async function(key) {
+            if (!confirm('Tem certeza que deseja excluir este cliente e suas observações manuais?')) return;
+            try {
+                await window.dbRemove(window.dbRef(window.db, 'clientes/' + key));
+                window.limparCadastroCliente();
+            } catch(e) {
+                alert('Erro ao excluir o cliente.');
+            }
+        }
+
         window.showScreen = function(id) {
             const permsStr = sessionStorage.getItem('fc_perms');
             if (permsStr) {
@@ -1579,6 +2168,7 @@
                 if (id === 'screen-form' && !perms.nova) return alert('Acesso restrito.');
                 if (id === 'screen-history' && !perms.pendentes) return alert('Acesso restrito.');
                 if (id === 'screen-approved' && !perms.aprovadas) return alert('Acesso restrito.');
+                if (id === 'screen-clients' && !perms.clientes) return alert('Acesso restrito.');
                 if (id === 'screen-map' && !perms.mapa) return alert('Acesso restrito.');
                 if (id === 'screen-catalog' && !perms.catalogo) return alert('Acesso restrito.');
                 if (id === 'screen-users' && !perms.equipe) return alert('Acesso restrito.');
@@ -1595,7 +2185,7 @@
         }
 
         window.updateActiveNav = function(id) {
-            const navMap = { 'screen-form': 'nav-new', 'screen-history': 'nav-history-pend', 'screen-approved': 'nav-approved', 'screen-map': 'menu-map', 'screen-users': 'menu-users', 'screen-catalog': 'menu-catalog' };
+            const navMap = { 'screen-form': 'nav-new', 'screen-history': 'nav-history-pend', 'screen-approved': 'nav-approved', 'screen-clients': 'menu-clients', 'screen-map': 'menu-map', 'screen-users': 'menu-users', 'screen-catalog': 'menu-catalog' };
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.toggle('active-link', link.id === navMap[id]);
             });
@@ -1642,20 +2232,43 @@
         }
 
         window.f_gerar_visual = async function() {
+            const tipoProposta = window.getTipoProposta();
+            const isInvestidor = tipoProposta === 'investidor';
+            window.calcularTotal();
+            if (isInvestidor) window.calcularInvestimento();
+
             const items = Array.from(document.querySelectorAll('#items-body tr')).map(tr => ({
                 q: tr.querySelector('.i-q').value,
                 g: tr.querySelector('.i-g-select').value === GRUPO_OUTRO ? tr.querySelector('.i-g-outro').value : tr.querySelector('.i-g-select').value,
                 d: tr.querySelector('.i-d').value,
                 p: tr.querySelector('.i-p').value
             }));
+
+            const investimento = document.getElementById('f-investimento')?.value || '';
+            const prazoMeses = parseInt(document.getElementById('f-invest-meses')?.value || '12', 10) || 12;
+            const rendaMensal = document.getElementById('f-renda-mensal')?.value || '';
+            const retornoProjetadoPeriodo = document.getElementById('f-renda-periodo')?.value || '';
+            const totalProposta = isInvestidor ? investimento : document.getElementById('f-total').value;
+
+            if (isInvestidor && !window.moneyToNumber(investimento)) {
+                alert('Informe o valor do investimento para gerar a proposta de investidores.');
+                return;
+            }
+
             const data = {
                 id: document.getElementById('f-id').value,
+                tipoProposta,
                 cli: document.getElementById('f-cli').value,
                 cnpj: document.getElementById('f-cnpj').value,
                 end: document.getElementById('f-end').value,
                 bairro: document.getElementById('f-bairro').value,
                 cidade: document.getElementById('f-cidade').value,
-                total: document.getElementById('f-total').value,
+                total: totalProposta,
+                investimento: isInvestidor ? investimento : '',
+                rentabilidadeMensalPct: isInvestidor ? 2.25 : '',
+                prazoMeses: isInvestidor ? prazoMeses : '',
+                rendaMensal: isInvestidor ? rendaMensal : '',
+                retornoProjetadoPeriodo: isInvestidor ? retornoProjetadoPeriodo : '',
                 email: document.getElementById('f-email').value,
                 tel: document.getElementById('f-tel').value,
                 obs: document.getElementById('f-obs').value,
@@ -1664,6 +2277,7 @@
             };
 
             try {
+                await window.salvarClienteAPartirDaProposta(data);
                 await window.dbSet(window.dbRef(window.db, 'propostas/' + data.id), data);
             } catch(e) {
                 alert("AVISO DE SISTEMA:\n\nA proposta foi gerada para impressão, mas NÃO FOI SALVA NA NUVEM porque as permissões do Firebase estão bloqueadas.\n\nAcesse o Console do Firebase > Realtime Database > Regras e ative .read e .write para true.");
@@ -1675,6 +2289,9 @@
 
         window.renderHistory = function(obj) {
             window.todasPropostas = obj || {}; 
+            if (window.clienteSelecionadoKey && typeof window.renderClienteDetalhe === 'function') {
+                try { window.renderClienteDetalhe(window.clienteSelecionadoKey); } catch(e) {}
+            }
             const hPend = document.getElementById('history-content');
             const hAppr = document.getElementById('approved-content');
             if (!obj) { 
@@ -1707,9 +2324,10 @@
             const buildT = (arr, type) => {
                 if (!arr.length) return 'Lista vazia.';
                 return `<table class="history-table">
-                    <thead><tr><th>#ID</th><th>Cliente</th><th>Valor</th><th>Estado</th><th>Ações</th></tr></thead>
+                    <thead><tr><th>#ID</th><th>Tipo</th><th>Cliente</th><th>Valor</th><th>Estado</th><th>Ações</th></tr></thead>
                     <tbody>${arr.map(p => `<tr>
                         <td><strong>#${p.id}</strong></td>
+                        <td><span class="status-badge ${p.tipoProposta === 'investidor' ? 'status-investidor' : 'status-venda'}">${p.tipoProposta === 'investidor' ? 'Investidor' : 'Venda'}</span></td>
                         <td>${window.escapeHtml(p.cli)}</td>
                         <td>${p.total || 'R$ 0,00'}</td>
                         <td><span class="status-badge status-${window.normProposalStatus(p.propostaStatus)}">${window.normProposalStatus(p.propostaStatus)}</span></td>
@@ -1788,11 +2406,18 @@
                 document.getElementById('f-email').value = p.email || '';
                 document.getElementById('f-tel').value = p.tel || '';
                 document.getElementById('f-obs').value = p.obs || '';
-                
                 document.getElementById('items-body').innerHTML = '';
+                window.setTipoProposta(p.tipoProposta || 'venda');
+
                 (p.items || []).forEach(i => window.addItemRow(i.q, i.g, i.d, i.p));
+                window.calcularTotal();
+
+                if ((p.tipoProposta || 'venda') === 'investidor') {
+                    document.getElementById('f-investimento').value = p.investimento || p.total || '';
+                    document.getElementById('f-invest-meses').value = p.prazoMeses || 12;
+                    window.calcularInvestimento();
+                }
                 
-                window.calcularTotal(); 
                 window.showScreen('screen-form');
             } catch(e) {
                 alert("Erro ao carregar dados da proposta.");
@@ -1814,11 +2439,13 @@
                 
                 const permsStr = sessionStorage.getItem('fc_perms');
                 if (permsStr) {
-                    const perms = JSON.parse(permsStr);
+                    const perms = window.normalizePerms(JSON.parse(permsStr), sessionStorage.getItem('saj_perfil') || 'operador');
+                    sessionStorage.setItem('fc_perms', JSON.stringify(perms));
                     
                     if(document.getElementById('nav-new')) document.getElementById('nav-new').hidden = !perms.nova;
                     if(document.getElementById('nav-history-pend')) document.getElementById('nav-history-pend').hidden = !perms.pendentes;
                     if(document.getElementById('nav-approved')) document.getElementById('nav-approved').hidden = !perms.aprovadas;
+                    if(document.getElementById('menu-clients')) document.getElementById('menu-clients').hidden = !perms.clientes;
                     if(document.getElementById('menu-map')) document.getElementById('menu-map').hidden = !perms.mapa;
                     if(document.getElementById('menu-catalog')) document.getElementById('menu-catalog').hidden = !perms.catalogo;
                     if(document.getElementById('menu-users')) document.getElementById('menu-users').hidden = !perms.equipe;
@@ -1826,17 +2453,20 @@
                     if(!perms.nova && document.getElementById('screen-form')) document.getElementById('screen-form').innerHTML = '';
                     if(!perms.pendentes && document.getElementById('screen-history')) document.getElementById('screen-history').innerHTML = '';
                     if(!perms.aprovadas && document.getElementById('screen-approved')) document.getElementById('screen-approved').innerHTML = '';
+                    if(!perms.clientes && document.getElementById('screen-clients')) document.getElementById('screen-clients').innerHTML = '';
                     if(!perms.mapa && document.getElementById('screen-map')) document.getElementById('screen-map').innerHTML = '';
                     if(!perms.catalogo && document.getElementById('screen-catalog')) document.getElementById('screen-catalog').innerHTML = '';
                     if(!perms.equipe && document.getElementById('screen-users')) document.getElementById('screen-users').innerHTML = '';
 
                     if(perms.nova) {
                         window.showScreen('screen-form');
-                        try { window.addItemRow(); } catch(e) {}
+                        try { window.addItemRow(); window.onTipoPropostaChange(false); } catch(e) {}
                     } else if(perms.pendentes) {
                         window.showScreen('screen-history');
                     } else if(perms.aprovadas) {
                         window.showScreen('screen-approved');
+                    } else if(perms.clientes) {
+                        window.showScreen('screen-clients');
                     } else if(perms.mapa) {
                         window.showScreen('screen-map');
                     } else if(perms.catalogo) {
@@ -1846,7 +2476,7 @@
                     }
                 } else {
                     window.showScreen('screen-form');
-                    try { window.addItemRow(); } catch(e) {}
+                    try { window.addItemRow(); window.onTipoPropostaChange(false); } catch(e) {}
                 }
             }
         };
