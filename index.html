@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Portal de vendas e gestão FullCharge.">
     <meta name="theme-color" content="#000b18">
-    <title>FullCharge | Portal de Negócios</title>
+    <title>FullCharge | Portal de Negócios v3 CNPJ Corrigido</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1165,7 +1165,56 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         window.db = db;
-        window.dbRef = ref;
+        window.FC_BUILD = 'firebase-v4-index-2026-06-29';
+        console.log('[FullCharge] build:', window.FC_BUILD);
+        window.__firebaseOriginalRef = ref;
+        window.__firebaseCleanSegment = function(segment) {
+            let s = String(segment || '').trim();
+            if (!s) return '';
+            if (/^doc_/i.test(s)) {
+                const digitos = s.replace(/^doc_/i, '').replace(/\D/g, '');
+                if (digitos) return 'doc_' + digitos;
+            }
+            return s
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/[.#$\[\]\/]/g, '-')
+                .replace(/[^a-zA-Z0-9_-]+/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-+|-+$/g, '') || ('key_' + Date.now());
+        };
+        window.__firebaseSafePath = function(path) {
+            let p = String(path || '').trim();
+            if (!p) return p;
+
+            // Correção crítica: CNPJ/CPF não pode entrar cru no caminho do Realtime Database.
+            // Ex.: clientes/doc_35.237.879/0001-74 -> clientes/doc_35237879000174
+            if (p.indexOf('clientes/doc_') === 0) {
+                const marcadores = ['/historicoPropostas/', '/observacoes/'];
+                let resto = p.slice('clientes/doc_'.length);
+                let marcadorEncontrado = '';
+                let indice = -1;
+                for (const marcador of marcadores) {
+                    const pos = resto.indexOf(marcador);
+                    if (pos >= 0 && (indice < 0 || pos < indice)) {
+                        indice = pos;
+                        marcadorEncontrado = marcador;
+                    }
+                }
+                const docOriginal = indice >= 0 ? resto.slice(0, indice) : resto;
+                const subOriginal = indice >= 0 ? resto.slice(indice + marcadorEncontrado.length) : '';
+                const digitos = String(docOriginal || '').replace(/\D/g, '');
+                const chaveCliente = digitos ? ('doc_' + digitos) : window.__firebaseCleanSegment('doc_' + docOriginal);
+                if (!subOriginal) return 'clientes/' + chaveCliente;
+                const subPartes = subOriginal.split('/').filter(Boolean).map(window.__firebaseCleanSegment).filter(Boolean).join('/');
+                return 'clientes/' + chaveCliente + marcadorEncontrado + subPartes;
+            }
+
+            return p.split('/').filter(Boolean).map(window.__firebaseCleanSegment).filter(Boolean).join('/');
+        };
+        window.dbRef = function(database, path) {
+            const caminhoSeguro = window.__firebaseSafePath(path);
+            return ref(database, caminhoSeguro);
+        };
         window.dbSet = set;
         window.dbGet = get;
         window.dbRemove = remove;
@@ -1190,6 +1239,9 @@ Realtime Database: ${dbUrl}`;
             const code = String(erro?.code || '').toUpperCase();
             const message = String(erro?.message || erro || '');
             let dica = 'Confira se as regras foram publicadas no Realtime Database do projeto fullcharge-c5615.';
+            if (message.includes('clientes/doc_') && message.includes('.') && message.includes('/')) {
+                dica = 'O site está tentando salvar um CNPJ com ponto/barra no caminho do Firebase. Se aparecer clientes/doc_35.237..., você ainda está com o index.html antigo no GitHub ou cache do navegador. Substitua o arquivo index.html pelo arquivo novo e abra com ?v=4.';
+            }
             if (code.includes('PERMISSION')) {
                 dica = 'Permissão negada. Publique as regras no Realtime Database, não no Firestore, e confira se o App Check não está bloqueando o banco.';
             } else if (code.includes('NETWORK') || message.toLowerCase().includes('network')) {
@@ -1209,9 +1261,9 @@ ${dica}`;
                     pagina: location.href,
                     atualizadoEm: new Date().toISOString()
                 };
-                await set(ref(db, testePath), payload);
-                const snapTeste = await get(ref(db, testePath));
-                await remove(ref(db, testePath));
+                await window.dbSet(window.dbRef(window.db, testePath), payload);
+                const snapTeste = await window.dbGet(window.dbRef(window.db, testePath));
+                await window.dbRemove(window.dbRef(window.db, testePath));
                 if (!snapTeste.exists()) throw new Error('O teste gravou, mas não conseguiu ler o retorno.');
                 if (exibirAlerta) alert('Firebase conectado com sucesso. Leitura e escrita liberadas no Realtime Database.');
                 return true;
@@ -1222,7 +1274,7 @@ ${dica}`;
         };
 
         const ouvirFirebase = function(caminho, callback) {
-            return onValue(ref(db, caminho), callback, erro => {
+            return onValue(window.dbRef(window.db, caminho), callback, erro => {
                 window.alertaFirebase('ler ' + caminho, erro);
             });
         };
@@ -2362,7 +2414,12 @@ ${dica}`;
         }
 
         window.safeFirebaseKey = function(value, fallbackPrefix = 'key') {
-            const base = String(value || '')
+            let raw = String(value || '').trim();
+            if (/^doc_/i.test(raw)) {
+                const digitos = raw.replace(/^doc_/i, '').replace(/\D/g, '');
+                if (digitos) return 'doc_' + digitos;
+            }
+            const base = raw
                 .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
                 .trim()
                 .replace(/[.#$\[\]\/]/g, '-')
