@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Portal de vendas e gestão FullCharge.">
     <meta name="theme-color" content="#000b18">
-    <title>FullCharge | Portal de Negócios v3 CNPJ Corrigido</title>
+    <title>FullCharge | Portal de Negócios</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -612,7 +612,7 @@
         <main class="main-content" id="main-app">
             <div id="screen-form" class="screen active">
                 <div class="card no-print">
-                    <h2 class="page-title" id="form-title-proposta">Gerar proposta E-Mobility</h2>
+                    <h2 class="page-title" id="form-title-proposta">Gerar proposta</h2>
                     <div class="proposal-type-card" aria-label="Escolha do tipo de proposta">
                         <p class="proposal-type-title">Tipo de proposta</p>
                         <div class="proposal-type-options">
@@ -788,7 +788,7 @@
                             </div>
                             <div class="cover-footer-panel">
                                 <div class="cover-tagline"><strong>Energia que conecta.</strong>Mobilidade que <span>transforma.</span></div>
-                                <div class="cover-caption">Soluções de recarga E-Mobility FullCharge com apresentação padrão, adaptada automaticamente para cada projeto.</div>
+                                <div class="cover-caption">Soluções de recarga FullCharge</div>
                             </div>
                         </section>
                         <article class="preview-container" aria-label="Pré-visualização do orçamento">
@@ -871,7 +871,7 @@
                                 <div class="p-obs-box" id="p-obs"></div>
                             </section>
                             <footer class="p-doc-footer">
-                                <span><strong>FullCharge</strong> · Soluções de Recarga E-Mobility</span>
+                                <span><strong>FullCharge</strong> · Soluções de Recarga </span>
                                 <span class="p-doc-footer-note">Valores e prazos sujeitos a confirmação formal da proposta.</span>
                             </footer>
                         </div>
@@ -1449,7 +1449,7 @@ ${dica}`;
             const obs = document.getElementById('f-obs');
 
             if (formTitle) {
-                formTitle.textContent = isInvestidor ? 'Gerar proposta para investidores' : (isComodato ? 'Gerar proposta de comodato' : 'Gerar proposta de venda E-Mobility');
+                formTitle.textContent = isInvestidor ? 'Gerar proposta para investidores' : (isComodato ? 'Gerar proposta de comodato' : 'Gerar proposta de venda');
             }
             if (investorFields) investorFields.hidden = !isInvestidor;
             if (itemsWrap) itemsWrap.style.display = '';
