@@ -612,7 +612,7 @@
         <main class="main-content" id="main-app">
             <div id="screen-form" class="screen active">
                 <div class="card no-print">
-                    <h2 class="page-title" id="form-title-proposta">Gerar proposta </h2>
+                    <h2 class="page-title" id="form-title-proposta">Gerar proposta E-Mobility</h2>
                     <div class="proposal-type-card" aria-label="Escolha do tipo de proposta">
                         <p class="proposal-type-title">Tipo de proposta</p>
                         <div class="proposal-type-options">
@@ -703,11 +703,11 @@
                     <div class="field">
                         <label for="f-obs">Observações Comerciais</label>
                         <textarea id="f-obs" rows="7" placeholder="Condições comerciais, prazos, etc.">Condições Comerciais e Técnicas:
-• Validade da proposta: 5 dias
+• Validade da proposta: 
 • Serviços Inclusos: O valor desta proposta já contempla a mão de obra de instalação e as melhorias necessárias na rede elétrica.
 • Exclusões (Não inclusos): Obras civis (abertura de valas, concretagem, recomposição de asfalto/piso) e laudos de engenharia estrutural, salvo se expressamente descritos nos itens desta proposta.
-• Garantia: 12 meses
-• Condições de pagamento: à vista </textarea>
+• Garantia: 
+• Condições de pagamento: </textarea>
                     </div>
 
                     <div class="items-table-wrap" id="itens-proposta-wrap">
@@ -788,7 +788,7 @@
                             </div>
                             <div class="cover-footer-panel">
                                 <div class="cover-tagline"><strong>Energia que conecta.</strong>Mobilidade que <span>transforma.</span></div>
-                                <div class="cover-caption">Movimento limpo, sustentável e eficiente</div>
+                                <div class="cover-caption">Soluções de recarga E-Mobility FullCharge com apresentação padrão, adaptada automaticamente para cada projeto.</div>
                             </div>
                         </section>
                         <article class="preview-container" aria-label="Pré-visualização do orçamento">
@@ -871,7 +871,7 @@
                                 <div class="p-obs-box" id="p-obs"></div>
                             </section>
                             <footer class="p-doc-footer">
-                                <span><strong>FullCharge</strong> · Movimento limpo, sustentável e eficiente · .</span>
+                                <span><strong>FullCharge</strong> · Soluções de Recarga E-Mobility</span>
                                 <span class="p-doc-footer-note">Valores e prazos sujeitos a confirmação formal da proposta.</span>
                             </footer>
                         </div>
@@ -1170,16 +1170,72 @@
         window.dbGet = get;
         window.dbRemove = remove;
         window.dbUpdate = update;
+        window.firebaseConfigAtual = firebaseConfig;
+
+        window.firebaseErroDetalhado = function(acao, erro) {
+            const code = erro?.code || erro?.name || 'erro_desconhecido';
+            const message = erro?.message || String(erro || 'Erro desconhecido');
+            const dbUrl = firebaseConfig.databaseURL;
+            const projectId = firebaseConfig.projectId;
+            return `Ação: ${acao}
+Código: ${code}
+Mensagem: ${message}
+Projeto: ${projectId}
+Realtime Database: ${dbUrl}`;
+        };
+
+        window.alertaFirebase = function(acao, erro) {
+            const detalhe = window.firebaseErroDetalhado(acao, erro);
+            console.error('[FullCharge Firebase]', detalhe, erro);
+            const code = String(erro?.code || '').toUpperCase();
+            const message = String(erro?.message || erro || '');
+            let dica = 'Confira se as regras foram publicadas no Realtime Database do projeto fullcharge-c5615.';
+            if (code.includes('PERMISSION')) {
+                dica = 'Permissão negada. Publique as regras no Realtime Database, não no Firestore, e confira se o App Check não está bloqueando o banco.';
+            } else if (code.includes('NETWORK') || message.toLowerCase().includes('network')) {
+                dica = 'Falha de rede. Verifique internet, bloqueador/extensão ou se o navegador está conseguindo acessar o Firebase.';
+            }
+            return `${detalhe}
+
+${dica}`;
+        };
+
+        window.testarFirebase = async function(exibirAlerta = true) {
+            const testePath = '__diagnostico/conexao_github_pages';
+            try {
+                const payload = {
+                    ok: true,
+                    origem: location.origin || 'arquivo-local',
+                    pagina: location.href,
+                    atualizadoEm: new Date().toISOString()
+                };
+                await set(ref(db, testePath), payload);
+                const snapTeste = await get(ref(db, testePath));
+                await remove(ref(db, testePath));
+                if (!snapTeste.exists()) throw new Error('O teste gravou, mas não conseguiu ler o retorno.');
+                if (exibirAlerta) alert('Firebase conectado com sucesso. Leitura e escrita liberadas no Realtime Database.');
+                return true;
+            } catch (erro) {
+                if (exibirAlerta) alert('FALHA NO TESTE DO FIREBASE:\n\n' + window.alertaFirebase('teste de leitura/escrita', erro));
+                return false;
+            }
+        };
+
+        const ouvirFirebase = function(caminho, callback) {
+            return onValue(ref(db, caminho), callback, erro => {
+                window.alertaFirebase('ler ' + caminho, erro);
+            });
+        };
 
         try {
-            onValue(ref(db, 'propostas'), snap => window.renderHistory(snap.val()));
-            onValue(ref(db, 'usuarios'), snap => window.renderUsers(snap.val()));
-            onValue(ref(db, 'clientes'), snap => {
+            ouvirFirebase('propostas', snap => window.renderHistory(snap.val()));
+            ouvirFirebase('usuarios', snap => window.renderUsers(snap.val()));
+            ouvirFirebase('clientes', snap => {
                 window.clientesCadastrados = snap.val() || {};
                 if (typeof window.renderClientes === 'function') window.renderClientes(window.clientesCadastrados);
             });
             
-            onValue(ref(db, 'produtos'), snap => {
+            ouvirFirebase('produtos', snap => {
                 if (!snap.exists()) {
                     window.seedInitialProducts();
                     return;
@@ -1341,7 +1397,7 @@
             const obs = document.getElementById('f-obs');
 
             if (formTitle) {
-                formTitle.textContent = isInvestidor ? 'Gerar proposta para investidores' : (isComodato ? 'Gerar proposta de comodato' : 'Gerar proposta de venda');
+                formTitle.textContent = isInvestidor ? 'Gerar proposta para investidores' : (isComodato ? 'Gerar proposta de comodato' : 'Gerar proposta de venda E-Mobility');
             }
             if (investorFields) investorFields.hidden = !isInvestidor;
             if (itemsWrap) itemsWrap.style.display = '';
@@ -1398,7 +1454,45 @@
                 .replace(/`/g, '&#96;');
         }
 
-        window.currentLoggedUser = function() { return (sessionStorage.getItem('saj_user') || '').toLowerCase(); }
+        window.FC_SESSION_DAYS = 30;
+        window.FC_SESSION_KEYS = ['saj_user', 'saj_perfil', 'fc_perms', 'fc_session_until', 'fc_last_screen'];
+        window.fcRenewSession = function() {
+            const until = Date.now() + (window.FC_SESSION_DAYS * 24 * 60 * 60 * 1000);
+            localStorage.setItem('fc_session_until', String(until));
+        }
+        window.fcHasValidSession = function() {
+            const user = localStorage.getItem('saj_user');
+            if (!user) return false;
+            const until = Number(localStorage.getItem('fc_session_until') || '0');
+            if (!until) {
+                window.fcRenewSession();
+                return true;
+            }
+            if (Date.now() > until) {
+                window.fcClearSession();
+                return false;
+            }
+            window.fcRenewSession();
+            return true;
+        }
+        window.fcClearSession = function() {
+            window.FC_SESSION_KEYS.forEach(k => localStorage.removeItem(k));
+        }
+        window.fcCanOpenScreen = function(id, perms) {
+            if (!perms) return true;
+            const rules = {
+                'screen-form': 'nova',
+                'screen-history': 'pendentes',
+                'screen-approved': 'aprovadas',
+                'screen-clients': 'clientes',
+                'screen-map': 'mapa',
+                'screen-catalog': 'catalogo',
+                'screen-users': 'equipe'
+            };
+            return !rules[id] || !!perms[rules[id]];
+        }
+
+        window.currentLoggedUser = function() { return (localStorage.getItem('saj_user') || '').toLowerCase(); }
 
         window.userPerfilFromRecord = function(d, username) {
             const login = String(username || '').toLowerCase();
@@ -1407,7 +1501,7 @@
             return 'operador';
         }
 
-        window.isAdministrator = function() { return sessionStorage.getItem('saj_perfil') === 'administrador'; }
+        window.isAdministrator = function() { return localStorage.getItem('saj_perfil') === 'administrador'; }
 
         window.normProposalStatus = function(s) { 
             if (!s) return 'pendente';
@@ -1643,7 +1737,7 @@
         }
 
         window.salvarProdutoCatalogo = async function() {
-            const perms = JSON.parse(sessionStorage.getItem('fc_perms') || '{}');
+            const perms = JSON.parse(localStorage.getItem('fc_perms') || '{}');
             if (!window.isAdministrator() && !perms.catalogo) return alert('Acesso restrito. Não tem permissão para editar o catálogo.');
 
             const nome = document.getElementById('cat-nome').value.trim();
@@ -1680,7 +1774,7 @@
         }
 
         window.excluirProdutoCatalogo = async function(key) {
-            const perms = JSON.parse(sessionStorage.getItem('fc_perms') || '{}');
+            const perms = JSON.parse(localStorage.getItem('fc_perms') || '{}');
             if (!window.isAdministrator() && !perms.catalogo) return;
             
             if(confirm('Tem certeza que deseja remover este equipamento do catálogo?')) {
@@ -2126,9 +2220,10 @@
                     } catch(e) {
                         console.log("Ignorar erro de escrita/leitura para liberar o admin.");
                     }
-                    sessionStorage.setItem('saj_user', 'lucas');
-                    sessionStorage.setItem('saj_perfil', 'administrador');
-                    sessionStorage.setItem('fc_perms', JSON.stringify(permsMaster));
+                    localStorage.setItem('saj_user', 'lucas');
+                    localStorage.setItem('saj_perfil', 'administrador');
+                    localStorage.setItem('fc_perms', JSON.stringify(permsMaster));
+                    window.fcRenewSession();
                     location.reload();
                     return;
                 }
@@ -2151,9 +2246,10 @@
                 }
 
                 perms = window.normalizePerms(perms, perfilDef);
-                sessionStorage.setItem('saj_user', user);
-                sessionStorage.setItem('saj_perfil', perfilDef);
-                sessionStorage.setItem('fc_perms', JSON.stringify(perms));
+                localStorage.setItem('saj_user', user);
+                localStorage.setItem('saj_perfil', perfilDef);
+                localStorage.setItem('fc_perms', JSON.stringify(perms));
+                window.fcRenewSession();
                 location.reload();
             } catch (error) {
                 alert("ERRO DE CONEXÃO: O Firebase bloqueou o acesso. Acesse o console do Firebase > Realtime Database > Regras e altere '.read' e '.write' para true.");
@@ -2534,21 +2630,24 @@
         }
 
         window.showScreen = function(id) {
-            const permsStr = sessionStorage.getItem('fc_perms');
+            let perms = null;
+            const permsStr = localStorage.getItem('fc_perms');
             if (permsStr) {
-                const perms = JSON.parse(permsStr);
-                if (id === 'screen-form' && !perms.nova) return alert('Acesso restrito.');
-                if (id === 'screen-history' && !perms.pendentes) return alert('Acesso restrito.');
-                if (id === 'screen-approved' && !perms.aprovadas) return alert('Acesso restrito.');
-                if (id === 'screen-clients' && !perms.clientes) return alert('Acesso restrito.');
-                if (id === 'screen-map' && !perms.mapa) return alert('Acesso restrito.');
-                if (id === 'screen-catalog' && !perms.catalogo) return alert('Acesso restrito.');
-                if (id === 'screen-users' && !perms.equipe) return alert('Acesso restrito.');
+                try { perms = JSON.parse(permsStr); } catch(e) { perms = null; }
+                if (!window.fcCanOpenScreen(id, perms)) return alert('Acesso restrito.');
             }
 
+            const screen = document.getElementById(id);
+            if (!screen) return;
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            screen.classList.add('active');
             window.updateActiveNav(id);
+
+            const screensPersistentes = ['screen-form', 'screen-history', 'screen-approved', 'screen-clients', 'screen-map', 'screen-catalog', 'screen-users'];
+            if (localStorage.getItem('saj_user') && screensPersistentes.includes(id)) {
+                localStorage.setItem('fc_last_screen', id);
+                window.fcRenewSession();
+            }
 
             if (id === 'screen-map') {
                 window.initMap();
@@ -2671,7 +2770,10 @@
                 await window.salvarClienteAPartirDaProposta(data);
                 await window.dbSet(window.dbRef(window.db, 'propostas/' + data.id), data);
             } catch(e) {
-                alert("AVISO DE SISTEMA:\n\nA proposta foi gerada para impressão, mas NÃO FOI SALVA NA NUVEM porque as permissões do Firebase estão bloqueadas.\n\nAcesse o Console do Firebase > Realtime Database > Regras e ative .read e .write para true.");
+                try {
+                    localStorage.setItem('fc_backup_proposta_' + (data.id || Date.now()), JSON.stringify(data));
+                } catch(_) {}
+                alert('AVISO DE SISTEMA:\n\nA proposta foi gerada para impressão, mas NÃO FOI SALVA NA NUVEM. Fiz um backup local temporário no navegador.\n\n' + window.alertaFirebase('salvar proposta ' + (data.id || ''), e));
             }
 
             window.fillPreviewFromData(data);
@@ -2815,10 +2917,11 @@
             }
         }
 
-        window.f_logout = function() { sessionStorage.clear(); location.reload(); }
+        window.f_logout = function() { window.fcClearSession(); location.reload(); }
 
         window.onload = () => {
-            const u = sessionStorage.getItem('saj_user');
+            if (!window.fcHasValidSession()) return;
+            const u = localStorage.getItem('saj_user');
             if (u) {
                 document.getElementById('screen-login').classList.remove('active');
                 document.getElementById('app-main').classList.add('is-visible');
@@ -2828,10 +2931,10 @@
                     document.getElementById('f-id').value = 'FC-' + Math.floor(1000 + Math.random() * 9000); 
                 }
                 
-                const permsStr = sessionStorage.getItem('fc_perms');
+                const permsStr = localStorage.getItem('fc_perms');
                 if (permsStr) {
-                    const perms = window.normalizePerms(JSON.parse(permsStr), sessionStorage.getItem('saj_perfil') || 'operador');
-                    sessionStorage.setItem('fc_perms', JSON.stringify(perms));
+                    const perms = window.normalizePerms(JSON.parse(permsStr), localStorage.getItem('saj_perfil') || 'operador');
+                    localStorage.setItem('fc_perms', JSON.stringify(perms));
                     
                     if(document.getElementById('nav-new')) document.getElementById('nav-new').hidden = !perms.nova;
                     if(document.getElementById('nav-history-pend')) document.getElementById('nav-history-pend').hidden = !perms.pendentes;
@@ -2849,21 +2952,21 @@
                     if(!perms.catalogo && document.getElementById('screen-catalog')) document.getElementById('screen-catalog').innerHTML = '';
                     if(!perms.equipe && document.getElementById('screen-users')) document.getElementById('screen-users').innerHTML = '';
 
-                    if(perms.nova) {
-                        window.showScreen('screen-form');
+                    const telasPermitidas = [
+                        ['screen-form', 'nova'],
+                        ['screen-history', 'pendentes'],
+                        ['screen-approved', 'aprovadas'],
+                        ['screen-clients', 'clientes'],
+                        ['screen-map', 'mapa'],
+                        ['screen-catalog', 'catalogo'],
+                        ['screen-users', 'equipe']
+                    ];
+                    const ultimaTela = localStorage.getItem('fc_last_screen');
+                    let telaInicial = telasPermitidas.find(([id]) => id === ultimaTela && window.fcCanOpenScreen(id, perms))?.[0];
+                    if (!telaInicial) telaInicial = telasPermitidas.find(([id, chave]) => perms[chave])?.[0] || 'screen-form';
+                    window.showScreen(telaInicial);
+                    if (telaInicial === 'screen-form') {
                         try { window.addItemRow(); window.onTipoPropostaChange(false); } catch(e) {}
-                    } else if(perms.pendentes) {
-                        window.showScreen('screen-history');
-                    } else if(perms.aprovadas) {
-                        window.showScreen('screen-approved');
-                    } else if(perms.clientes) {
-                        window.showScreen('screen-clients');
-                    } else if(perms.mapa) {
-                        window.showScreen('screen-map');
-                    } else if(perms.catalogo) {
-                        window.showScreen('screen-catalog');
-                    } else if(perms.equipe) {
-                        window.showScreen('screen-users');
                     }
                 } else {
                     window.showScreen('screen-form');
