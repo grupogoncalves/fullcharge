@@ -788,7 +788,7 @@
                             </div>
                             <div class="cover-footer-panel">
                                 <div class="cover-tagline"><strong>Energia que conecta.</strong>Mobilidade que <span>transforma.</span></div>
-                                <div class="cover-caption">Soluções de recarga E-Mobility FullCharge.</div>
+                                <div class="cover-caption">Soluções de recarga E-Mobility FullCharge com apresentação padrão, adaptada automaticamente para cada projeto.</div>
                             </div>
                         </section>
                         <article class="preview-container" aria-label="Pré-visualização do orçamento">
@@ -2350,7 +2350,7 @@ ${dica}`;
         }
 
         /* ——— Cadastro de Clientes ——— */
-        window.onlyDigits = function(s) { return String(s || '').replace(/\\D/g, ''); }
+        window.onlyDigits = function(s) { return String(s || '').replace(/\D/g, ''); }
 
         window.slugCliente = function(s) {
             return String(s || '')
@@ -2361,11 +2361,23 @@ ${dica}`;
                 .slice(0, 60);
         }
 
+        window.safeFirebaseKey = function(value, fallbackPrefix = 'key') {
+            const base = String(value || '')
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .trim()
+                .replace(/[.#$\[\]\/]/g, '-')
+                .replace(/[^a-zA-Z0-9_-]+/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .slice(0, 90);
+            return base || (fallbackPrefix + '_' + Date.now());
+        }
+
         window.getClienteKeyFromData = function(doc, nome) {
             const digits = window.onlyDigits(doc);
-            if (digits) return 'doc_' + digits;
+            if (digits) return window.safeFirebaseKey('doc_' + digits, 'cliente');
             const slug = window.slugCliente(nome);
-            return slug ? 'nome_' + slug : 'cliente_' + Date.now();
+            return window.safeFirebaseKey(slug ? 'nome_' + slug : ('cliente_' + Date.now()), 'cliente');
         }
 
         window.formatDateTimeBR = function(value) {
@@ -2413,7 +2425,7 @@ ${dica}`;
             const dados = window.coletarClienteForm();
             if (!dados.nome && !dados.cnpj) return alert('Informe pelo menos o nome ou o CNPJ/CPF do cliente.');
 
-            const key = dados.key || window.getClienteKeyFromData(dados.cnpj, dados.nome);
+            const key = dados.key ? window.safeFirebaseKey(dados.key, 'cliente') : window.getClienteKeyFromData(dados.cnpj, dados.nome);
             const atual = window.clientesCadastrados[key] || {};
             const payload = Object.assign({}, atual, dados, {
                 key,
@@ -2442,7 +2454,7 @@ ${dica}`;
                 alert('Cliente salvo com sucesso.');
                 window.renderClienteDetalhe(key);
             } catch(e) {
-                alert('Erro ao salvar o cliente. Verifique as permissões do Firebase.');
+                alert('Erro ao salvar o cliente.\n\n' + window.alertaFirebase('salvar cliente', e));
             }
         }
 
@@ -2466,7 +2478,7 @@ ${dica}`;
             };
 
             await window.dbUpdate(window.dbRef(window.db, 'clientes/' + key), payload);
-            await window.dbSet(window.dbRef(window.db, 'clientes/' + key + '/historicoPropostas/' + data.id), {
+            await window.dbSet(window.dbRef(window.db, 'clientes/' + key + '/historicoPropostas/' + window.safeFirebaseKey(data.id, 'proposta')), {
                 id: data.id,
                 tipoProposta: data.tipoProposta || 'venda',
                 data: data.data || new Date().toLocaleDateString('pt-BR'),
@@ -2768,7 +2780,7 @@ ${dica}`;
 
             try {
                 await window.salvarClienteAPartirDaProposta(data);
-                await window.dbSet(window.dbRef(window.db, 'propostas/' + data.id), data);
+                await window.dbSet(window.dbRef(window.db, 'propostas/' + window.safeFirebaseKey(data.id, 'proposta')), data);
             } catch(e) {
                 try {
                     localStorage.setItem('fc_backup_proposta_' + (data.id || Date.now()), JSON.stringify(data));
