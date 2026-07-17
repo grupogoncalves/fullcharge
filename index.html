@@ -302,6 +302,46 @@
         .p-total-box small { display: block; opacity: 0.88; font-size: 0.625rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
         .p-total-box strong { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 
+        /* ——— Referência cambial / dólar ——— */
+        .exchange-card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 0.72fr); gap: 18px; align-items: center; margin: 2px 0 20px; padding: 18px; border: 1px solid #cfe0f5; border-radius: 14px; background: linear-gradient(135deg, #f8fbff 0%, #eef5ff 100%); box-shadow: 0 8px 26px rgba(0, 86, 255, 0.07); }
+        .exchange-card-main { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 13px; align-items: center; }
+        .exchange-card-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 13px; color: #0056ff; background: #ffffff; border: 1px solid #dbeafe; box-shadow: 0 6px 18px rgba(0, 86, 255, 0.10); font-size: 1rem; }
+        .exchange-card-kicker { display: block; margin-bottom: 3px; color: #0056ff; font-size: 0.64rem; font-weight: 900; letter-spacing: 0.10em; text-transform: uppercase; }
+        .exchange-card-value { display: block; color: #000b18; font-size: 1.08rem; font-weight: 850; letter-spacing: -0.02em; }
+        .exchange-card-status { display: block; margin-top: 4px; color: #64748b; font-size: 0.72rem; line-height: 1.45; }
+        .exchange-card-status.is-error { color: #b45309; }
+        .exchange-card-status.is-success { color: #047857; }
+        .exchange-controls { display: grid; grid-template-columns: minmax(110px, 1fr) auto; gap: 9px; align-items: end; }
+        .exchange-controls .field { margin: 0; }
+        .exchange-controls .btn { width: auto; min-height: 42px; white-space: nowrap; padding-inline: 15px; }
+        .exchange-input { font-weight: 800; color: #000b18; font-variant-numeric: tabular-nums; }
+
+        .p-exchange-section { margin: -4px 0 24px; break-inside: avoid; page-break-inside: avoid; }
+        .p-exchange-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .p-exchange-card { padding: 14px 16px; border: 1px solid #dbe5f0; border-radius: 10px; background: linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%); }
+        .p-exchange-label { display: block; margin-bottom: 4px; color: #64748b; font-size: 0.58rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; }
+        .p-exchange-value { display: block; color: #000b18; font-size: 0.96rem; line-height: 1.25; font-weight: 850; font-variant-numeric: tabular-nums; }
+        .p-exchange-meta { display: block; margin-top: 4px; color: #64748b; font-size: 0.63rem; line-height: 1.35; }
+        .p-exchange-note { margin: 9px 0 0; padding: 10px 12px; border-left: 3px solid #0056ff; border-radius: 0 8px 8px 0; background: #eff6ff; color: #334155; font-size: 0.67rem; line-height: 1.48; }
+
+        @media (max-width: 760px) {
+            .exchange-card { grid-template-columns: 1fr; }
+            .exchange-controls { grid-template-columns: 1fr; }
+            .exchange-controls .btn { width: 100%; }
+        }
+        @media (max-width: 560px) { .p-exchange-grid { grid-template-columns: 1fr; } }
+
+        .preview-container.p-fit-a4[data-fit-density="compact"] .p-exchange-section { margin-bottom: 12px; }
+        .preview-container.p-fit-a4[data-fit-density="compact"] .p-exchange-card { padding: 9px 11px; }
+        .preview-container.p-fit-a4[data-fit-density="compact"] .p-exchange-note { margin-top: 6px; padding: 7px 9px; font-size: 0.60rem; line-height: 1.35; }
+        .preview-container.p-fit-a4[data-fit-density="ultra"] .p-exchange-section { margin-bottom: 7px; }
+        .preview-container.p-fit-a4[data-fit-density="ultra"] .p-exchange-grid { gap: 5px; }
+        .preview-container.p-fit-a4[data-fit-density="ultra"] .p-exchange-card { padding: 6px 8px; border-radius: 7px; }
+        .preview-container.p-fit-a4[data-fit-density="ultra"] .p-exchange-label { font-size: 0.48rem; margin-bottom: 1px; }
+        .preview-container.p-fit-a4[data-fit-density="ultra"] .p-exchange-value { font-size: 0.72rem; }
+        .preview-container.p-fit-a4[data-fit-density="ultra"] .p-exchange-meta { margin-top: 2px; font-size: 0.50rem; }
+        .preview-container.p-fit-a4[data-fit-density="ultra"] .p-exchange-note { margin-top: 4px; padding: 5px 7px; font-size: 0.49rem; line-height: 1.25; }
+
         .p-obs-section { margin-bottom: 8px; }
         .p-obs-box { margin: 0; padding: 16px 18px; background: #f8fafc; border: 1px solid var(--p-doc-line); border-radius: 10px; border-left: 3px solid #94a3b8; font-size: 0.8125rem; line-height: 1.65; color: #475569; white-space: pre-wrap; }
         .p-doc-footer { margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--p-doc-line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; font-size: 0.6875rem; color: var(--p-doc-muted); }
@@ -363,7 +403,7 @@
         body.is-exporting-pdf .preview-container { width: 210mm !important; max-width: 210mm !important; min-height: auto !important; border-radius: 0 !important; box-shadow: none !important; overflow: visible !important; }
         body.is-exporting-pdf .preview-container::before { height: 0 !important; }
         body.is-exporting-pdf .p-inner { padding: 14mm 12mm 16mm !important; }
-        body.is-exporting-pdf .p-table tr, body.is-exporting-pdf .p-client-card, body.is-exporting-pdf .p-investor-card, body.is-exporting-pdf .p-total-wrap, body.is-exporting-pdf .p-obs-section { break-inside: avoid; page-break-inside: avoid; }
+        body.is-exporting-pdf .p-table tr, body.is-exporting-pdf .p-client-card, body.is-exporting-pdf .p-investor-card, body.is-exporting-pdf .p-total-wrap, body.is-exporting-pdf .p-exchange-section, body.is-exporting-pdf .p-obs-section { break-inside: avoid; page-break-inside: avoid; }
         body.is-exporting-pdf .p-img-thumb { width: 120px !important; height: 120px !important; }
 
         body.is-exporting-pdf .proposal-cover,
@@ -401,6 +441,19 @@
             break-before: page;
             print-color-adjust: exact;
             -webkit-print-color-adjust: exact;
+        }
+        .proposal-value-page {
+            width: 100%;
+            max-width: 800px;
+            min-height: 0;
+            height: auto;
+            aspect-ratio: 210 / 297;
+        }
+        .proposal-value-content {
+            width: 100%;
+            transform-origin: top left;
+            transform: scale(var(--value-page-scale, 1));
+            will-change: transform;
         }
         .proposal-value-page::before {
             content: "";
@@ -485,6 +538,9 @@
             padding: 14mm 13mm !important;
             overflow: hidden !important;
         }
+        body.is-exporting-pdf .proposal-value-content {
+            transform-origin: top left !important;
+        }
         @media print {
             .proposal-value-page,
             .proposal-logo-page.proposal-final-page {
@@ -497,6 +553,9 @@
                 overflow: hidden !important;
                 page-break-before: always !important;
                 break-before: page !important;
+            }
+            .proposal-value-content {
+                transform-origin: top left !important;
             }
         }
 
@@ -712,7 +771,7 @@
             .preview-container { width: 210mm !important; max-width: 210mm !important; min-height: 297mm !important; box-shadow: none !important; border-radius: 0 !important; border: none !important; overflow: visible !important; }
             .preview-container::before { height: 0 !important; }
             .p-inner { padding: 14mm 12mm 16mm !important; }
-            .p-table tr, .p-client-card, .p-investor-card, .p-total-wrap, .p-obs-section { page-break-inside: avoid !important; break-inside: avoid !important; }
+            .p-table tr, .p-client-card, .p-investor-card, .p-total-wrap, .p-exchange-section, .p-obs-section { page-break-inside: avoid !important; break-inside: avoid !important; }
             .p-table tbody tr:hover td { background: transparent !important; }
             .p-img-thumb { width: 120px !important; height: 120px !important; }
         }
@@ -943,7 +1002,24 @@
                     </div>
                     <div class="field" id="f-total-field">
                         <label for="f-total" id="f-total-label">Total Calculado (R$)</label>
-                        <input type="text" id="f-total" inputmode="decimal" oninput="window.maskMoney(this); window.calcularTotal();" placeholder="R$ 0,00" style="font-size:1.2rem; font-weight:bold; color:var(--accent);">
+                        <input type="text" id="f-total" inputmode="decimal" oninput="window.maskMoney(this); window.calcularTotal(); window.atualizarResumoCotacaoDolar();" placeholder="R$ 0,00" style="font-size:1.2rem; font-weight:bold; color:var(--accent);">
+                    </div>
+                    <div class="exchange-card" id="exchange-card">
+                        <div class="exchange-card-main">
+                            <span class="exchange-card-icon"><i class="fa fa-dollar-sign" aria-hidden="true"></i></span>
+                            <span>
+                                <span class="exchange-card-kicker">Referência cambial da proposta</span>
+                                <strong class="exchange-card-value" id="f-cotacao-display">Cotação ainda não consultada</strong>
+                                <small class="exchange-card-status" id="f-cotacao-status">A cotação do dólar comercial será consultada automaticamente e registrada na proposta.</small>
+                            </span>
+                        </div>
+                        <div class="exchange-controls">
+                            <div class="field light-label">
+                                <label for="f-cotacao-dolar">US$ 1,00 em reais</label>
+                                <input class="exchange-input" type="text" id="f-cotacao-dolar" inputmode="decimal" placeholder="Ex.: 5,0742" oninput="window.atualizarResumoCotacaoDolar({ manual: true });">
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="window.atualizarCotacaoDolar(true)"><i class="fa fa-rotate" aria-hidden="true"></i> Atualizar</button>
+                        </div>
                     </div>
                     <div class="investor-panel" id="investor-fields" hidden>
                         <h3><i class="fa fa-chart-line" aria-hidden="true"></i> Simulação de investimento</h3>
@@ -1070,6 +1146,7 @@
                             </div>
                         </section>
                         <section class="proposal-value-page" aria-label="Resumo executivo e diferenciais da solução">
+                            <div class="proposal-value-content">
                             <p class="value-page-kicker">Resumo executivo</p>
                             <h2 class="value-page-title">Uma solução completa para transformar recarga em experiência, conveniência e valor.</h2>
                             <p class="value-page-lead" id="value-page-lead">A FullCharge entrega uma estrutura preparada para o projeto, reunindo equipamento, implantação, configuração e suporte em uma única jornada.</p>
@@ -1115,6 +1192,7 @@
                             </section>
 
                             <div class="value-footnote" id="p-resumo-nota">Pedido preparado para <strong id="p-resumo-cliente">o cliente</strong>. Prazos definitivos são confirmados após aprovação comercial e disponibilidade logística.</div>
+                            </div>
                         </section>
                         <article class="preview-container" aria-label="Pré-visualização do orçamento">
                         <div class="p-inner">
@@ -1191,6 +1269,23 @@
                                 </div>
                                 <div class="p-investor-disclaimer">Projeção calculada com base em rentabilidade simples mensal de 2,25% sobre o investimento informado. Condições finais dependem de aprovação contratual e confirmação formal da operação.</div>
                             </section>
+                            <section class="p-exchange-section" id="p-exchange-section" aria-labelledby="p-exchange-heading">
+                                <h3 class="p-section-title" id="p-exchange-heading">Referência cambial</h3>
+                                <div class="p-exchange-grid">
+                                    <div class="p-exchange-card">
+                                        <span class="p-exchange-label">Cotação utilizada</span>
+                                        <strong class="p-exchange-value" id="p-cotacao-dolar">US$ 1,00 = R$ 0,0000</strong>
+                                        <small class="p-exchange-meta" id="p-cotacao-meta"></small>
+                                    </div>
+                                    <div class="p-exchange-card">
+                                        <span class="p-exchange-label">Equivalente do investimento</span>
+                                        <strong class="p-exchange-value" id="p-total-usd">US$ 0,00</strong>
+                                        <small class="p-exchange-meta">Conversão meramente referencial.</small>
+                                    </div>
+                                </div>
+                                <p class="p-exchange-note" id="p-cotacao-clausula"></p>
+                            </section>
+
                             <section class="p-obs-section" aria-labelledby="p-obs-heading">
                                 <h3 class="p-section-title" id="p-obs-heading">Observações e Condições</h3>
                                 <div class="p-obs-box" id="p-obs"></div>
@@ -1692,6 +1787,7 @@ ${dica}`;
             const valorFormatado = window.formatBRL ? window.formatBRL(totalGeral) : ("R$ " + totalGeral.toFixed(2).replace('.', ','));
             const fTotal = document.getElementById('f-total');
             if(fTotal) fTotal.value = valorFormatado;
+            if (typeof window.atualizarResumoCotacaoDolar === 'function') window.atualizarResumoCotacaoDolar();
 
             const tipo = typeof window.getTipoProposta === 'function' ? window.getTipoProposta() : 'venda_entrega';
             if (tipo === 'investidor' && totalLinhas > 0) {
@@ -1715,6 +1811,190 @@ ${dica}`;
         window.formatBRL = function(n) {
             return (Number(n) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
+
+        window.formatUSD = function(n) {
+            return (Number(n) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'USD' });
+        }
+
+        window.parseCotacaoDolar = function(value) {
+            if (value == null) return 0;
+            let clean = String(value).trim().replace(/[^\d,.-]/g, '');
+            if (clean.includes(',') && clean.includes('.')) clean = clean.replace(/\./g, '').replace(',', '.');
+            else clean = clean.replace(',', '.');
+            const number = parseFloat(clean);
+            return Number.isFinite(number) && number > 0 ? number : 0;
+        }
+
+        window.formatCotacaoDolar = function(value) {
+            const number = window.parseCotacaoDolar(value);
+            return `R$ ${number.toLocaleString('pt-BR', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`;
+        }
+
+        window.cotacaoDolarAtual = null;
+        window.COTACAO_DOLAR_CACHE_KEY = 'fc_cotacao_dolar_atual';
+
+        window.dataHoraCambioTexto = function(dateValue = new Date()) {
+            const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
+            const safeDate = Number.isNaN(date.getTime()) ? new Date() : date;
+            return safeDate.toLocaleString('pt-BR', {
+                timeZone: 'America/Sao_Paulo',
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        window.buscarCotacaoDolarAwesome = async function() {
+            const response = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL', { cache: 'no-store' });
+            if (!response.ok) throw new Error(`AwesomeAPI respondeu ${response.status}`);
+            const json = await response.json();
+            const quote = json && json.USDBRL;
+            const valor = window.parseCotacaoDolar(quote?.ask || quote?.bid);
+            if (!valor) throw new Error('Cotação USD/BRL inválida na AwesomeAPI.');
+            const dataHora = quote?.timestamp ? new Date(Number(quote.timestamp) * 1000) : new Date();
+            return {
+                valor,
+                dataHoraISO: dataHora.toISOString(),
+                dataHoraTexto: window.dataHoraCambioTexto(dataHora),
+                fonte: 'AwesomeAPI — dólar comercial de venda',
+                origem: 'online'
+            };
+        }
+
+        window.buscarCotacaoDolarBCB = async function() {
+            const fim = new Date();
+            const inicio = new Date(fim);
+            inicio.setDate(inicio.getDate() - 10);
+            const mmddyyyy = date => `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}-${date.getFullYear()}`;
+            const base = 'https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)';
+            const params = `?@dataInicial='${mmddyyyy(inicio)}'&@dataFinalCotacao='${mmddyyyy(fim)}'&$orderby=dataHoraCotacao%20desc&$top=100&$format=json`;
+            const response = await fetch(base + params, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`Banco Central respondeu ${response.status}`);
+            const json = await response.json();
+            const quote = (json?.value || []).find(item => window.parseCotacaoDolar(item?.cotacaoVenda));
+            const valor = window.parseCotacaoDolar(quote?.cotacaoVenda);
+            if (!valor) throw new Error('PTAX de venda não encontrada.');
+            const dataHora = quote?.dataHoraCotacao ? new Date(quote.dataHoraCotacao) : new Date();
+            return {
+                valor,
+                dataHoraISO: Number.isNaN(dataHora.getTime()) ? new Date().toISOString() : dataHora.toISOString(),
+                dataHoraTexto: quote?.dataHoraCotacao ? window.dataHoraCambioTexto(dataHora) : window.dataHoraCambioTexto(),
+                fonte: 'Banco Central do Brasil — PTAX de venda',
+                origem: 'online'
+            };
+        }
+
+        window.salvarCacheCotacaoDolar = function(cotacao) {
+            try { localStorage.setItem(window.COTACAO_DOLAR_CACHE_KEY, JSON.stringify(cotacao)); } catch (_) {}
+        }
+
+        window.lerCacheCotacaoDolar = function() {
+            try {
+                const cached = JSON.parse(localStorage.getItem(window.COTACAO_DOLAR_CACHE_KEY) || 'null');
+                return cached && window.parseCotacaoDolar(cached.valor) ? cached : null;
+            } catch (_) { return null; }
+        }
+
+        window.atualizarResumoCotacaoDolar = function(options = {}) {
+            const input = document.getElementById('f-cotacao-dolar');
+            const display = document.getElementById('f-cotacao-display');
+            const status = document.getElementById('f-cotacao-status');
+            const valor = window.parseCotacaoDolar(input?.value);
+            const total = window.moneyToNumber(document.getElementById('f-total')?.value || document.getElementById('f-investimento')?.value || 0);
+
+            if (options.manual && valor) {
+                window.cotacaoDolarAtual = {
+                    valor,
+                    dataHoraISO: new Date().toISOString(),
+                    dataHoraTexto: window.dataHoraCambioTexto(),
+                    fonte: 'Cotação informada manualmente',
+                    origem: 'manual'
+                };
+                window.salvarCacheCotacaoDolar(window.cotacaoDolarAtual);
+            }
+
+            const cotacao = valor ? (window.cotacaoDolarAtual && window.parseCotacaoDolar(window.cotacaoDolarAtual.valor) === valor
+                ? window.cotacaoDolarAtual
+                : { valor, dataHoraTexto: window.dataHoraCambioTexto(), fonte: 'Cotação informada manualmente', origem: 'manual' }) : window.cotacaoDolarAtual;
+
+            if (!cotacao || !window.parseCotacaoDolar(cotacao.valor)) {
+                if (display) display.textContent = 'Cotação ainda não consultada';
+                return null;
+            }
+
+            const equivalente = total > 0 ? window.formatUSD(total / cotacao.valor) : 'equivalente calculado após informar os itens';
+            if (display) display.textContent = `US$ 1,00 = ${window.formatCotacaoDolar(cotacao.valor)} · ${equivalente}`;
+            if (status) {
+                status.classList.remove('is-error');
+                status.classList.add('is-success');
+                status.textContent = `${cotacao.fonte} · ${cotacao.dataHoraTexto || window.dataHoraCambioTexto()}`;
+            }
+            return cotacao;
+        }
+
+        window.atualizarCotacaoDolar = async function(exibirAlerta = false) {
+            const input = document.getElementById('f-cotacao-dolar');
+            const display = document.getElementById('f-cotacao-display');
+            const status = document.getElementById('f-cotacao-status');
+            if (display) display.textContent = 'Consultando cotação atual...';
+            if (status) {
+                status.classList.remove('is-error', 'is-success');
+                status.textContent = 'Buscando o dólar comercial de venda em fontes online.';
+            }
+
+            let cotacao = null;
+            let ultimoErro = null;
+            for (const buscar of [window.buscarCotacaoDolarAwesome, window.buscarCotacaoDolarBCB]) {
+                try {
+                    cotacao = await buscar();
+                    if (cotacao) break;
+                } catch (error) { ultimoErro = error; }
+            }
+
+            if (!cotacao) {
+                const manual = window.parseCotacaoDolar(input?.value);
+                if (manual) {
+                    cotacao = {
+                        valor: manual,
+                        dataHoraISO: new Date().toISOString(),
+                        dataHoraTexto: window.dataHoraCambioTexto(),
+                        fonte: 'Cotação informada manualmente',
+                        origem: 'manual'
+                    };
+                } else {
+                    const cache = window.lerCacheCotacaoDolar();
+                    if (cache) cotacao = { ...cache, fonte: `${cache.fonte || 'Cotação salva'} — última cotação disponível`, origem: 'cache' };
+                }
+            }
+
+            if (!cotacao) {
+                window.cotacaoDolarAtual = null;
+                if (display) display.textContent = 'Não foi possível consultar a cotação';
+                if (status) {
+                    status.classList.add('is-error');
+                    status.textContent = 'Digite manualmente o valor de US$ 1,00 em reais para continuar.';
+                }
+                if (exibirAlerta) alert(`Não foi possível consultar a cotação do dólar. Informe a cotação manualmente.\n\n${ultimoErro?.message || ''}`);
+                return null;
+            }
+
+            window.cotacaoDolarAtual = cotacao;
+            if (input) input.value = Number(cotacao.valor).toLocaleString('pt-BR', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+            window.salvarCacheCotacaoDolar(cotacao);
+            window.atualizarResumoCotacaoDolar();
+            if (exibirAlerta) alert(`Cotação atualizada: US$ 1,00 = ${window.formatCotacaoDolar(cotacao.valor)}\n${cotacao.fonte}`);
+            return cotacao;
+        }
+
+        window.montarClausulaCambial = function(cotacao, totalBRL = 0) {
+            const valor = window.parseCotacaoDolar(cotacao?.valor);
+            if (!valor) return '';
+            const equivalente = totalBRL > 0 ? window.formatUSD(totalBRL / valor) : '';
+            return `O valor desta proposta está calculado de acordo com a cotação do dólar comercial de venda de ${window.formatCotacaoDolar(valor)} para US$ 1,00, consultada em ${cotacao.dataHoraTexto || window.dataHoraCambioTexto()} (${cotacao.fonte || 'fonte informada'}).${equivalente ? ` O equivalente de ${equivalente} é apenas referencial.` : ''} Variações cambiais ocorridas até a confirmação formal do pedido poderão resultar na atualização dos valores.`;
+        }
+
+        setTimeout(() => {
+            if (document.getElementById('f-cotacao-dolar') && !window.cotacaoDolarAtual) window.atualizarCotacaoDolar(false);
+        }, 700);
 
         window.getTipoProposta = function() {
             const checked = document.querySelector('input[name="tipo-proposta"]:checked');
@@ -2432,6 +2712,27 @@ ${dica}`;
             document.getElementById('p-data').textContent = data.data || '';
             document.getElementById('p-obs').textContent = data.obs || '';
 
+            const cotacaoValor = window.parseCotacaoDolar(data.cotacaoDolarValor || data.cotacaoDolar || 0);
+            const totalNumeroCambio = window.moneyToNumber(data.total || data.investimento || 0);
+            const pExchangeSection = document.getElementById('p-exchange-section');
+            if (pExchangeSection) pExchangeSection.hidden = !cotacaoValor;
+            if (cotacaoValor) {
+                const cotacaoObj = {
+                    valor: cotacaoValor,
+                    dataHoraTexto: data.cotacaoDolarDataHora || data.cotacaoDolarDataHoraTexto || '',
+                    fonte: data.cotacaoDolarFonte || 'Cotação registrada na proposta'
+                };
+                const equivalenteUsd = data.valorEquivalenteUsd || window.formatUSD(totalNumeroCambio / cotacaoValor);
+                const pCotacao = document.getElementById('p-cotacao-dolar');
+                const pCotacaoMeta = document.getElementById('p-cotacao-meta');
+                const pTotalUsd = document.getElementById('p-total-usd');
+                const pCotacaoClausula = document.getElementById('p-cotacao-clausula');
+                if (pCotacao) pCotacao.textContent = `US$ 1,00 = ${window.formatCotacaoDolar(cotacaoValor)}`;
+                if (pCotacaoMeta) pCotacaoMeta.textContent = `${cotacaoObj.fonte}${cotacaoObj.dataHoraTexto ? ` · ${cotacaoObj.dataHoraTexto}` : ''}`;
+                if (pTotalUsd) pTotalUsd.textContent = equivalenteUsd;
+                if (pCotacaoClausula) pCotacaoClausula.textContent = data.clausulaCambial || window.montarClausulaCambial(cotacaoObj, totalNumeroCambio);
+            }
+
             const coverTitle = document.getElementById('cover-title');
             const coverEyebrow = document.getElementById('cover-eyebrow');
             const coverClient = document.getElementById('cover-client');
@@ -2557,7 +2858,47 @@ ${dica}`;
                 .slice(0, 42) || 'cliente';
         }
 
+        window.ajustarPaginaValorA4 = function(options = {}) {
+            const page = document.querySelector('#proposal-pdf-document .proposal-value-page');
+            const inner = page?.querySelector('.proposal-value-content');
+            if (!page || !inner) return 1;
+
+            page.style.setProperty('--value-page-scale', '1');
+            inner.style.width = '100%';
+            inner.style.transform = 'scale(1)';
+
+            const pageWidth = page.getBoundingClientRect().width || 794;
+            const targetHeight = pageWidth * (297 / 210);
+            page.style.height = `${targetHeight}px`;
+            page.style.minHeight = `${targetHeight}px`;
+
+            const computed = window.getComputedStyle(page);
+            const paddingTop = parseFloat(computed.paddingTop) || 0;
+            const paddingBottom = parseFloat(computed.paddingBottom) || 0;
+            const availableHeight = Math.max(120, targetHeight - paddingTop - paddingBottom);
+
+            let scale = 1;
+            for (let attempt = 0; attempt < 5; attempt += 1) {
+                inner.style.width = `${(100 / scale).toFixed(4)}%`;
+                inner.style.transform = `scale(${scale})`;
+                const contentHeight = Math.max(inner.scrollHeight, 1);
+                const nextScale = Math.max(0.62, Math.min(1, availableHeight / contentHeight));
+                if (Math.abs(nextScale - scale) < 0.002) {
+                    scale = nextScale;
+                    break;
+                }
+                scale = nextScale;
+            }
+
+            inner.style.width = `${(100 / scale).toFixed(4)}%`;
+            inner.style.transform = `scale(${scale})`;
+            page.style.setProperty('--value-page-scale', scale.toFixed(4));
+            page.dataset.fitScale = scale.toFixed(3);
+            return scale;
+        };
+
         window.ajustarPropostaA4 = function(options = {}) {
+            try { window.ajustarPaginaValorA4(options); } catch (e) { console.warn('Ajuste A4 da página de resumo falhou:', e); }
             const page = document.querySelector('#proposal-pdf-document .preview-container');
             const inner = page?.querySelector('.p-inner');
             if (!page || !inner) return 1;
@@ -3552,6 +3893,21 @@ ${dica}`;
             const rendaMensal = document.getElementById('f-renda-mensal')?.value || '';
             const retornoProjetadoPeriodo = document.getElementById('f-renda-periodo')?.value || '';
             const totalProposta = isInvestidor ? investimento : document.getElementById('f-total').value;
+            let cotacaoDolar = await window.atualizarCotacaoDolar(false);
+            if (!cotacaoDolar) {
+                const cotacaoManual = window.parseCotacaoDolar(document.getElementById('f-cotacao-dolar')?.value);
+                if (cotacaoManual) {
+                    cotacaoDolar = { valor: cotacaoManual, dataHoraISO: new Date().toISOString(), dataHoraTexto: window.dataHoraCambioTexto(), fonte: 'Cotação informada manualmente', origem: 'manual' };
+                }
+            }
+            if (!cotacaoDolar || !window.parseCotacaoDolar(cotacaoDolar.valor)) {
+                alert('Não foi possível obter a cotação do dólar. Digite manualmente o valor de US$ 1,00 em reais no campo de referência cambial.');
+                document.getElementById('f-cotacao-dolar')?.focus();
+                return;
+            }
+            const totalNumeroCambio = window.moneyToNumber(totalProposta);
+            const valorEquivalenteUsd = totalNumeroCambio > 0 ? window.formatUSD(totalNumeroCambio / cotacaoDolar.valor) : window.formatUSD(0);
+            const clausulaCambial = window.montarClausulaCambial(cotacaoDolar, totalNumeroCambio);
             const incluiInstalacao = !window.isVendaSemEntrega(tipoProposta) && !!document.getElementById('f-inclui-instalacao')?.checked;
             let observacoesProposta = document.getElementById('f-obs').value;
             if (window.isVendaSemEntrega(tipoProposta)) {
@@ -3579,6 +3935,14 @@ ${dica}`;
                 bairro: document.getElementById('f-bairro').value,
                 cidade: document.getElementById('f-cidade').value,
                 total: totalProposta,
+                cotacaoDolarValor: Number(cotacaoDolar.valor),
+                cotacaoDolarTexto: window.formatCotacaoDolar(cotacaoDolar.valor),
+                cotacaoDolarDataHora: cotacaoDolar.dataHoraTexto || window.dataHoraCambioTexto(),
+                cotacaoDolarDataISO: cotacaoDolar.dataHoraISO || new Date().toISOString(),
+                cotacaoDolarFonte: cotacaoDolar.fonte || 'Cotação informada',
+                cotacaoDolarOrigem: cotacaoDolar.origem || 'online',
+                valorEquivalenteUsd,
+                clausulaCambial,
                 investimento: isInvestidor ? investimento : '',
                 rentabilidadeMensalPct: isInvestidor ? 2.25 : '',
                 prazoMeses: isInvestidor ? prazoMeses : '',
@@ -3727,6 +4091,17 @@ ${dica}`;
                 document.getElementById('f-bairro').value = p.bairro || '';
                 document.getElementById('f-cidade').value = p.cidade || '';
                 document.getElementById('f-total').value = p.total;
+                if (document.getElementById('f-cotacao-dolar') && window.parseCotacaoDolar(p.cotacaoDolarValor || p.cotacaoDolar)) {
+                    document.getElementById('f-cotacao-dolar').value = Number(window.parseCotacaoDolar(p.cotacaoDolarValor || p.cotacaoDolar)).toLocaleString('pt-BR', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+                    window.cotacaoDolarAtual = {
+                        valor: window.parseCotacaoDolar(p.cotacaoDolarValor || p.cotacaoDolar),
+                        dataHoraISO: p.cotacaoDolarDataISO || new Date().toISOString(),
+                        dataHoraTexto: p.cotacaoDolarDataHora || p.cotacaoDolarDataHoraTexto || window.dataHoraCambioTexto(),
+                        fonte: p.cotacaoDolarFonte || 'Cotação registrada na proposta',
+                        origem: p.cotacaoDolarOrigem || 'historico'
+                    };
+                    window.atualizarResumoCotacaoDolar();
+                }
                 document.getElementById('f-email').value = p.email || '';
                 document.getElementById('f-tel').value = p.tel || '';
                 if (document.getElementById('f-inclui-instalacao')) {
