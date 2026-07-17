@@ -503,7 +503,7 @@
         /* ——— Modalidades de proposta ——— */
         .proposal-type-card { margin: 8px 0 22px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); }
         .proposal-type-title { margin: 0 0 12px; font-size: 0.8125rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); }
-        .proposal-type-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+        .proposal-type-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
         .proposal-type-option { position: relative; display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: #fff; cursor: pointer; transition: border-color var(--transition), box-shadow var(--transition), background var(--transition); }
         .proposal-type-option:hover { border-color: var(--accent); background: #f8fbff; }
         .proposal-type-option input { width: auto; margin: 3px 0 0; accent-color: var(--accent); }
@@ -538,6 +538,12 @@
         .status-investidor { background: #dbeafe; color: #1d4ed8; }
         .status-comodato { background: #ecfdf5; color: #047857; }
         .status-venda { background: #f1f5f9; color: #475569; }
+
+        .installation-toggle-card.is-disabled { opacity: 0.72; background: #f8fafc; border-color: var(--border); }
+        .installation-toggle-card.is-disabled .premium-switch { cursor: not-allowed; }
+        .installation-toggle-card.is-disabled .premium-switch-slider { background: #cbd5e1; }
+        @media (max-width: 1150px) { .proposal-type-options { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
         @media (max-width: 720px) { .proposal-type-options, .p-investor-grid { grid-template-columns: 1fr; } }
 
         .status-badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
@@ -843,8 +849,12 @@
                         <p class="proposal-type-title">Tipo de proposta</p>
                         <div class="proposal-type-options">
                             <label class="proposal-type-option">
-                                <input type="radio" name="tipo-proposta" value="venda" checked onchange="window.onTipoPropostaChange()">
-                                <span><strong>Venda de carregadores</strong>Proposta comercial tradicional com equipamentos, instalação e valor total.</span>
+                                <input type="radio" name="tipo-proposta" value="venda_entrega" checked onchange="window.onTipoPropostaChange()">
+                                <span><strong>Venda com entrega</strong>Equipamentos enviados ao endereço do cliente, com opção de incluir instalação.</span>
+                            </label>
+                            <label class="proposal-type-option">
+                                <input type="radio" name="tipo-proposta" value="venda_sem_entrega" onchange="window.onTipoPropostaChange()">
+                                <span><strong>Venda sem entrega</strong>Equipamentos preparados para retirada pelo cliente, sem frete e sem instalação.</span>
                             </label>
                             <label class="proposal-type-option">
                                 <input type="radio" name="tipo-proposta" value="investidor" onchange="window.onTipoPropostaChange()">
@@ -1683,7 +1693,7 @@ ${dica}`;
             const fTotal = document.getElementById('f-total');
             if(fTotal) fTotal.value = valorFormatado;
 
-            const tipo = typeof window.getTipoProposta === 'function' ? window.getTipoProposta() : 'venda';
+            const tipo = typeof window.getTipoProposta === 'function' ? window.getTipoProposta() : 'venda_entrega';
             if (tipo === 'investidor' && totalLinhas > 0) {
                 const investimentoInput = document.getElementById('f-investimento');
                 if (investimentoInput && document.activeElement !== investimentoInput) {
@@ -1708,13 +1718,22 @@ ${dica}`;
 
         window.getTipoProposta = function() {
             const checked = document.querySelector('input[name="tipo-proposta"]:checked');
-            return checked ? checked.value : 'venda';
+            return checked ? checked.value : 'venda_entrega';
         }
 
         window.getTipoPropostaLabel = function(tipo = window.getTipoProposta()) {
             if (tipo === 'investidor') return 'Investidor';
             if (tipo === 'comodato') return 'Comodato';
-            return 'Venda';
+            if (tipo === 'venda_sem_entrega') return 'Venda sem entrega';
+            return 'Venda com entrega';
+        }
+
+        window.isVendaSemEntrega = function(tipo = window.getTipoProposta()) {
+            return tipo === 'venda_sem_entrega';
+        }
+
+        window.isVendaComEntrega = function(tipo = window.getTipoProposta()) {
+            return tipo === 'venda' || tipo === 'venda_entrega';
         }
 
         window.getTipoPropostaBadgeClass = function(tipo = window.getTipoProposta()) {
@@ -1767,11 +1786,20 @@ ${dica}`;
 • Condições de pagamento: `;
         }
 
-        window.defaultVendaObs = function() {
-            return `Condições Comerciais e Técnicas:
+        window.defaultVendaObs = function(tipo = window.getTipoProposta()) {
+            if (window.isVendaSemEntrega(tipo)) {
+                return `Condições Comerciais e Técnicas — Venda sem entrega:
 • Validade da proposta: 
-• Serviços Inclusos: O valor desta proposta já contempla a mão de obra de instalação e as melhorias necessárias na rede elétrica.
-• Exclusões (Não inclusos): Obras civis (abertura de valas, concretagem, recomposição de asfalto/piso) e laudos de engenharia estrutural, salvo se expressamente descritos nos itens desta proposta.
+• Serviços Inclusos: equipamentos e acessórios descritos nesta proposta, separados e conferidos para retirada pelo cliente.
+• Retirada: deverá ser realizada no local e prazo informados pela FullCharge, mediante agendamento.
+• Não inclusos: frete, transporte, descarga, instalação, obras civis, adequações elétricas e laudos técnicos.
+• Garantia: 
+• Condições de pagamento: `;
+            }
+            return `Condições Comerciais e Técnicas — Venda com entrega:
+• Validade da proposta: 
+• Serviços Inclusos: equipamentos e acessórios descritos nesta proposta, com entrega no endereço informado. Quando a instalação estiver ativada, também contempla a mão de obra e o escopo técnico descrito.
+• Exclusões (Não inclusos): obras civis, adequações não descritas, descarga especial e laudos técnicos, salvo quando expressamente incluídos.
 • Garantia: 
 • Condições de pagamento: `;
         }
@@ -1780,6 +1808,7 @@ ${dica}`;
             const tipo = window.getTipoProposta();
             const isInvestidor = tipo === 'investidor';
             const isComodato = tipo === 'comodato';
+            const isSemEntrega = window.isVendaSemEntrega(tipo);
             const formTitle = document.getElementById('form-title-proposta');
             const totalField = document.getElementById('f-total-field');
             const totalLabel = document.getElementById('f-total-label');
@@ -1789,7 +1818,9 @@ ${dica}`;
             const obs = document.getElementById('f-obs');
 
             if (formTitle) {
-                formTitle.textContent = isInvestidor ? 'Gerar proposta para investidores' : (isComodato ? 'Gerar proposta de comodato' : 'Gerar proposta de venda');
+                formTitle.textContent = isInvestidor
+                    ? 'Gerar proposta para investidores'
+                    : (isComodato ? 'Gerar proposta de comodato' : (isSemEntrega ? 'Gerar venda sem entrega' : 'Gerar venda com entrega'));
             }
             if (investorFields) investorFields.hidden = !isInvestidor;
             if (itemsWrap) itemsWrap.style.display = '';
@@ -1803,7 +1834,7 @@ ${dica}`;
             if (totalField) totalField.style.display = '';
 
             if (obs && (forceDefaultObs || !obs.value.trim())) {
-                obs.value = isInvestidor ? window.defaultInvestorObs() : (isComodato ? window.defaultComodatoObs() : window.defaultVendaObs());
+                obs.value = isInvestidor ? window.defaultInvestorObs() : (isComodato ? window.defaultComodatoObs() : window.defaultVendaObs(tipo));
             }
 
             const thPreco = document.getElementById('th-preco');
@@ -1813,14 +1844,16 @@ ${dica}`;
             }
             document.querySelectorAll('.td-preco').forEach(td => td.style.display = '');
 
+            if (typeof window.atualizarModoInstalacaoUI === 'function') window.atualizarModoInstalacaoUI();
             if (typeof window.atualizarPrecosItensPorTipo === 'function') window.atualizarPrecosItensPorTipo();
             else if (isInvestidor) window.calcularInvestimento();
             else window.calcularTotal();
         }
 
         window.setTipoProposta = function(tipo) {
-            const tiposPermitidos = ['venda', 'investidor', 'comodato'];
-            const val = tiposPermitidos.includes(tipo) ? tipo : 'venda';
+            const tiposPermitidos = ['venda_entrega', 'venda_sem_entrega', 'investidor', 'comodato'];
+            const normalizado = tipo === 'venda' ? 'venda_entrega' : tipo;
+            const val = tiposPermitidos.includes(normalizado) ? normalizado : 'venda_entrega';
             const input = document.querySelector(`input[name="tipo-proposta"][value="${val}"]`);
             if (input) input.checked = true;
             window.onTipoPropostaChange(false);
@@ -2272,28 +2305,38 @@ ${dica}`;
 
         window.atualizarModoInstalacaoUI = function() {
             const checkbox = document.getElementById('f-inclui-instalacao');
-            const ativo = !!checkbox?.checked;
+            const tipo = window.getTipoProposta();
+            const semEntrega = window.isVendaSemEntrega(tipo);
+            if (checkbox && semEntrega) checkbox.checked = false;
+            if (checkbox) checkbox.disabled = semEntrega;
+            const ativo = !semEntrega && !!checkbox?.checked;
             const card = document.getElementById('installation-toggle-card');
             const status = document.getElementById('f-instalacao-status');
             const prazoLabel = document.getElementById('f-prazo-label');
             const enderecoLabel = document.getElementById('f-end-label');
-            if (card) card.classList.toggle('is-active', ativo);
-            if (status) status.textContent = ativo
-                ? 'Ativado — a proposta exibirá todas as etapas de instalação e ativação.'
-                : 'Desativado — a proposta exibirá somente as etapas de entrega.';
-            if (prazoLabel) prazoLabel.textContent = ativo ? 'Prazo estimado de implantação' : 'Prazo estimado de entrega';
-            if (enderecoLabel) enderecoLabel.textContent = ativo ? 'Local de instalação' : 'Local de entrega';
+            if (card) {
+                card.classList.toggle('is-active', ativo);
+                card.classList.toggle('is-disabled', semEntrega);
+            }
+            if (status) status.textContent = semEntrega
+                ? 'Indisponível — na venda sem entrega, os equipamentos ficam preparados para retirada pelo cliente.'
+                : (ativo
+                    ? 'Ativado — a proposta exibirá todas as etapas de instalação e ativação.'
+                    : 'Desativado — a proposta exibirá somente as etapas de entrega.');
+            if (prazoLabel) prazoLabel.textContent = semEntrega ? 'Prazo estimado para retirada' : (ativo ? 'Prazo estimado de implantação' : 'Prazo estimado de entrega');
+            if (enderecoLabel) enderecoLabel.textContent = semEntrega ? 'Local de retirada' : (ativo ? 'Local de instalação' : 'Local de entrega');
         };
 
-        window.aplicarProcessoNaProposta = function(incluiInstalacao) {
-            const ativo = window.isInstalacaoAtiva(incluiInstalacao);
+        window.aplicarProcessoNaProposta = function(incluiInstalacao, tipoProposta = window.getTipoProposta()) {
+            const semEntrega = window.isVendaSemEntrega(tipoProposta);
+            const ativo = !semEntrega && window.isInstalacaoAtiva(incluiInstalacao);
             const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
             const setHtml = (id, value) => { const el = document.getElementById(id); if (el) el.innerHTML = value; };
 
-            setText('p-resumo-prazo-label', ativo ? 'Implantação estimada' : 'Entrega estimada');
-            setText('cover-location-label', ativo ? 'Local de instalação' : 'Local de entrega');
-            setText('p-end-label', ativo ? 'Local de instalação' : 'Local de entrega');
-            setText('journey-title', ativo ? 'Jornada de implantação' : 'Etapas de entrega');
+            setText('p-resumo-prazo-label', semEntrega ? 'Disponível para retirada' : (ativo ? 'Implantação estimada' : 'Entrega estimada'));
+            setText('cover-location-label', semEntrega ? 'Local de retirada' : (ativo ? 'Local de instalação' : 'Local de entrega'));
+            setText('p-end-label', semEntrega ? 'Local de retirada' : (ativo ? 'Local de instalação' : 'Local de entrega'));
+            setText('journey-title', semEntrega ? 'Etapas de retirada' : (ativo ? 'Jornada de implantação' : 'Etapas de entrega'));
 
             const jornadaInstalacao = [
                 ['01', 'Validação técnica', 'Confirmação do ponto, infraestrutura e condições do projeto.'],
@@ -2309,12 +2352,24 @@ ${dica}`;
                 ['04', 'Transporte', 'Acompanhamento do envio até o destino informado pelo cliente.'],
                 ['05', 'Entrega', 'Recebimento dos equipamentos e início do suporte FullCharge.']
             ];
-            const jornada = ativo ? jornadaInstalacao : jornadaEntrega;
+            const jornadaRetirada = [
+                ['01', 'Confirmação do pedido', 'Validação dos equipamentos, quantidades e condições comerciais.'],
+                ['02', 'Separação', 'Reserva dos equipamentos e acessórios descritos na proposta.'],
+                ['03', 'Conferência', 'Verificação dos itens, documentação e condições de retirada.'],
+                ['04', 'Disponibilidade', 'Aviso ao cliente quando o pedido estiver liberado para retirada.'],
+                ['05', 'Retirada', 'Coleta dos equipamentos pelo cliente ou transportadora contratada por ele.']
+            ];
+            const jornada = semEntrega ? jornadaRetirada : (ativo ? jornadaInstalacao : jornadaEntrega);
             setHtml('journey-grid', jornada.map(([n, titulo, descricao]) =>
                 `<div class="journey-step"><span class="journey-index">${n}</span><strong>${titulo}</strong><span>${descricao}</span></div>`
             ).join(''));
 
-            const entregaveis = ativo ? [
+            const entregaveis = semEntrega ? [
+                'Equipamentos e acessórios descritos na proposta.',
+                'Separação e conferência completa do pedido.',
+                'Documentação comercial para retirada.',
+                'Suporte comercial após a retirada.'
+            ] : (ativo ? [
                 'Equipamentos e acessórios descritos na proposta.',
                 'Instalação, configuração e testes de funcionamento.',
                 'Comissionamento e orientação operacional inicial.',
@@ -2324,33 +2379,40 @@ ${dica}`;
                 'Conferência e preparação completa do pedido.',
                 'Embalagem, documentação e despacho dos equipamentos.',
                 'Suporte comercial após o recebimento.'
-            ];
+            ]);
             setHtml('value-deliverables-list', entregaveis.map(item => `<li>${item}</li>`).join(''));
 
-            setText('value-diff-integrada', ativo ? 'Um único parceiro do projeto à ativação.' : 'Um único parceiro do pedido à entrega.');
-            setText('value-diff-suporte', ativo ? 'Continuidade e segurança depois da instalação.' : 'Continuidade e segurança depois da entrega.');
+            setText('value-diff-integrada', semEntrega ? 'Do pedido à liberação para retirada.' : (ativo ? 'Um único parceiro do projeto à ativação.' : 'Um único parceiro do pedido à entrega.'));
+            setText('value-diff-suporte', semEntrega ? 'Continuidade e segurança depois da retirada.' : (ativo ? 'Continuidade e segurança depois da instalação.' : 'Continuidade e segurança depois da entrega.'));
 
             const nota = document.getElementById('p-resumo-nota');
             const cliente = document.getElementById('p-resumo-cliente')?.textContent || 'o cliente';
-            if (nota) nota.innerHTML = ativo
-                ? `Projeto preparado para <strong id="p-resumo-cliente">${window.escapeHtml(cliente)}</strong>. Prazos definitivos são confirmados após validação técnica e aprovação comercial.`
-                : `Pedido preparado para <strong id="p-resumo-cliente">${window.escapeHtml(cliente)}</strong>. Prazos definitivos são confirmados após aprovação comercial e disponibilidade logística.`;
+            if (nota) nota.innerHTML = semEntrega
+                ? `Pedido preparado para <strong id="p-resumo-cliente">${window.escapeHtml(cliente)}</strong>. A retirada será liberada após confirmação do pagamento e disponibilidade dos itens.`
+                : (ativo
+                    ? `Projeto preparado para <strong id="p-resumo-cliente">${window.escapeHtml(cliente)}</strong>. Prazos definitivos são confirmados após validação técnica e aprovação comercial.`
+                    : `Pedido preparado para <strong id="p-resumo-cliente">${window.escapeHtml(cliente)}</strong>. Prazos definitivos são confirmados após aprovação comercial e disponibilidade logística.`);
 
-            setText('final-title', ativo ? 'Vamos colocar este projeto em movimento?' : 'Vamos colocar este pedido em movimento?');
-            setText('final-lead', ativo
-                ? 'Com a aprovação da proposta, nossa equipe inicia a validação final e organiza a implantação da solução FullCharge.'
-                : 'Com a aprovação da proposta, nossa equipe confirma o pedido, prepara os equipamentos e organiza a entrega FullCharge.');
-            const finalSteps = ativo
-                ? ['Aprovação comercial', 'Validação técnica final', 'Formalização e agenda', 'Implantação e ativação']
-                : ['Aprovação comercial', 'Confirmação do pedido', 'Preparação e expedição', 'Entrega e recebimento'];
+            setText('final-title', semEntrega ? 'Vamos preparar este pedido para retirada?' : (ativo ? 'Vamos colocar este projeto em movimento?' : 'Vamos colocar este pedido em movimento?'));
+            setText('final-lead', semEntrega
+                ? 'Com a aprovação da proposta, nossa equipe confirma o pedido, separa os equipamentos e avisa quando estiverem disponíveis para retirada.'
+                : (ativo
+                    ? 'Com a aprovação da proposta, nossa equipe inicia a validação final e organiza a implantação da solução FullCharge.'
+                    : 'Com a aprovação da proposta, nossa equipe confirma o pedido, prepara os equipamentos e organiza a entrega FullCharge.'));
+            const finalSteps = semEntrega
+                ? ['Aprovação comercial', 'Confirmação do pedido', 'Separação e conferência', 'Liberação para retirada']
+                : (ativo
+                    ? ['Aprovação comercial', 'Validação técnica final', 'Formalização e agenda', 'Implantação e ativação']
+                    : ['Aprovação comercial', 'Confirmação do pedido', 'Preparação e expedição', 'Entrega e recebimento']);
             setHtml('final-steps', finalSteps.map((step, idx) => `<div class="final-step"><b>${String(idx + 1).padStart(2, '0')}</b><span>${step}</span></div>`).join(''));
         };
 
         window.fillPreviewFromData = function(data) {
-            const tipo = ['venda', 'investidor', 'comodato'].includes(data.tipoProposta) ? data.tipoProposta : 'venda';
+            const tipoRaw = data.tipoProposta === 'venda' ? 'venda_entrega' : data.tipoProposta;
+            const tipo = ['venda_entrega', 'venda_sem_entrega', 'investidor', 'comodato'].includes(tipoRaw) ? tipoRaw : 'venda_entrega';
             const isInvestidor = tipo === 'investidor';
             const isComodato = tipo === 'comodato';
-            const incluiInstalacao = data.incluiInstalacao === undefined ? true : window.isInstalacaoAtiva(data.incluiInstalacao);
+            const incluiInstalacao = window.isVendaSemEntrega(tipo) ? false : (data.incluiInstalacao === undefined ? true : window.isInstalacaoAtiva(data.incluiInstalacao));
             const investimentoNumero = window.moneyToNumber(data.investimento || data.total || '0');
             const meses = Math.max(1, parseInt(data.prazoMeses || 12, 10) || 12);
             const rendaMensal = data.rendaMensal || window.formatBRL(investimentoNumero * window.INVESTOR_MONTHLY_RATE);
@@ -2388,8 +2450,8 @@ ${dica}`;
             if (coverId) coverId.textContent = data.id || 'FC-0000';
             if (coverDate) coverDate.textContent = data.data || new Date().toLocaleDateString('pt-BR');
             if (coverCnpj) coverCnpj.textContent = data.cnpj || 'Não informado';
-            if (coverLocation) coverLocation.textContent = endCompleto || data.cidade || data.end || (incluiInstalacao ? 'Local de instalação' : 'Local de entrega');
-            if (coverLocationPill) coverLocationPill.textContent = data.cidade || (data.end ? String(data.end).split(',').slice(-1)[0].trim() : (incluiInstalacao ? 'Local do projeto' : 'Local de entrega'));
+            if (coverLocation) coverLocation.textContent = endCompleto || data.cidade || data.end || (window.isVendaSemEntrega(tipo) ? 'Local de retirada' : (incluiInstalacao ? 'Local de instalação' : 'Local de entrega'));
+            if (coverLocationPill) coverLocationPill.textContent = data.cidade || (data.end ? String(data.end).split(',').slice(-1)[0].trim() : (window.isVendaSemEntrega(tipo) ? 'Local de retirada' : (incluiInstalacao ? 'Local do projeto' : 'Local de entrega')));
             if (coverProductsTitle) coverProductsTitle.textContent = isInvestidor ? 'Resumo da proposta' : 'Pedido da proposta';
             const itensCapa = data.items || [];
             const primeiroItemCapa = itensCapa[0] || {};
@@ -2410,7 +2472,9 @@ ${dica}`;
                 }
             });
             const modalidadeBase = isInvestidor ? 'Investimento' : (isComodato ? 'Comodato' : 'Venda');
-            const modalidadeLabel = `${modalidadeBase} com ${incluiInstalacao ? 'instalação' : 'entrega'}`;
+            const modalidadeLabel = window.isVendaSemEntrega(tipo)
+                ? 'Venda sem entrega'
+                : (incluiInstalacao ? `${modalidadeBase} com instalação` : `${modalidadeBase} com entrega`);
             const setTextPremium = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
             setTextPremium('p-resumo-modalidade', modalidadeLabel);
             setTextPremium('p-resumo-equipamentos', `${totalEquipamentos || itensResumo.length || 0} ${(totalEquipamentos || itensResumo.length) === 1 ? 'unidade' : 'unidades'}`);
@@ -2419,10 +2483,12 @@ ${dica}`;
             setTextPremium('p-resumo-garantia', data.garantia || '12 meses');
             setTextPremium('p-resumo-investimento', data.total || data.investimento || window.formatBRL(investimentoNumero));
             setTextPremium('p-resumo-cliente', data.cli || 'o cliente');
-            setTextPremium('value-page-lead', incluiInstalacao
-                ? `Para ${data.cli || 'este projeto'}, a FullCharge reúne equipamento, implantação, configuração e suporte em uma única jornada comercial.`
-                : `Para ${data.cli || 'este pedido'}, a FullCharge reúne equipamentos, preparação, expedição e suporte em uma jornada de entrega organizada.`);
-            window.aplicarProcessoNaProposta(incluiInstalacao);
+            setTextPremium('value-page-lead', window.isVendaSemEntrega(tipo)
+                ? `Para ${data.cli || 'este pedido'}, a FullCharge reúne equipamentos, conferência e liberação em uma jornada de retirada simples e organizada.`
+                : (incluiInstalacao
+                    ? `Para ${data.cli || 'este projeto'}, a FullCharge reúne equipamento, implantação, configuração e suporte em uma única jornada comercial.`
+                    : `Para ${data.cli || 'este pedido'}, a FullCharge reúne equipamentos, preparação, expedição e suporte em uma jornada de entrega organizada.`));
+            window.aplicarProcessoNaProposta(incluiInstalacao, tipo);
             setTextPremium('final-validade', `Proposta válida por ${data.validade || '5 dias'}`);
             setTextPremium('final-consultor', data.consultor || 'Equipe FullCharge');
             setTextPremium('final-contato', [data.whatsapp, data.email, 'www.fullcharge.com.br'].filter(Boolean).join(' · '));
@@ -3486,9 +3552,13 @@ ${dica}`;
             const rendaMensal = document.getElementById('f-renda-mensal')?.value || '';
             const retornoProjetadoPeriodo = document.getElementById('f-renda-periodo')?.value || '';
             const totalProposta = isInvestidor ? investimento : document.getElementById('f-total').value;
-            const incluiInstalacao = !!document.getElementById('f-inclui-instalacao')?.checked;
+            const incluiInstalacao = !window.isVendaSemEntrega(tipoProposta) && !!document.getElementById('f-inclui-instalacao')?.checked;
             let observacoesProposta = document.getElementById('f-obs').value;
-            if (!incluiInstalacao) {
+            if (window.isVendaSemEntrega(tipoProposta)) {
+                observacoesProposta = observacoesProposta
+                    .replace('• Serviços Inclusos: O valor desta proposta já contempla a mão de obra de instalação e as melhorias necessárias na rede elétrica.', '• Serviços Inclusos: equipamentos e acessórios descritos nesta proposta, separados e conferidos para retirada pelo cliente.')
+                    .replace('• Serviços Inclusos: O valor desta proposta contempla os equipamentos e acessórios descritos, com entrega conforme condições informadas.', '• Serviços Inclusos: equipamentos e acessórios descritos nesta proposta, separados e conferidos para retirada pelo cliente.');
+            } else if (!incluiInstalacao) {
                 observacoesProposta = observacoesProposta.replace(
                     '• Serviços Inclusos: O valor desta proposta já contempla a mão de obra de instalação e as melhorias necessárias na rede elétrica.',
                     '• Serviços Inclusos: O valor desta proposta contempla os equipamentos e acessórios descritos, com entrega conforme condições informadas.'
