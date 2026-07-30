@@ -856,7 +856,32 @@
         .contract-notice { margin:10px 0; padding:10px 12px; border-radius:8px; border:1px solid #bfdbfe; background:#eff6ff; color:#1e3a5f; font-size:8.5pt; }
         .contract-domain-notice { margin:10px 0; padding:10px 12px; border-radius:8px; border:1px solid #60a5fa; background:linear-gradient(180deg,#eff6ff,#f8fbff); color:#0f2e58; }
         .contract-domain-notice strong { display:block; margin-bottom:3px; color:#0056ff; font-size:8pt; letter-spacing:.08em; text-transform:uppercase; }
-        .contract-clause { margin-bottom:8px; break-inside:avoid; page-break-inside:avoid; }
+        .contract-object-notice { margin:9px 0 10px; padding:10px 12px; border:1px solid #bfd4f5; border-left:4px solid #0056ff; border-radius:7px; background:#f7faff; color:#172033; }
+        .contract-object-notice > strong { display:block; margin-bottom:5px; color:#0056ff; font-size:7.6pt; letter-spacing:.09em; text-transform:uppercase; }
+        .contract-object-notice p { margin:0; color:#172033; font-size:8.2pt; line-height:1.42; font-weight:650; }
+        .contract-object-notice small { display:block; margin-top:4px; color:#64748b; font-size:6.8pt; line-height:1.35; }
+
+        .contract-cover-page .contract-cover-title { margin:12mm 0 4mm; font-size:23pt; max-width:165mm; }
+        .contract-cover-page .contract-cover-subtitle { margin:0 0 8mm; font-size:10pt; }
+        .contract-cover-page .contract-summary-grid { gap:7px; margin-bottom:10px; }
+        .contract-cover-page .contract-summary-card { min-height:43px; padding:7px 9px; }
+        .contract-cover-page .contract-summary-card small { font-size:6.2pt; }
+        .contract-cover-page .contract-summary-card strong { font-size:8.4pt; line-height:1.22; }
+        .contract-cover-page .contract-object-notice { margin:8px 0; padding:9px 11px; }
+        .contract-cover-page .contract-domain-notice { margin:8px 0; padding:9px 11px; font-size:8.2pt; }
+        .contract-cover-page .contract-cover-note { margin-top:10px; padding-top:9px; border-top:1px solid #dbe5f0; color:#64748b; font-size:7.4pt; line-height:1.45; }
+        .contract-parties-page .contract-party-box { padding:10px 12px; margin-bottom:10px; font-size:8.3pt; line-height:1.42; }
+        .contract-parties-page .contract-summary-grid { margin:10px 0 12px; }
+        .contract-parties-page .contract-summary-card { min-height:45px; padding:8px 10px; }
+        .contract-parties-page .contract-object-notice { margin:10px 0; }
+        .contract-clause { margin-bottom:8px; break-inside:auto; page-break-inside:auto; }
+        .contract-clause h3 { break-after:avoid; page-break-after:avoid; }
+        .contract-clause-page .contract-page-body { padding-bottom:11mm; }
+        .contract-page-title-row.contract-continuation-title { margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid #e2e8f0; }
+        .contract-page-title-row.contract-continuation-title h2 { font-size:11pt; margin-bottom:0; }
+        .contract-page-title-row.contract-continuation-title .contract-kicker { display:none; }
+        .contract-pagination-stage { position:fixed !important; left:-10000px !important; top:0 !important; width:210mm !important; min-width:210mm !important; display:block !important; visibility:hidden !important; pointer-events:none !important; z-index:-99999 !important; }
+        .contract-pagination-stage .contract-page { margin:0 !important; box-shadow:none !important; }
         .contract-clause h3 { margin:0 0 4px; color:#000b18; font-size:9pt; line-height:1.25; font-weight:800; text-transform:uppercase; }
         .contract-clause p { margin:0 0 4px; text-align:justify; }
         .contract-clause--domain { padding:9px 10px; border:1px solid #93c5fd; border-left:4px solid #0056ff; border-radius:7px; background:#f8fbff; }
@@ -4811,7 +4836,72 @@ ${dica}`;
             return [p?.end, p?.bairro, p?.cidade].filter(Boolean).join(', ');
         };
 
+        window.normalizeContractItems = function(proposal) {
+            const p = proposal || {};
+            const source = p.items ?? p.itens ?? p.produtos ?? p.equipamentos ?? [];
+            let list = [];
+            if (Array.isArray(source)) list = source;
+            else if (source && typeof source === 'object') list = Object.values(source);
+            else if (source) list = [source];
+
+            return list.map((raw, index) => {
+                const item = (raw && typeof raw === 'object') ? raw : { g: String(raw || '') };
+                const suppliedName = String(item.g ?? item.nome ?? item.produto ?? item.modelo ?? item.equipamento ?? '').trim();
+                const catalogRaw = Object.values(window.produtosCatalogo || {}).find(prod => {
+                    const prodName = String(prod?.nome || '').trim();
+                    const prodCode = String(prod?.codigo || '').trim();
+                    const itemCode = String(item.codigo || item.code || '').trim();
+                    return (suppliedName && prodName === suppliedName) || (itemCode && prodCode === itemCode);
+                });
+                const catalog = window.enrichCatalogProduct ? window.enrichCatalogProduct(catalogRaw || { nome: suppliedName }) : (catalogRaw || { nome: suppliedName });
+                const station = window.findStationSpec ? window.findStationSpec(item.codigo || catalog?.codigo || suppliedName) : null;
+                const name = suppliedName || String(catalog?.nome || station?.nome || `Equipamento ${index + 1}`).trim();
+                const qty = item.q ?? item.qtd ?? item.quantidade ?? item.qtde ?? 1;
+                const description = String(item.d ?? item.descricaoTecnica ?? item.especificacoes ?? item.escopo ?? catalog?.escopo ?? station?.escopo ?? '').trim();
+                const price = item.p ?? item.preco ?? item.valor ?? item.valorUnitario ?? item.precoUnitario ?? '';
+                const technical = item.fichaTecnica || catalog?.fichaTecnica || (station ? {
+                    potencia: station.potencia, tensao: station.tensao, corrente: station.corrente,
+                    disjuntor: station.disjuntor, cabeamento: station.cabeamento, dr: station.dr,
+                    cabo: station.cabo, conector: station.conector, protecao: station.protecao,
+                    comunicacao: station.comunicacao, demanda: station.demanda,
+                    garantia: station.garantia, plataforma: station.plataforma
+                } : {});
+                return {
+                    ...item,
+                    q: String(qty || 1),
+                    g: name,
+                    d: description,
+                    p: String(price || ''),
+                    codigo: String(item.codigo || item.code || catalog?.codigo || station?.codigo || '').trim(),
+                    fichaTecnica: technical || {}
+                };
+            }).filter(item => item.g);
+        };
+
+        window.contractItemCatalogData = function(item) {
+            const catalogRaw = Object.values(window.produtosCatalogo || {}).find(prod => {
+                const prodName = String(prod?.nome || '').trim();
+                const prodCode = String(prod?.codigo || '').trim();
+                return prodName === String(item?.g || '').trim() || (item?.codigo && prodCode === String(item.codigo).trim());
+            });
+            const product = window.enrichCatalogProduct ? window.enrichCatalogProduct(catalogRaw || { nome:item?.g || '', codigo:item?.codigo || '' }) : (catalogRaw || {});
+            const station = window.findStationSpec ? window.findStationSpec(item?.codigo || item?.g || '') : null;
+            return { product: product || {}, station: station || null, technical: item?.fichaTecnica || product?.fichaTecnica || station || {} };
+        };
+
+        window.contractEquipmentSummary = function(items) {
+            const list = Array.isArray(items) ? items : [];
+            if (!list.length) return 'Nenhum equipamento foi identificado nos dados da proposta.';
+            return list.map(item => {
+                const code = item.codigo ? ` — ${item.codigo}` : '';
+                return `${item.q || 1}x ${item.g}${code}`;
+            }).join('; ');
+        };
+
         window.contractPowerFromItem = function(item) {
+            const data = window.contractItemCatalogData(item);
+            const declared = data.technical?.potencia || data.station?.potencia || '';
+            if (declared) return String(declared).replace(/\s*kW\s*$/i, '').trim() + ' kW';
             const text = `${item?.g || ''} ${item?.d || ''}`;
             const matches = [...text.matchAll(/(\d+(?:[.,]\d+)?)\s*kW\b/gi)];
             if (!matches.length) return 'Conforme especificação';
@@ -4819,6 +4909,9 @@ ${dica}`;
         };
 
         window.contractConnectorFromItem = function(item) {
+            const data = window.contractItemCatalogData(item);
+            const declared = data.technical?.conector || data.station?.conector || '';
+            if (declared) return String(declared);
             const text = `${item?.g || ''} ${item?.d || ''}`;
             const found = text.match(/\b(CCS2|CCS 2|Tipo 2|Type 2|GB\/T|CHAdeMO)\b/ig);
             return found?.length ? [...new Set(found.map(v => v.toUpperCase().replace('CCS 2','CCS2')))].join(' / ') : 'Conforme especificação';
@@ -4908,6 +5001,8 @@ ${dica}`;
 
         window.contractViewData = function() {
             const p = window._contractProposal || {};
+            const items = window.normalizeContractItems(p);
+            const equipmentSummary = window.contractEquipmentSummary(items);
             const type = p.tipoProposta === 'venda' ? 'venda_entrega' : (p.tipoProposta || 'venda_entrega');
             const noDelivery = type === 'venda_sem_entrega';
             const installation = !noDelivery && window.isInstalacaoAtiva(p.incluiInstalacao);
@@ -4933,6 +5028,8 @@ ${dica}`;
             };
             return {
                 proposal: p,
+                items,
+                equipmentSummary,
                 type,
                 noDelivery,
                 installation,
@@ -4999,6 +5096,8 @@ ${dica}`;
             out = out.replace('[5]', '5');
             out = out.replace('[10]', '10');
             out = out.replace('[90]', '90');
+            if (out.startsWith('2.1.')) out += ` Para esta contratação, os equipamentos adquiridos são: ${d.equipmentSummary}.`;
+            if (out.startsWith('3.1.')) out += ` A relação individualizada consta do Quadro do Objeto Adquirido e do Anexo I deste instrumento.`;
             if (out.startsWith('5.1.')) out += ` Condição preenchida: ${d.payment}.`;
             if (out.startsWith('5.4.')) out += d.currency
                 ? ' Para esta contratação, a variação cambial foi marcada como aplicável nos limites da proposta comercial.'
@@ -5028,12 +5127,11 @@ ${dica}`;
             const mode = d.noDelivery
                 ? 'Somente fornecimento — retirada pelo cliente'
                 : (d.installation ? 'Fornecimento + entrega + instalação e comissionamento' : 'Fornecimento + entrega');
-            const location = window.contractProposalAddress(p) || d.client.endereco;
-            return `<section class="contract-page">
+            return `<section class="contract-page contract-cover-page">
                 ${window.contractPageHeader(d, 1, 'Contrato comercial')}
                 <div class="contract-cover-title">Contrato de fornecimento de estação de recarga veicular</div>
                 <div class="contract-cover-subtitle">Com reserva de domínio</div>
-                <p class="contract-kicker">Quadro-resumo da contratação</p>
+                <p class="contract-kicker">Resumo da contratação</p>
                 <div class="contract-summary-grid">
                     <div class="contract-summary-card"><small>Contrato</small><strong>${window.contractEscape(d.contractNumber)}</strong></div>
                     <div class="contract-summary-card"><small>Proposta integrante</small><strong>${window.contractEscape(p.id || '—')} · ${window.contractEscape(p.data || '—')}</strong></div>
@@ -5042,24 +5140,61 @@ ${dica}`;
                     <div class="contract-summary-card"><small>Modalidade</small><strong>${window.contractEscape(mode)}</strong></div>
                     <div class="contract-summary-card"><small>Preço total</small><strong>${window.contractEscape(d.total)}</strong></div>
                     <div class="contract-summary-card"><small>Pagamento</small><strong>${window.contractEscape(d.payment)}</strong></div>
-                    <div class="contract-summary-card"><small>Frete / retirada</small><strong>${window.contractEscape(d.freight)}</strong></div>
-                    <div class="contract-summary-card"><small>Prazo</small><strong>${window.contractEscape(d.deliveryDeadline)}</strong></div>
-                    <div class="contract-summary-card"><small>Garantia</small><strong>${window.contractEscape(d.guarantee)}</strong></div>
-                    <div class="contract-summary-card"><small>Local</small><strong>${window.contractEscape(location)}</strong></div>
-                    <div class="contract-summary-card"><small>Variação cambial</small><strong>${d.currency ? 'Aplicável conforme proposta' : 'Não aplicável'}</strong></div>
+                    <div class="contract-summary-card"><small>Prazo de entrega</small><strong>${window.contractEscape(d.deliveryDeadline)}</strong></div>
+                </div>
+                <div class="contract-object-notice">
+                    <strong>Equipamentos objeto desta compra</strong>
+                    <p>${window.contractEscape(d.equipmentSummary)}</p>
+                    <small>A identificação completa, quantidades, códigos, potência, conectores, valores e números de série constam no Quadro do Objeto Adquirido.</small>
                 </div>
                 <div class="contract-domain-notice">
                     <strong>Reserva de domínio</strong>
                     Até a quitação integral do preço, a propriedade das estações e acessórios móveis identificáveis permanece com a FULLCHARGE. Os riscos passam ao CONTRATANTE desde a entrega.
                 </div>
-                <p class="contract-kicker">Qualificação das partes</p>
-                <div class="contract-party-box"><strong>CONTRATADA / VENDEDORA:</strong> ${window.contractEscape(d.company.razao)}, nome fantasia FULLCHARGE, inscrita no CNPJ sob nº ${window.contractEscape(d.company.cnpj)}, com sede em ${window.contractEscape(d.company.endereco)}, representada por ${window.contractEscape(d.company.representante)}, CPF ${window.contractEscape(d.company.representanteCpf)}, ${window.contractEscape(d.company.representanteCargo)}.</div>
-                <div class="contract-party-box"><strong>CONTRATANTE / COMPRADOR:</strong> ${window.contractEscape(d.client.nome)}, inscrito(a) no CPF/CNPJ sob nº ${window.contractEscape(d.client.documento)}, com endereço/sede em ${window.contractEscape(d.client.endereco)}, representado(a) por ${window.contractEscape(d.client.representante)}, CPF ${window.contractEscape(d.client.representanteCpf)}, ${window.contractEscape(d.client.representanteCargo)}.</div>
-                <div class="contract-notice">A proposta comercial ${window.contractEscape(p.id || '')} integra este contrato. Serviços, materiais e obras não descritos expressamente não estão incluídos.</div>
+                <div class="contract-cover-note">
+                    A qualificação completa das Partes, o local de entrega ou instalação e as demais condições específicas constam na página seguinte. A proposta comercial integra este instrumento.
+                </div>
                 ${window.contractPageFooter(d, 1, totalPages)}
             </section>`;
         };
 
+        window.renderContractPartiesPage = function(d, pageNumber, totalPages) {
+            const p = d.proposal;
+            const location = window.contractProposalAddress(p) || d.client.endereco;
+            const installationStatus = d.installation ? 'Incluída conforme escopo e proposta' : 'Não incluída, salvo item expresso';
+            return `<section class="contract-page contract-parties-page">
+                ${window.contractPageHeader(d, pageNumber, 'Identificação das partes e condições')}
+                <main class="contract-page-body">
+                    <div class="contract-page-title-row">
+                        <span class="contract-kicker">Instrumento contratual</span>
+                        <h2>Qualificação das Partes</h2>
+                        <p>Identificação da vendedora e do comprador vinculados ao contrato ${window.contractEscape(d.contractNumber)}.</p>
+                    </div>
+                    <div class="contract-party-box"><strong>CONTRATADA / VENDEDORA:</strong> ${window.contractEscape(d.company.razao)}, nome fantasia FULLCHARGE, inscrita no CNPJ sob nº ${window.contractEscape(d.company.cnpj)}, com sede em ${window.contractEscape(d.company.endereco)}, representada por ${window.contractEscape(d.company.representante)}, CPF ${window.contractEscape(d.company.representanteCpf)}, ${window.contractEscape(d.company.representanteCargo)}.</div>
+                    <div class="contract-party-box"><strong>CONTRATANTE / COMPRADOR:</strong> ${window.contractEscape(d.client.nome)}, inscrito(a) no CPF/CNPJ sob nº ${window.contractEscape(d.client.documento)}, com endereço/sede em ${window.contractEscape(d.client.endereco)}, representado(a) por ${window.contractEscape(d.client.representante)}, CPF ${window.contractEscape(d.client.representanteCpf)}, ${window.contractEscape(d.client.representanteCargo)}.</div>
+                    <p class="contract-kicker">Condições específicas</p>
+                    <div class="contract-summary-grid">
+                        <div class="contract-summary-card"><small>Local de entrega / instalação</small><strong>${window.contractEscape(location)}</strong></div>
+                        <div class="contract-summary-card"><small>Frete / retirada</small><strong>${window.contractEscape(d.freight)}</strong></div>
+                        <div class="contract-summary-card"><small>Garantia indicada</small><strong>${window.contractEscape(d.guarantee)}</strong></div>
+                        <div class="contract-summary-card"><small>Instalação</small><strong>${window.contractEscape(installationStatus)}</strong></div>
+                        <div class="contract-summary-card"><small>Plataforma / conectividade</small><strong>${window.contractEscape(d.platform)}</strong></div>
+                        <div class="contract-summary-card"><small>Variação cambial</small><strong>${d.currency ? 'Aplicável nos limites da proposta' : 'Não aplicável'}</strong></div>
+                    </div>
+                    <div class="contract-object-notice">
+                        <strong>Objeto específico</strong>
+                        <p>${window.contractEscape(d.equipmentSummary)}</p>
+                        <small>O quadro detalhado dos bens adquiridos está na página seguinte e integra o objeto deste contrato para todos os fins.</small>
+                    </div>
+                    <div class="contract-notice">A proposta comercial ${window.contractEscape(p.id || '')}, seus anexos, especificações, valores e observações integram este contrato. Serviços, materiais e obras não descritos expressamente não estão incluídos.</div>
+                    <div class="contract-domain-notice">
+                        <strong>Regra de propriedade</strong>
+                        Os equipamentos identificados permanecem sob reserva de domínio em favor da FULLCHARGE até o pagamento integral, conforme a Cláusula Décima Terceira.
+                    </div>
+                </main>
+                ${window.contractPageFooter(d, pageNumber, totalPages)}
+            </section>`;
+        };
 
         window.renderContractClausesPage = function(d, pageNumber, startIndex, endIndex, totalPages) {
             const selected = window.FC_CONTRACT_CLAUSES.slice(startIndex, endIndex);
@@ -5093,45 +5228,57 @@ ${dica}`;
 
 
         window.renderContractAnnexOne = function(d, pageNumber, totalPages) {
-            const items = Array.isArray(d.proposal.items) ? d.proposal.items : [];
+            const items = Array.isArray(d.items) ? d.items : window.normalizeContractItems(d.proposal);
             const rows = items.length ? items.map((item, index) => {
-                const product = window.enrichCatalogProduct(Object.values(window.produtosCatalogo || {}).find(p => p.nome === item.g) || { nome:item.g });
-                const description = String(item.d || product.escopo || item.g || 'Equipamento').trim();
-                const group = String(item.g || product.nome || '').trim();
+                const data = window.contractItemCatalogData(item);
+                const technical = data.technical || {};
+                const description = String(item.d || data.product?.escopo || data.station?.escopo || '').trim();
+                const group = String(item.g || data.product?.nome || data.station?.nome || 'Equipamento').trim();
+                const code = String(item.codigo || data.product?.codigo || data.station?.codigo || 'Não informado').trim();
                 const power = window.contractPowerFromItem(item);
                 const connectors = window.contractConnectorFromItem(item);
+                const identity = [
+                    technical.tensao ? `Tensão: ${technical.tensao}` : '',
+                    technical.corrente ? `Corrente: ${technical.corrente}` : '',
+                    technical.protecao ? `Proteção: ${technical.protecao}` : '',
+                    technical.comunicacao ? `Comunicação: ${technical.comunicacao}` : ''
+                ].filter(Boolean).join(' · ');
                 return `<tr>
                     <td>${index + 1}</td>
                     <td>${window.contractEscape(item.q || '1')}</td>
-                    <td><strong>${window.contractEscape(group || description)}</strong>${description && description !== group ? `<span>${window.contractEscape(description)}</span>` : ''}</td>
+                    <td><strong>${window.contractEscape(group)}</strong><span>Código/modelo: ${window.contractEscape(code)}</span>${description ? `<span>${window.contractEscape(description)}</span>` : ''}${identity ? `<span>${window.contractEscape(identity)}</span>` : ''}</td>
                     <td>${window.contractEscape(power)}</td>
                     <td>${window.contractEscape(connectors)}</td>
-                    <td>A preencher na entrega</td>
+                    <td>A preencher na entrega / nota fiscal</td>
                     <td>${window.contractEscape(item.p || 'Conforme proposta')}</td>
                 </tr>`;
-            }).join('') : `<tr><td colspan="7">Nenhum item identificado na proposta. Preencher antes da assinatura.</td></tr>`;
+            }).join('') : `<tr><td colspan="7"><strong>Nenhum equipamento foi localizado.</strong> O contrato não deve ser assinado até que os itens da proposta sejam recuperados ou preenchidos.</td></tr>`;
 
             const modality = d.noDelivery
                 ? 'Venda sem entrega: retirada e transporte sob responsabilidade do CONTRATANTE.'
                 : (d.installation ? 'Venda com entrega e instalação contratada.' : 'Venda com entrega, sem instalação.');
 
             return `<section class="contract-page">
-                ${window.contractPageHeader(d, pageNumber, 'Anexo I — Equipamentos e condições comerciais')}
+                ${window.contractPageHeader(d, pageNumber, 'Quadro do objeto adquirido — equipamentos')}
                 <main class="contract-page-body">
                     <div class="contract-page-title-row">
-                        <span class="contract-kicker">Anexo I</span>
-                        <h2>Equipamentos e condições comerciais</h2>
-                        <p>Este anexo é preenchido automaticamente a partir da proposta comercial nº ${window.contractEscape(d.proposal.id || '—')}.</p>
+                        <span class="contract-kicker">Objeto específico da compra</span>
+                        <h2>Equipamentos adquiridos</h2>
+                        <p>Esta relação identifica de forma expressa os bens objeto da compra vinculada à proposta comercial nº ${window.contractEscape(d.proposal.id || '—')}.</p>
                     </div>
                     <div class="contract-summary-grid compact">
                         <div><span>Contratante</span><strong>${window.contractEscape(d.client.nome)}</strong></div>
                         <div><span>Documento</span><strong>${window.contractEscape(d.client.documento)}</strong></div>
                         <div><span>Valor total</span><strong>${window.contractEscape(d.total)}</strong></div>
                     </div>
+                    <div class="contract-domain-notice">
+                        <strong>Bens submetidos à reserva de domínio</strong>
+                        Os equipamentos relacionados abaixo permanecem de propriedade da FULLCHARGE até a quitação integral do preço, sem prejuízo da transferência dos riscos desde a entrega.
+                    </div>
                     <div class="contract-table-wrap">
                         <table class="contract-table contract-items-table">
                             <thead><tr>
-                                <th>Item</th><th>Qtd.</th><th>Produto / modelo</th><th>Potência</th><th>Conectores</th><th>Nº de série</th><th>Valor</th>
+                                <th>Item</th><th>Qtd.</th><th>Equipamento / modelo adquirido</th><th>Potência</th><th>Conector</th><th>Nº de série</th><th>Valor</th>
                             </tr></thead>
                             <tbody>${rows}</tbody>
                         </table>
@@ -5154,7 +5301,7 @@ ${dica}`;
                         </section>
                     </div>
                     <div class="contract-note">
-                        A proposta comercial, seus valores, especificações e observações integram este contrato. Em caso de divergência, prevalece a ordem definida na Cláusula Primeira.
+                        Os equipamentos acima compõem o objeto específico deste contrato. A nota fiscal e o Termo de Entrega deverão repetir o modelo e registrar os respectivos números de série.
                     </div>
                 </main>
                 ${window.contractPageFooter(d, pageNumber, totalPages)}
@@ -5166,7 +5313,7 @@ ${dica}`;
             const installedText = d.installation
                 ? (d.installScope || 'Instalação conforme proposta comercial, projeto e condições técnicas do local.')
                 : 'INSTALAÇÃO NÃO CONTRATADA. O fornecimento não inclui instalação, montagem, comissionamento, obras civis, adequações elétricas ou serviços de concessionária, salvo item expresso na proposta.';
-            const scopeItems = (Array.isArray(d.proposal.items) ? d.proposal.items : []).map(item => {
+            const scopeItems = (Array.isArray(d.items) ? d.items : window.normalizeContractItems(d.proposal)).map(item => {
                 const product = window.enrichCatalogProduct(Object.values(window.produtosCatalogo || {}).find(p => p.nome === item.g) || { nome:item.g });
                 return {
                     nome: item.g || product.nome || 'Equipamento',
@@ -5297,24 +5444,158 @@ ${dica}`;
         };
 
 
+        window.contractSignatureSectionHtml = function(d) {
+            return `<section class="contract-final-signatures">
+                <p>E, por estarem justas e contratadas, as Partes assinam este instrumento, inclusive por meio eletrônico, juntamente com as testemunhas abaixo.</p>
+                <p class="contract-sign-date">${window.contractEscape(d.signCity)}, ${window.contractEscape(d.signDate)}.</p>
+                <div class="contract-signature-grid">
+                    <div><span></span><strong>${window.contractEscape(d.company.razao)}</strong><small>FULLCHARGE / CONTRATADA</small></div>
+                    <div><span></span><strong>${window.contractEscape(d.client.nome)}</strong><small>CONTRATANTE</small></div>
+                    <div><span></span><strong>${window.contractEscape(d.witness1 || 'TESTEMUNHA 1')}</strong><small>CPF: ${window.contractEscape(d.witness1Cpf || '________________')}</small></div>
+                    <div><span></span><strong>${window.contractEscape(d.witness2 || 'TESTEMUNHA 2')}</strong><small>CPF: ${window.contractEscape(d.witness2Cpf || '________________')}</small></div>
+                </div>
+            </section>`;
+        };
+
+        window.createContractClausePageElement = function(d, continuation = false) {
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = `<section class="contract-page contract-clause-page">
+                ${window.contractPageHeader(d, 0, 'Contrato de fornecimento')}
+                <main class="contract-page-body">
+                    <div class="contract-page-title-row${continuation ? ' contract-continuation-title' : ''}">
+                        <span class="contract-kicker">Instrumento contratual</span>
+                        <h2>${continuation ? 'Condições gerais — continuação' : 'Condições gerais'}</h2>
+                    </div>
+                    <div class="contract-clauses"></div>
+                </main>
+                ${window.contractPageFooter(d, 0, 0)}
+            </section>`;
+            const page = wrapper.firstElementChild;
+            const logo = page.querySelector('[data-contract-logo]');
+            if (logo && window.FC_CONTRACT_LOGO_SRC) logo.src = window.FC_CONTRACT_LOGO_SRC;
+            return page;
+        };
+
+        window.contractPageHasOverflow = function(page) {
+            if (!page) return false;
+            const footer = page.querySelector('.contract-page-footer');
+            const body = page.querySelector('.contract-page-body');
+            if (!footer || !body) return false;
+            const footerTop = footer.getBoundingClientRect().top;
+            const bodyBottom = body.getBoundingClientRect().bottom;
+            return bodyBottom > footerTop - 8;
+        };
+
+        window.paginateContractClauses = function(d) {
+            const stage = document.createElement('div');
+            stage.className = 'contract-document contract-pagination-stage';
+            document.body.appendChild(stage);
+
+            const pages = [];
+            let currentPage = null;
+            let currentContainer = null;
+
+            const startPage = (continuation = false) => {
+                currentPage = window.createContractClausePageElement(d, continuation);
+                stage.appendChild(currentPage);
+                pages.push(currentPage);
+                currentContainer = currentPage.querySelector('.contract-clauses');
+                return currentPage;
+            };
+
+            const createClauseSection = (clause, continuation = false) => {
+                const section = document.createElement('section');
+                const isDomain = String(clause.title || '').includes('DÉCIMA TERCEIRA');
+                section.className = `contract-clause${isDomain ? ' contract-clause--domain' : ''}`;
+                const h3 = document.createElement('h3');
+                h3.textContent = `${clause.title || ''}${continuation ? ' — continuação' : ''}`;
+                section.appendChild(h3);
+                return section;
+            };
+
+            startPage(false);
+
+            (window.FC_CONTRACT_CLAUSES || []).forEach(clause => {
+                const paragraphs = clause.paragraphs || [];
+                let section = createClauseSection(clause, false);
+                currentContainer.appendChild(section);
+                let paragraphCountOnSection = 0;
+
+                paragraphs.forEach((paragraphText, paragraphIndex) => {
+                    const p = document.createElement('p');
+                    p.textContent = window.personalizeContractClauseText(paragraphText, d);
+                    section.appendChild(p);
+
+                    if (window.contractPageHasOverflow(currentPage)) {
+                        section.removeChild(p);
+
+                        // Não deixa título isolado no fim da página.
+                        if (paragraphCountOnSection === 0) {
+                            section.remove();
+                        }
+
+                        startPage(true);
+                        section = createClauseSection(clause, paragraphIndex > 0 || paragraphCountOnSection > 0);
+                        currentContainer.appendChild(section);
+                        section.appendChild(p);
+
+                        // Parágrafos excepcionalmente longos permanecem inteiros na nova página.
+                        // O texto contratual normal cabe no espaço útil disponível.
+                    }
+                    paragraphCountOnSection += 1;
+                });
+            });
+
+            const signaturesWrapper = document.createElement('div');
+            signaturesWrapper.innerHTML = window.contractSignatureSectionHtml(d);
+            let signatures = signaturesWrapper.firstElementChild;
+            currentPage.querySelector('.contract-page-body').appendChild(signatures);
+            if (window.contractPageHasOverflow(currentPage)) {
+                signatures.remove();
+                startPage(true);
+                const title = currentPage.querySelector('.contract-page-title-row h2');
+                if (title) title.textContent = 'Assinaturas';
+                currentPage.querySelector('.contract-page-body').appendChild(signatures);
+            }
+
+            const htmlPages = pages.map(page => page.outerHTML);
+            stage.remove();
+            return htmlPages;
+        };
+
+        window.updateContractPageNumbers = function(container, d) {
+            const pages = [...container.querySelectorAll('.contract-page')];
+            const total = pages.length;
+            pages.forEach((page, index) => {
+                const number = index + 1;
+                const headerMeta = page.querySelector('.contract-page-header-meta span');
+                if (headerMeta) headerMeta.textContent = `${d.contractNumber} · Página ${number}`;
+                const footerSpans = page.querySelectorAll('.contract-page-footer span');
+                if (footerSpans.length) footerSpans[footerSpans.length - 1].textContent = `${d.contractNumber} · ${number}/${total}`;
+            });
+            return total;
+        };
+
         window.renderizarContratoAtual = function() {
             const container = document.getElementById('contract-document');
             if (!container || !window._contractProposal) return;
             const d = window.contractViewData();
-            const clauseGroups = [[0,3],[3,5],[5,8],[8,10],[10,12],[12,14],[14,17],[17,21],[21,24],[24,28]];
-            const totalPages = 1 + clauseGroups.length + 3;
+
+            // As cláusulas são paginadas pela altura real do conteúdo. Assim, a próxima
+            // cláusula ocupa imediatamente o espaço disponível, sem páginas com grandes vazios.
+            const clausePages = window.paginateContractClauses(d);
+            const preliminaryTotal = 5 + clausePages.length;
             let page = 1;
-            const pages = [window.renderContractCoverPage(d, totalPages)];
-            clauseGroups.forEach(group => {
-                page += 1;
-                pages.push(window.renderContractClausesPage(d, page, group[0], group[1], totalPages));
-            });
+            const pages = [window.renderContractCoverPage(d, preliminaryTotal)];
             page += 1;
-            pages.push(window.renderContractAnnexOne(d, page, totalPages));
+            pages.push(window.renderContractPartiesPage(d, page, preliminaryTotal));
             page += 1;
-            pages.push(window.renderContractAnnexTwo(d, page, totalPages));
+            pages.push(window.renderContractAnnexOne(d, page, preliminaryTotal));
+            pages.push(...clausePages);
+            page = 3 + clausePages.length + 1;
+            pages.push(window.renderContractAnnexTwo(d, page, preliminaryTotal));
             page += 1;
-            pages.push(window.renderContractAnnexThree(d, page, totalPages));
+            pages.push(window.renderContractAnnexThree(d, page, preliminaryTotal));
             container.innerHTML = pages.join('');
 
             const appLogo = document.querySelector('.sidebar .app-logo, .proposal-cover .cover-logo-img, .p-brand .app-logo, .auth-card .app-logo');
@@ -5327,6 +5608,8 @@ ${dica}`;
                     img.style.display = 'none';
                 }
             });
+
+            window.updateContractPageNumbers(container, d);
 
             const missing = ['c-full-razao','c-full-cnpj','c-full-end','c-full-rep','c-full-rep-cpf','c-full-foro']
                 .filter(id => !window.contractValue(id));
