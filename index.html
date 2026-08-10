@@ -131,12 +131,33 @@
         @media (max-width: 720px) { .form-grid-2, .form-grid-equal, .form-grid-4, .form-grid-catalog { grid-template-columns: 1fr; } }
 
         .items-table-wrap { width: 100%; overflow-x: auto; margin-bottom: 10px; border: 1px solid var(--border); border-radius: var(--radius-md); }
-        .items-table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        .items-table { width: 100%; border-collapse: collapse; min-width: 880px; }
         .items-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
         .items-table tr:last-child td { border-bottom: none; }
         .items-table input, .items-table select { margin-bottom: 0; }
         .items-table .i-g-select { width: 100%; max-width: 280px; padding: 9px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.875rem; background: var(--surface); }
         .items-table .i-g-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-muted); }
+
+        /* ——— Dois CNPJs / duas entregas na mesma proposta e contrato ——— */
+        .dual-delivery-card { margin: 2px 0 20px; border: 1px solid #bfdbfe; border-radius: 14px; overflow: hidden; background: linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%); box-shadow: 0 8px 24px rgba(0, 86, 255, 0.06); }
+        .dual-delivery-toggle { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:16px 18px; }
+        .dual-delivery-toggle-copy { display:flex; align-items:flex-start; gap:12px; }
+        .dual-delivery-toggle-copy i { display:grid; place-items:center; width:38px; height:38px; border-radius:11px; background:#fff; color:#0056ff; border:1px solid #dbeafe; flex:0 0 auto; }
+        .dual-delivery-toggle-copy strong { display:block; color:#000b18; font-size:.94rem; }
+        .dual-delivery-toggle-copy small { display:block; margin-top:3px; color:#64748b; line-height:1.45; }
+        .dual-delivery-switch { display:inline-flex; align-items:center; gap:9px; cursor:pointer; color:#334155; font-weight:700; font-size:.82rem; white-space:nowrap; }
+        .dual-delivery-switch input { width:20px; height:20px; margin:0; accent-color:#0056ff; }
+        .dual-delivery-fields { padding:18px; border-top:1px solid #bfdbfe; background:rgba(255,255,255,.72); }
+        .dual-delivery-fields[hidden] { display:none !important; }
+        .dual-delivery-heading { margin:0 0 14px; color:#0056ff; font-size:.72rem; font-weight:850; letter-spacing:.09em; text-transform:uppercase; }
+        .i-destino { min-width:155px; padding:9px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); background:#fff; font-family:inherit; font-size:.78rem; color:var(--text); }
+        .i-destino:disabled { color:#64748b; background:#f8fafc; cursor:not-allowed; }
+        .contract-second-client-fields { margin-top:4px; padding:15px; border:1px solid #bfdbfe; border-radius:10px; background:#f8fbff; }
+        .contract-second-client-fields[hidden] { display:none !important; }
+        .contract-delivery-group { margin:8px 0 11px; padding:9px 10px; border:1px solid #dbe5f0; border-left:3px solid #0056ff; border-radius:0 7px 7px 0; background:#f8fbff; }
+        .contract-delivery-group h3 { margin:0 0 4px; color:#0056ff; font-size:8pt; text-transform:uppercase; letter-spacing:.06em; }
+        .contract-delivery-group p { margin:2px 0; font-size:8pt; line-height:1.35; }
+        @media (max-width: 720px) { .dual-delivery-toggle { align-items:flex-start; flex-direction:column; } .dual-delivery-switch { align-self:stretch; justify-content:flex-start; } }
         .items-table .i-g-outro { width: 100%; max-width: 280px; margin-top: 6px; }
         .items-table .i-d { min-width: 430px; min-height: 112px; resize: vertical; line-height: 1.42; font-size: 0.82rem; }
         .catalog-scope-field textarea { min-height: 132px; line-height: 1.5; }
@@ -1199,12 +1220,12 @@
                         </div>
                         <div class="field">
                             <label for="f-cnpj">CNPJ / CPF <span style="font-weight:400; text-transform:none; letter-spacing:0; color:#94a3b8;">(Pressione Enter para buscar CNPJ)</span></label>
-                            <input type="text" id="f-cnpj" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00 ou 00.000.000/0000-00" oninput="window.maskCpfCnpj(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();window.buscarCNPJ(this.value);}">
+                            <input type="text" id="f-cnpj" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00 ou 00.000.000/0000-00" oninput="window.maskCpfCnpj(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();window.buscarCNPJ(this.value, 1);}">
                         </div>
                     </div>
                     <div class="field">
                         <label for="f-cli">Razão social / Nome</label>
-                        <input type="text" id="f-cli" autocomplete="organization">
+                        <input type="text" id="f-cli" autocomplete="organization" oninput="window.refreshItemDestinationOptions()">
                     </div>
                     <div class="field">
                         <label for="f-end" id="f-end-label">Local de entrega</label>
@@ -1228,6 +1249,50 @@
                         <div class="field">
                             <label for="f-tel">Telefone</label>
                             <input type="tel" id="f-tel" autocomplete="tel">
+                        </div>
+                    </div>
+                    <div class="dual-delivery-card" id="dual-delivery-card">
+                        <div class="dual-delivery-toggle">
+                            <div class="dual-delivery-toggle-copy">
+                                <i class="fa fa-building-circle-check" aria-hidden="true"></i>
+                                <span>
+                                    <strong>Dois CNPJs e dois locais de entrega no mesmo contrato</strong>
+                                    <small>Ative para cadastrar o segundo comprador/destinatário e vincular cada equipamento à Entrega 1 ou Entrega 2.</small>
+                                </span>
+                            </div>
+                            <label class="dual-delivery-switch" for="f-multi-delivery">
+                                <input type="checkbox" id="f-multi-delivery" onchange="window.toggleMultiDeliveryUI()">
+                                Ativar segunda entrega
+                            </label>
+                        </div>
+                        <div class="dual-delivery-fields" id="second-client-fields" hidden>
+                            <p class="dual-delivery-heading">CNPJ 2 · Contratante / destinatário da Entrega 2</p>
+                            <div class="form-grid-2">
+                                <div class="field">
+                                    <label for="f-cnpj2">CNPJ / CPF 2 <span style="font-weight:400; text-transform:none; letter-spacing:0; color:#94a3b8;">(Enter para buscar)</span></label>
+                                    <input type="text" id="f-cnpj2" inputmode="numeric" autocomplete="off" placeholder="00.000.000/0000-00" oninput="window.maskCpfCnpj(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();window.buscarCNPJ(this.value, 2);}">
+                                </div>
+                                <div class="field">
+                                    <label for="f-cli2">Razão social / Nome 2</label>
+                                    <input type="text" id="f-cli2" autocomplete="organization" oninput="window.refreshItemDestinationOptions()">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="f-end2">Local da Entrega 2</label>
+                                <input type="text" id="f-end2" autocomplete="street-address">
+                            </div>
+                            <div class="form-grid-equal">
+                                <div class="field"><label for="f-bairro2">Bairro 2</label><input type="text" id="f-bairro2"></div>
+                                <div class="field"><label for="f-cidade2">Cidade 2</label><input type="text" id="f-cidade2"></div>
+                            </div>
+                            <div class="form-grid-equal">
+                                <div class="field"><label for="f-email2">E-mail 2</label><input type="email" id="f-email2" autocomplete="email"></div>
+                                <div class="field"><label for="f-tel2">Telefone 2</label><input type="tel" id="f-tel2" autocomplete="tel"></div>
+                            </div>
+                            <div class="form-grid-equal">
+                                <div class="field"><label for="f-implantacao2">Prazo da Entrega 2</label><input type="text" id="f-implantacao2" placeholder="Ex.: 20 dias úteis"></div>
+                                <div class="field"><label for="f-frete2">Frete / condição da Entrega 2</label><input type="text" id="f-frete2" placeholder="Ex.: CIF incluso"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="installation-toggle-card" id="installation-toggle-card">
@@ -1338,6 +1403,7 @@
                                     <th scope="col" style="width:1%">Qtd</th>
                                     <th scope="col">Equipamento / Modelo</th>
                                     <th scope="col">Descrição Técnica</th>
+                                    <th scope="col" style="width:16%">Destino</th>
                                     <th scope="col" style="width:15%" id="th-preco">Preço Unit.</th>
                                     <th scope="col" style="width:1%" aria-label="Remover"></th>
                                 </tr>
@@ -1612,7 +1678,7 @@
                     <div class="contract-editor-head">
                         <div>
                             <h2>Contrato automático da proposta <span id="contract-editor-proposal">—</span></h2>
-                            <p>Os dados do cliente, endereço, itens, valor, instalação, prazo, garantia e condições comerciais são importados da proposta. Os dados complementares ficam salvos para reutilização.</p>
+                            <p>O contrato segue integralmente o modelo anexado, sem inclusão ou exclusão de cláusulas. Cliente(s), CNPJ(s), endereços, destinos dos equipamentos, valor, instalação, prazos, garantia e condições comerciais são importados automaticamente da proposta.</p>
                         </div>
                         <span class="contract-autofill-badge"><i class="fa fa-wand-magic-sparkles" aria-hidden="true"></i> Preenchimento automático</span>
                     </div>
@@ -1654,6 +1720,19 @@
                                     <div class="field"><label for="c-client-rep">Representante</label><input id="c-client-rep" type="text" placeholder="Quando pessoa jurídica"></div>
                                     <div class="field"><label for="c-client-rep-cpf">CPF do representante</label><input id="c-client-rep-cpf" type="text"></div>
                                     <div class="field"><label for="c-client-rep-cargo">Cargo</label><input id="c-client-rep-cargo" type="text"></div>
+                                    <div class="contract-inline-check span-3"><input id="c-second-enabled" type="checkbox" onchange="window.toggleSecondContractClientUI()"><label for="c-second-enabled">Incluir segundo CNPJ / segundo contratante e Entrega 2 neste mesmo contrato</label></div>
+                                    <div id="contract-second-client-fields" class="contract-second-client-fields span-3" hidden>
+                                        <div class="contract-form-grid">
+                                            <div class="field span-2"><label for="c-client2-name">Nome / razão social 2</label><input id="c-client2-name" type="text"></div>
+                                            <div class="field"><label for="c-client2-doc">CPF / CNPJ 2</label><input id="c-client2-doc" type="text"></div>
+                                            <div class="field span-3"><label for="c-client2-end">Endereço completo da Entrega 2</label><input id="c-client2-end" type="text"></div>
+                                            <div class="field"><label for="c-client2-rep">Representante 2</label><input id="c-client2-rep" type="text"></div>
+                                            <div class="field"><label for="c-client2-rep-cpf">CPF do representante 2</label><input id="c-client2-rep-cpf" type="text"></div>
+                                            <div class="field"><label for="c-client2-rep-cargo">Cargo 2</label><input id="c-client2-rep-cargo" type="text"></div>
+                                            <div class="field span-2"><label for="c-freight2">Frete / condição da Entrega 2</label><input id="c-freight2" type="text"></div>
+                                            <div class="field"><label for="c-delivery2-deadline">Prazo da Entrega 2</label><input id="c-delivery2-deadline" type="text"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1665,7 +1744,7 @@
                                     <div class="field"><label for="c-delivery-deadline">Prazo de entrega / retirada</label><input id="c-delivery-deadline" type="text"></div>
                                     <div class="field"><label for="c-install-deadline">Prazo de instalação</label><input id="c-install-deadline" type="text"></div>
                                     <div class="field"><label for="c-guarantee">Garantia</label><input id="c-guarantee" type="text"></div>
-                                    <div class="field"><label for="c-correction-index">Índice de atualização</label><input id="c-correction-index" type="text" value="IPCA"></div>
+                                    <div class="field"><label for="c-correction-index">Índice de atualização</label><input id="c-correction-index" type="text" value="INPC"></div>
                                     <div class="field"><label for="c-registration-cost">Custo do registro da reserva</label><select id="c-registration-cost"><option value="CONTRATANTE">Contratante</option><option value="FULLCHARGE">FullCharge</option><option value="PARTES EM IGUAL PROPORÇÃO">Partes em igual proporção</option></select></div>
                                     <div class="field"><label for="c-warranty-start">Início da garantia</label><select id="c-warranty-start"><option value="entrega">Entrega</option><option value="comissionamento">Comissionamento</option></select></div>
                                     <div class="field span-2"><label for="c-platform">Plataforma / conectividade</label><input id="c-platform" type="text"></div>
@@ -1981,7 +2060,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         window.db = db;
-        window.FC_BUILD = 'firebase-v4-index-2026-06-29';
+        window.FC_BUILD = 'firebase-v4-contrato-corrigido-2026-07-30';
         console.log('[FullCharge] build:', window.FC_BUILD);
         window.__firebaseOriginalRef = ref;
         window.__firebaseCleanSegment = function(segment) {
@@ -2186,6 +2265,7 @@ ${dica}`;
 
         window.moneyToNumber = function(v) {
             if (v == null) return 0;
+            if (typeof v === 'number') return Number.isFinite(v) ? v : 0;
             const clean = String(v).replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.');
             const n = parseFloat(clean);
             return isNaN(n) ? 0 : n;
@@ -2194,6 +2274,105 @@ ${dica}`;
         window.formatBRL = function(n) {
             return (Number(n) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
+
+
+        // Converte valores monetários para a forma por extenso em português do Brasil.
+        window.valorPorExtensoBRL = function(value) {
+            const numero = Number(value) || 0;
+            const negativo = numero < 0;
+            const totalCentavos = Math.round(Math.abs(numero) * 100);
+            const inteiro = Math.floor(totalCentavos / 100);
+            const centavos = totalCentavos % 100;
+
+            const unidades = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
+            const especiais = ['dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
+            const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
+            const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
+            const escalas = [
+                null,
+                { singular: 'mil', plural: 'mil' },
+                { singular: 'milhão', plural: 'milhões' },
+                { singular: 'bilhão', plural: 'bilhões' },
+                { singular: 'trilhão', plural: 'trilhões' },
+                { singular: 'quadrilhão', plural: 'quadrilhões' }
+            ];
+
+            const ate999 = (n) => {
+                n = Math.trunc(n);
+                if (!n) return '';
+                if (n < 10) return unidades[n];
+                if (n < 20) return especiais[n - 10];
+                if (n < 100) {
+                    const d = Math.floor(n / 10);
+                    const r = n % 10;
+                    return dezenas[d] + (r ? ' e ' + unidades[r] : '');
+                }
+                if (n === 100) return 'cem';
+                const c = Math.floor(n / 100);
+                const r = n % 100;
+                return centenas[c] + (r ? ' e ' + ate999(r) : '');
+            };
+
+            const inteiroPorExtenso = (n) => {
+                n = Math.trunc(n);
+                if (n === 0) return 'zero';
+                const grupos = [];
+                let restante = n;
+                let escala = 0;
+                while (restante > 0 && escala < escalas.length) {
+                    grupos.push({ valor: restante % 1000, escala });
+                    restante = Math.floor(restante / 1000);
+                    escala += 1;
+                }
+
+                const partes = [];
+                grupos.slice().reverse().forEach((grupo) => {
+                    if (!grupo.valor) return;
+                    if (grupo.escala === 0) {
+                        partes.push({ texto: ate999(grupo.valor), valor: grupo.valor });
+                        return;
+                    }
+                    if (grupo.escala === 1) {
+                        partes.push({ texto: grupo.valor === 1 ? 'mil' : `${ate999(grupo.valor)} mil`, valor: grupo.valor });
+                        return;
+                    }
+                    const nomeEscala = grupo.valor === 1 ? escalas[grupo.escala].singular : escalas[grupo.escala].plural;
+                    partes.push({ texto: `${ate999(grupo.valor)} ${nomeEscala}`, valor: grupo.valor });
+                });
+
+                return partes.map((parte, indice) => {
+                    if (indice === 0) return parte.texto;
+                    const ultima = indice === partes.length - 1;
+                    const usarE = ultima && (parte.valor < 100 || parte.valor % 100 === 0);
+                    return (usarE ? ' e ' : ', ') + parte.texto;
+                }).join('');
+            };
+
+            const trechos = [];
+            if (inteiro > 0) {
+                const nomeReal = inteiro === 1 ? 'real' : 'reais';
+                const usarDe = inteiro >= 1000000 && inteiro % 1000000 === 0;
+                trechos.push(`${inteiroPorExtenso(inteiro)}${usarDe ? ' de' : ''} ${nomeReal}`);
+            }
+            if (centavos > 0) {
+                trechos.push(`${inteiroPorExtenso(centavos)} ${centavos === 1 ? 'centavo' : 'centavos'}`);
+            }
+            if (!trechos.length) trechos.push('zero reais');
+
+            return `${negativo ? 'menos ' : ''}${trechos.join(' e ')}`;
+        };
+
+        // Padrão obrigatório no contrato: R$ 1.000,00 (mil reais).
+        window.contractPriceWithWords = function(value) {
+            const numero = window.moneyToNumber(value);
+            return `${window.formatBRL(numero)} (${window.valorPorExtensoBRL(numero)})`;
+        };
+
+        window.contractPriceWithWordsIfMonetary = function(value) {
+            const texto = String(value ?? '').trim();
+            if (!texto || !/\d/.test(texto) || window.moneyToNumber(texto) <= 0) return texto || 'Conforme proposta';
+            return window.contractPriceWithWords(texto);
+        };
 
         window.formatUSD = function(n) {
             return (Number(n) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'USD' });
@@ -3254,14 +3433,16 @@ ${dica}`;
             const rendaPeriodo = data.retornoProjetadoPeriodo || window.formatBRL(investimentoNumero * window.INVESTOR_MONTHLY_RATE * meses);
 
             document.getElementById('p-id').textContent = data.id;
-            document.getElementById('p-cli').textContent = data.cli || '';
-            document.getElementById('p-cnpj').textContent = data.cnpj || '';
+            const multiDeliveryPreview = !!data.multiDelivery || !!data.cnpj2 || (data.items || []).some(i => String(i.destino) === '2');
+            document.getElementById('p-cli').textContent = multiDeliveryPreview ? [data.cli, data.cli2].filter(Boolean).join(' / ') : (data.cli || '');
+            document.getElementById('p-cnpj').textContent = multiDeliveryPreview ? [data.cnpj, data.cnpj2].filter(Boolean).join(' / ') : (data.cnpj || '');
             document.getElementById('p-doc-eyebrow').textContent = isInvestidor ? 'Proposta para investidores' : (isComodato ? 'Proposta de comodato' : 'Proposta comercial');
             document.getElementById('p-doc-title').textContent = isInvestidor ? 'Investimento FullCharge' : (isComodato ? 'Comodato FullCharge' : 'Orçamento');
             document.getElementById('p-total-label').textContent = isInvestidor ? 'Investimento Total' : (isComodato ? 'Total do Comodato' : 'Investimento Total');
             
             const endCompleto = [data.end, data.bairro, data.cidade].filter(Boolean).join(', ');
-            document.getElementById('p-end').textContent = endCompleto || '';
+            const endCompleto2 = [data.end2, data.bairro2, data.cidade2].filter(Boolean).join(', ');
+            document.getElementById('p-end').textContent = multiDeliveryPreview ? [`Entrega 1: ${endCompleto}`, `Entrega 2: ${endCompleto2}`].filter(v => !v.endsWith(': ')).join(' | ') : (endCompleto || '');
             document.getElementById('p-contato').textContent = `${data.email || ''} | ${data.tel || ''}`;
             document.getElementById('p-total').textContent = data.total || data.investimento || '';
             document.getElementById('p-data').textContent = data.data || '';
@@ -3302,11 +3483,11 @@ ${dica}`;
             const coverTotal = document.getElementById('cover-total');
             if (coverTitle) coverTitle.textContent = isInvestidor ? 'Investimento' : (isComodato ? 'Comodato' : 'Orçamento');
             if (coverEyebrow) coverEyebrow.textContent = isInvestidor ? 'PROPOSTA PARA INVESTIDORES' : (isComodato ? 'PROPOSTA DE COMODATO' : 'PROPOSTA COMERCIAL');
-            if (coverClient) coverClient.textContent = data.cli || 'Cliente';
+            if (coverClient) coverClient.textContent = multiDeliveryPreview ? [data.cli, data.cli2].filter(Boolean).join(' + ') : (data.cli || 'Cliente');
             if (coverId) coverId.textContent = data.id || 'FC-0000';
             if (coverDate) coverDate.textContent = data.data || new Date().toLocaleDateString('pt-BR');
-            if (coverCnpj) coverCnpj.textContent = data.cnpj || 'Não informado';
-            if (coverLocation) coverLocation.textContent = endCompleto || data.cidade || data.end || (window.isVendaSemEntrega(tipo) ? 'Local de retirada' : (incluiInstalacao ? 'Local de instalação' : 'Local de entrega'));
+            if (coverCnpj) coverCnpj.textContent = multiDeliveryPreview ? [data.cnpj, data.cnpj2].filter(Boolean).join(' / ') : (data.cnpj || 'Não informado');
+            if (coverLocation) coverLocation.textContent = multiDeliveryPreview ? [`Entrega 1: ${endCompleto}`, `Entrega 2: ${endCompleto2}`].filter(v => !v.endsWith(': ')).join(' · ') : (endCompleto || data.cidade || data.end || (window.isVendaSemEntrega(tipo) ? 'Local de retirada' : (incluiInstalacao ? 'Local de instalação' : 'Local de entrega')));
             if (coverLocationPill) coverLocationPill.textContent = data.cidade || (data.end ? String(data.end).split(',').slice(-1)[0].trim() : (window.isVendaSemEntrega(tipo) ? 'Local de retirada' : (incluiInstalacao ? 'Local do projeto' : 'Local de entrega')));
             if (coverProductsTitle) coverProductsTitle.textContent = isInvestidor ? 'Resumo da proposta' : 'Pedido da proposta';
             const itensCapa = data.items || [];
@@ -3378,10 +3559,12 @@ ${dica}`;
                     if (prod && prod.img) imgUrl = prod.img;
                 }
 
+                const destinationName = String(i.destino) === '2' ? (data.cli2 || 'CNPJ 2') : (data.cli || 'CNPJ 1');
+                const destinationLabel = multiDeliveryPreview ? `${String(i.destino) === '2' ? 'Entrega 2' : 'Entrega 1'} — ${destinationName}` : 'Equipamento selecionado na proposta';
                 return `<tr class="p-item-main-row">
                     <td><div class="p-item-image-wrap"><img src="${window.escapeAttr(imgUrl)}" class="p-img-thumb" data-pdf-product-img="1" data-product-name="${window.escapeAttr(i.g)}" alt="${window.escapeAttr(i.g)}" onerror="this.onerror=null; this.removeAttribute('crossorigin'); this.removeAttribute('referrerpolicy'); this.src=window.PDF_PRODUCT_FALLBACK_IMAGE;"></div></td>
                     <td class="p-item-qty">${window.escapeHtml(i.q)}</td>
-                    <td class="p-item-product"><strong class="p-item-product-name">${window.escapeHtml(i.g)}</strong><span class="p-item-product-subtitle">Equipamento selecionado na proposta</span></td>
+                    <td class="p-item-product"><strong class="p-item-product-name">${window.escapeHtml(i.g)}</strong><span class="p-item-product-subtitle">${window.escapeHtml(destinationLabel)}</span></td>
                     <td class="p-item-price">${window.escapeHtml(i.p || '-')}</td>
                 </tr>
                 <tr class="p-item-specs-row">
@@ -4033,19 +4216,59 @@ ${dica}`;
             window.fecharEdicaoUsuario();
         }
 
-        window.buscarCNPJ = async function(cpfCnpj) {
-            const clean = cpfCnpj.replace(/\D/g, '');
+        window.buscarCNPJ = async function(cpfCnpj, slot = 1) {
+            const clean = String(cpfCnpj || '').replace(/\D/g, '');
             if (clean.length !== 14) return;
+            const suffix = String(slot) === '2' ? '2' : '';
             try {
                 const r = await fetch(`https://publica.cnpj.ws/cnpj/${clean}`);
+                if (!r.ok) throw new Error('Consulta indisponível');
                 const d = await r.json();
-                document.getElementById('f-cli').value = d.razao_social || '';
                 const est = d.estabelecimento || {};
-                document.getElementById('f-end').value = [est.logradouro, est.numero].filter(Boolean).join(', ');
-                document.getElementById('f-bairro').value = est.bairro || '';
-                document.getElementById('f-cidade').value = d.estabelecimento.cidade.nome || '';
+                const cidade = est.cidade?.nome || '';
+                const set = (id, value) => { const el = document.getElementById(id + suffix); if (el) el.value = value || ''; };
+                set('f-cli', d.razao_social || '');
+                set('f-end', [est.logradouro, est.numero].filter(Boolean).join(', '));
+                set('f-bairro', est.bairro || '');
+                set('f-cidade', cidade);
+                window.refreshItemDestinationOptions();
             } catch (e) { alert('Erro ao buscar o CNPJ.'); }
         }
+
+        window.getDeliveryPartyLabel = function(slot) {
+            const isSecond = String(slot) === '2';
+            const name = document.getElementById(isSecond ? 'f-cli2' : 'f-cli')?.value?.trim();
+            return `${isSecond ? 'Entrega 2' : 'Entrega 1'}${name ? ` — ${name}` : ''}`;
+        };
+
+        window.refreshItemDestinationOptions = function() {
+            document.querySelectorAll('#items-body .i-destino').forEach(select => {
+                const selected = select.value || '1';
+                const first = select.querySelector('option[value="1"]');
+                const second = select.querySelector('option[value="2"]');
+                if (first) first.textContent = window.getDeliveryPartyLabel('1');
+                if (second) second.textContent = window.getDeliveryPartyLabel('2');
+                select.value = selected;
+            });
+        };
+
+        window.toggleMultiDeliveryUI = function(resetAssignments = true) {
+            const enabled = !!document.getElementById('f-multi-delivery')?.checked;
+            const panel = document.getElementById('second-client-fields');
+            if (panel) panel.hidden = !enabled;
+            document.querySelectorAll('#items-body .i-destino').forEach(select => {
+                select.disabled = !enabled;
+                if (!enabled && resetAssignments) select.value = '1';
+            });
+            window.refreshItemDestinationOptions();
+        };
+
+        window.onItemDestinationChange = function(select) {
+            if (select?.value === '2' && !document.getElementById('f-multi-delivery')?.checked) {
+                document.getElementById('f-multi-delivery').checked = true;
+                window.toggleMultiDeliveryUI(false);
+            }
+        };
 
         /* ——— Cadastro de Clientes ——— */
         window.onlyDigits = function(s) { return String(s || '').replace(/\D/g, ''); }
@@ -4189,6 +4412,33 @@ ${dica}`;
                 status: data.propostaStatus || 'pendente',
                 observacaoDaProposta: data.obs || ''
             });
+            if (data.multiDelivery && (data.cnpj2 || data.cli2)) {
+                const key2 = window.getClienteKeyFromData(data.cnpj2, data.cli2);
+                data.clienteKey2 = key2;
+                const atual2 = window.clientesCadastrados[key2] || {};
+                await window.dbUpdate(window.dbRef(window.db, 'clientes/' + key2), {
+                    key: key2,
+                    nome: data.cli2 || atual2.nome || '',
+                    cnpj: data.cnpj2 || atual2.cnpj || '',
+                    end: data.end2 || atual2.end || '',
+                    bairro: data.bairro2 || atual2.bairro || '',
+                    cidade: data.cidade2 || atual2.cidade || '',
+                    email: data.email2 || atual2.email || '',
+                    tel: data.tel2 || atual2.tel || '',
+                    ultimaPropostaId: data.id,
+                    ultimoValor: data.total || '',
+                    atualizadoEm: new Date().toISOString(),
+                    criadoEm: atual2.criadoEm || new Date().toISOString()
+                });
+                await window.dbSet(window.dbRef(window.db, 'clientes/' + key2 + '/historicoPropostas/' + window.safeFirebaseKey(data.id, 'proposta')), {
+                    id: data.id,
+                    tipoProposta: data.tipoProposta || 'venda',
+                    data: data.data || new Date().toLocaleDateString('pt-BR'),
+                    total: data.total || '',
+                    status: data.propostaStatus || 'pendente',
+                    observacaoDaProposta: 'Contratante / destinatário da Entrega 2 desta proposta.'
+                });
+            }
             return key;
         }
 
@@ -4417,17 +4667,21 @@ ${dica}`;
             window.calcularTotal();
         }
 
-        window.addItemRow = function(q = 1, g = '', d = '', p = '') {
+        window.addItemRow = function(q = 1, g = '', d = '', p = '', destino = '1') {
             const tbody = document.getElementById('items-body');
             if(!tbody) return;
-            
             const displayStyle = '';
+            const multiDelivery = !!document.getElementById('f-multi-delivery')?.checked;
 
             const tr = tbody.insertRow();
-            tr.innerHTML = `<td><input type="number" class="i-q" value="${q}" style="width:64px; text-align:center;" oninput="window.calcularTotal()"></td>
+            tr.innerHTML = `<td><input type="number" class="i-q" value="${window.escapeAttr(q)}" style="width:64px; text-align:center;" oninput="window.calcularTotal()"></td>
                 <td><select class="i-g-select" onchange="window.toggleGrupoOutro(this)">${window.getGrupoSelectInnerHtml()}</select>
                     <input type="text" class="i-g-outro" style="display:none;margin-top:5px" placeholder="Qual equipamento?"></td>
                 <td><textarea class="i-d" rows="4">${window.escapeHtml(d)}</textarea></td>
+                <td><select class="i-destino" onchange="window.onItemDestinationChange(this)">
+                    <option value="1">Entrega 1</option>
+                    <option value="2">Entrega 2</option>
+                </select></td>
                 <td class="td-preco" style="${displayStyle}"><input type="text" class="i-p" value="${window.escapeAttr(p)}" oninput="window.maskMoney(this); window.calcularTotal()" placeholder="R$ 0,00"></td>
                 <td style="text-align:center;"><button type="button" class="btn-icon-remove" onclick="this.closest('tr').remove(); window.calcularTotal()"><i class="fa fa-times"></i></button></td>`;
             const sel = tr.querySelector('.i-g-select');
@@ -4442,6 +4696,10 @@ ${dica}`;
                 tr.querySelector('.i-g-outro').style.display = 'block';
                 tr.querySelector('.i-g-outro').value = g;
             }
+            const destinationSelect = tr.querySelector('.i-destino');
+            destinationSelect.value = String(destino) === '2' ? '2' : '1';
+            destinationSelect.disabled = !multiDelivery;
+            window.refreshItemDestinationOptions();
             window.calcularTotal();
         }
 
@@ -4455,8 +4713,25 @@ ${dica}`;
                 q: tr.querySelector('.i-q').value,
                 g: tr.querySelector('.i-g-select').value === GRUPO_OUTRO ? tr.querySelector('.i-g-outro').value : tr.querySelector('.i-g-select').value,
                 d: tr.querySelector('.i-d').value,
-                p: tr.querySelector('.i-p').value
+                p: tr.querySelector('.i-p').value,
+                destino: tr.querySelector('.i-destino')?.value || '1'
             }));
+            const multiDelivery = !!document.getElementById('f-multi-delivery')?.checked;
+            if (multiDelivery) {
+                const requiredSecond = [
+                    ['f-cnpj2', 'CNPJ / CPF 2'], ['f-cli2', 'Razão social / Nome 2'], ['f-end2', 'Local da Entrega 2'], ['f-cidade2', 'Cidade 2']
+                ];
+                const missingSecond = requiredSecond.find(([id]) => !document.getElementById(id)?.value?.trim());
+                if (missingSecond) {
+                    alert(`Preencha o campo “${missingSecond[1]}” para gerar a proposta com dois CNPJs.`);
+                    document.getElementById(missingSecond[0])?.focus();
+                    return;
+                }
+                if (!items.some(item => String(item.destino) === '1') || !items.some(item => String(item.destino) === '2')) {
+                    alert('Para usar dois CNPJs no mesmo contrato, vincule pelo menos um equipamento à Entrega 1 e outro à Entrega 2.');
+                    return;
+                }
+            }
 
             const investimento = document.getElementById('f-investimento')?.value || '';
             const prazoMeses = parseInt(document.getElementById('f-invest-meses')?.value || '12', 10) || 12;
@@ -4501,6 +4776,16 @@ ${dica}`;
                 tipoProposta,
                 cli: document.getElementById('f-cli').value,
                 cnpj: document.getElementById('f-cnpj').value,
+                multiDelivery,
+                cli2: multiDelivery ? (document.getElementById('f-cli2')?.value || '') : '',
+                cnpj2: multiDelivery ? (document.getElementById('f-cnpj2')?.value || '') : '',
+                end2: multiDelivery ? (document.getElementById('f-end2')?.value || '') : '',
+                bairro2: multiDelivery ? (document.getElementById('f-bairro2')?.value || '') : '',
+                cidade2: multiDelivery ? (document.getElementById('f-cidade2')?.value || '') : '',
+                email2: multiDelivery ? (document.getElementById('f-email2')?.value || '') : '',
+                tel2: multiDelivery ? (document.getElementById('f-tel2')?.value || '') : '',
+                implantacao2: multiDelivery ? (document.getElementById('f-implantacao2')?.value || '') : '',
+                frete2: multiDelivery ? (document.getElementById('f-frete2')?.value || '') : '',
                 end: document.getElementById('f-end').value,
                 bairro: document.getElementById('f-bairro').value,
                 cidade: document.getElementById('f-cidade').value,
@@ -4661,6 +4946,18 @@ ${dica}`;
                 document.getElementById('f-end').value = p.end;
                 document.getElementById('f-bairro').value = p.bairro || '';
                 document.getElementById('f-cidade').value = p.cidade || '';
+                const hasSecondDelivery = !!p.multiDelivery || !!p.cnpj2 || (p.items || []).some(i => String(i.destino) === '2');
+                if (document.getElementById('f-multi-delivery')) document.getElementById('f-multi-delivery').checked = hasSecondDelivery;
+                if (document.getElementById('f-cli2')) document.getElementById('f-cli2').value = p.cli2 || '';
+                if (document.getElementById('f-cnpj2')) document.getElementById('f-cnpj2').value = p.cnpj2 || '';
+                if (document.getElementById('f-end2')) document.getElementById('f-end2').value = p.end2 || '';
+                if (document.getElementById('f-bairro2')) document.getElementById('f-bairro2').value = p.bairro2 || '';
+                if (document.getElementById('f-cidade2')) document.getElementById('f-cidade2').value = p.cidade2 || '';
+                if (document.getElementById('f-email2')) document.getElementById('f-email2').value = p.email2 || '';
+                if (document.getElementById('f-tel2')) document.getElementById('f-tel2').value = p.tel2 || '';
+                if (document.getElementById('f-implantacao2')) document.getElementById('f-implantacao2').value = p.implantacao2 || p.implantacao || '';
+                if (document.getElementById('f-frete2')) document.getElementById('f-frete2').value = p.frete2 || '';
+                window.toggleMultiDeliveryUI(false);
                 document.getElementById('f-total').value = p.total;
                 if (document.getElementById('f-cotacao-dolar') && window.parseCotacaoDolar(p.cotacaoDolarValor || p.cotacaoDolar)) {
                     document.getElementById('f-cotacao-dolar').value = Number(window.parseCotacaoDolar(p.cotacaoDolarValor || p.cotacaoDolar)).toLocaleString('pt-BR', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
@@ -4688,7 +4985,8 @@ ${dica}`;
                 document.getElementById('items-body').innerHTML = '';
                 window.setTipoProposta(p.tipoProposta || 'venda');
 
-                (p.items || []).forEach(i => window.addItemRow(i.q, i.g, i.d, i.p));
+                (p.items || []).forEach(i => window.addItemRow(i.q, i.g, i.d, i.p, i.destino || '1'));
+                window.toggleMultiDeliveryUI(false);
                 window.calcularTotal();
 
                 if ((p.tipoProposta || 'venda') === 'investidor') {
@@ -4752,30 +5050,31 @@ ${dica}`;
                     if (!telaInicial) telaInicial = telasPermitidas.find(([id, chave]) => perms[chave])?.[0] || 'screen-form';
                     window.showScreen(telaInicial);
                     if (telaInicial === 'screen-form') {
-                        try { window.addItemRow(); window.onTipoPropostaChange(false); window.atualizarModoInstalacaoUI(); } catch(e) {}
+                        try { window.addItemRow(); window.onTipoPropostaChange(false); window.atualizarModoInstalacaoUI(); window.toggleMultiDeliveryUI(false); } catch(e) {}
                     }
                 } else {
                     window.showScreen('screen-form');
-                    try { window.addItemRow(); window.onTipoPropostaChange(false); window.atualizarModoInstalacaoUI(); } catch(e) {}
+                    try { window.addItemRow(); window.onTipoPropostaChange(false); window.atualizarModoInstalacaoUI(); window.toggleMultiDeliveryUI(false); } catch(e) {}
                 }
             }
         };
     
 
         /* ——— Gerador automático de contratos ——— */
-        window.FC_CONTRACT_CLAUSES = [{"title":"CLÁUSULA PRIMEIRA - DOCUMENTOS INTEGRANTES E ORDEM DE PREVALÊNCIA","paragraphs":["1.1. Integram este contrato: (i) o Quadro-Resumo; (ii) a proposta comercial identificada no Quadro-Resumo; (iii) o Anexo I - Equipamentos e Condições Comerciais; (iv) o Anexo II - Escopo de Instalação e Requisitos Técnicos, quando aplicável; e (v) o Anexo III - Termo de Entrega, Instalação e Comissionamento.","1.2. Em caso de conflito, prevalecerão, nesta ordem: o Quadro-Resumo, os aditivos assinados, este contrato, a proposta comercial e os anexos técnicos.","1.3. Informações publicitárias ou comerciais suficientemente precisas e aceitas pelo CONTRATANTE integrarão a contratação nos limites da legislação aplicável."]},{"title":"CLÁUSULA SEGUNDA - OBJETO","paragraphs":["2.1. O objeto é o fornecimento, pela FULLCHARGE ao CONTRATANTE, da(s) estação(ões) de recarga para veículos elétricos descrita(s) no Anexo I, com seus acessórios, documentos e, quando expressamente contratado, serviços de entrega, instalação elétrica, configuração, integração, ativação e comissionamento.","2.2. A modalidade efetivamente contratada será exclusivamente a marcada no Quadro-Resumo e detalhada na proposta comercial.","2.3. Serviços, materiais, obras, adequações ou integrações não descritos de modo expresso serão considerados fora do escopo e dependerão de orçamento e aceite adicionais."]},{"title":"CLÁUSULA TERCEIRA - IDENTIFICAÇÃO E ESPECIFICAÇÕES DOS EQUIPAMENTOS","paragraphs":["3.1. Cada estação deverá ser perfeitamente individualizada por marca, modelo, potência, padrão e quantidade de conectores e, antes da entrega definitiva, por número de série. A identificação constará do Anexo I, da nota fiscal ou do Termo de Entrega.","3.2. A FULLCHARGE poderá substituir componente ou equipamento por outro de desempenho e qualidade equivalentes ou superiores somente mediante comunicação e concordância do CONTRATANTE, quando a substituição alterar característica relevante da proposta.","3.3. A potência nominal da estação não significa que todo veículo receberá a potência máxima. A potência efetiva depende, entre outros fatores, do veículo, estado de carga da bateria, temperatura, protocolo de comunicação, disponibilidade elétrica do local, compartilhamento de potência e configuração operacional."]},{"title":"CLÁUSULA QUARTA - PREÇO","paragraphs":["4.1. O preço total da contratação é de R$ [VALOR] ([VALOR POR EXTENSO]), conforme composição prevista no Quadro-Resumo e no Anexo I.","4.2. O preço abrange somente os equipamentos, serviços e materiais expressamente descritos. Tributos, frete, seguro, instalação, obras civis, aumento de demanda, adequações da entrada de energia, transformadores, subestações, internet, chip de dados e licenças de plataforma somente estarão incluídos quando assim indicado.","4.3. Qualquer mudança de escopo, quantidade, distância de cabos, condição do local ou requisito técnico poderá gerar aditivo de preço e prazo, sujeito a aceite prévio do CONTRATANTE."]},{"title":"CLÁUSULA QUINTA - CONDIÇÕES DE PAGAMENTO, REAJUSTE E VARIAÇÃO CAMBIAL","paragraphs":["5.1. O pagamento será realizado conforme datas, percentuais, valores e meios indicados no Quadro-Resumo e na proposta comercial.","5.2. O atraso sujeitará o CONTRATANTE, sem prejuízo de cobrança e demais medidas admitidas em lei, à multa moratória de 2% sobre a parcela vencida, juros de mora de 1% ao mês calculados proporcionalmente aos dias de atraso e atualização monetária pelo índice [IPCA/OUTRO ÍNDICE CONTRATADO].","5.3. A tolerância eventual da FULLCHARGE quanto ao atraso ou descumprimento não constituirá novação, renúncia ou alteração contratual.","5.4. Quando a opção “variação cambial aplicável” estiver marcada, a parcela do preço expressamente vinculada a equipamento importado será ajustada conforme a fórmula e a data-base indicadas na proposta comercial, utilizando a taxa PTAX de venda do dólar dos Estados Unidos divulgada pelo Banco Central do Brasil ou outro critério objetivo ali definido. Na ausência de marcação e fórmula, não haverá ajuste cambial.","5.5. Em venda parcelada a consumidor, o contrato e a proposta deverão informar, quando aplicável, preço à vista, total a prazo, quantidade e valor das parcelas, juros e demais acréscimos exigidos pela legislação."]},{"title":"CLÁUSULA SEXTA - FATURAMENTO, TRIBUTOS E DOCUMENTOS FISCAIS","paragraphs":["6.1. A nota fiscal será emitida conforme a natureza da operação e os dados cadastrais fornecidos pelo CONTRATANTE.","6.2. O CONTRATANTE deverá conferir razão social, CNPJ/CPF, inscrição estadual, endereço e demais dados antes do faturamento, respondendo pelos custos decorrentes de correções causadas por informação incorreta.","6.3. Benefícios fiscais, retenções ou regimes especiais somente serão considerados se comprovados tempestivamente pelo CONTRATANTE e aceitos segundo a legislação aplicável."]},{"title":"CLÁUSULA SÉTIMA - PRAZO, ENTREGA, FRETE E TRANSFERÊNCIA DOS RISCOS","paragraphs":["7.1. O prazo de entrega começará no evento indicado no Quadro-Resumo, podendo ser condicionado ao pagamento da entrada, aprovação do projeto, confirmação do pedido, disponibilidade do equipamento, liberação de crédito ou envio de documentos.","7.2. O frete seguirá a modalidade marcada no Quadro-Resumo. Na entrega, o CONTRATANTE deverá disponibilizar acesso, responsável para recebimento e condições seguras para descarga e armazenamento.","7.3. Os riscos de perda, avaria, furto e deterioração passam ao CONTRATANTE a partir da entrega física e assinatura do comprovante de recebimento, ainda que a propriedade permaneça reservada à FULLCHARGE até a quitação integral do preço.","7.4. A recusa injustificada, impossibilidade de acesso, ausência de responsável ou falta de condições para descarga poderá gerar armazenagem, nova tentativa de entrega, frete adicional e prorrogação do prazo."]},{"title":"CLÁUSULA OITAVA - ESCOPO DA INSTALAÇÃO","paragraphs":["8.1. A instalação somente integra o objeto quando expressamente marcada no Quadro-Resumo e detalhada no Anexo II.","8.2. Quando contratada a instalação padrão para estações de 30 kW, 40 kW ou 60 kW, e desde que essa condição conste da proposta, o escopo comercial padrão poderá compreender instalação elétrica com até 20 metros de percurso e cabo de 50 mm², pelo valor de R$ 6.000,00. Distâncias excedentes poderão ser cobradas a R$ 360,00 por metro adicional, após medição e aceite. Essas referências não se aplicam automaticamente a outras potências, configurações ou condições de obra.","8.3. A parte civil não está incluída, salvo previsão expressa. Consideram-se parte civil, entre outros: escavações, valas, recomposição de piso, concreto, base, cobertura, defensas, pintura, sinalização horizontal, drenagem, alvenaria, perfurações especiais e adequações arquitetônicas.","8.4. Também não estão incluídos, salvo previsão expressa: padrão de entrada, aumento de carga ou demanda, transformador, subestação, quadro geral, geração de energia, licenças, aprovações da distribuidora, projeto civil, laudos estruturais, aterramento geral do imóvel e infraestrutura de telecomunicações.","8.5. O comprimento será medido pelo percurso real tecnicamente executável dos cabos, incluindo subidas, descidas, desvios e folgas necessárias, e não pela distância em linha reta."]},{"title":"CLÁUSULA NONA - REQUISITOS TÉCNICOS E CONDIÇÕES DO LOCAL","paragraphs":["9.1. Antes da instalação, o CONTRATANTE deverá garantir que o local disponha de capacidade elétrica, tensão, demanda, proteção, aterramento, ventilação, acessibilidade, espaço e condições estruturais compatíveis com o equipamento.","9.2. Compete ao CONTRATANTE providenciar, quando necessário, estudo de carga, aumento de demanda, aprovação da concessionária, reforço da rede interna, transformador, subestação, sistema de medição, projeto civil e licenças públicas ou condominiais.","9.3. A FULLCHARGE poderá suspender ou adiar a instalação quando identificar risco, divergência de projeto, ausência de energia, inadequação do local, interferência de terceiros ou falta de autorização. O prazo será retomado após a regularização.","9.4. O CONTRATANTE deverá fornecer acesso seguro, autorização para desligamentos, responsável local, área isolada, banheiros quando legalmente exigidos e condições para circulação de equipe e equipamentos.","9.5. Despesas de retorno, mobilização adicional, espera, hospedagem, equipamento de içamento ou trabalho extraordinário causado por condição não informada poderão ser cobradas mediante comprovação e aceite, observada a legislação aplicável."]},{"title":"CLÁUSULA DÉCIMA - OBRIGAÇÕES DA FULLCHARGE","paragraphs":["10.1. Fornecer os equipamentos contratados, acompanhados dos documentos aplicáveis, e executar os serviços incluídos com pessoal próprio ou terceiros qualificados.","10.2. Observar as normas técnicas, de segurança e regulamentares aplicáveis ao escopo contratado, bem como as recomendações do fabricante.","10.3. Informar ao CONTRATANTE os requisitos relevantes de instalação, uso, conectividade, garantia e manutenção.","10.4. Entregar manual, termo de garantia e orientações de operação disponíveis para o modelo contratado, em meio físico ou digital.","10.5. Manter canal de atendimento para abertura de chamados durante o período e nas condições de garantia."]},{"title":"CLÁUSULA DÉCIMA PRIMEIRA - OBRIGAÇÕES DO CONTRATANTE","paragraphs":["11.1. Pagar pontualmente os valores contratados e fornecer informações, documentos e aprovações necessários.","11.2. Preparar o local e cumprir os requisitos técnicos, civis, elétricos, de rede e de segurança não incluídos no escopo da FULLCHARGE.","11.3. Utilizar o equipamento conforme manual, finalidade, limites de potência e orientações técnicas, impedindo intervenção de pessoas não autorizadas.","11.4. Zelar pela estação desde a entrega, protegendo-a contra impacto, vandalismo, inundação, agentes químicos, sobretemperatura, uso indevido e acesso não autorizado.","11.5. Manter conectividade, energia, licenças e serviços de terceiros necessários ao funcionamento, quando não contratados da FULLCHARGE.","11.6. Comunicar defeitos sem demora, preservar registros e permitir diagnóstico e acesso técnico em data razoável."]},{"title":"CLÁUSULA DÉCIMA SEGUNDA - INSTALAÇÃO, TESTES, COMISSIONAMENTO E ACEITE","paragraphs":["12.1. Quando contratado, o comissionamento compreenderá os testes funcionais definidos pela FULLCHARGE e pelo fabricante, configuração básica e orientação inicial ao responsável indicado pelo CONTRATANTE.","12.2. A conclusão será formalizada pelo Termo de Entrega, Instalação e Comissionamento. O CONTRATANTE deverá registrar ressalvas aparentes no próprio termo ou em até [5] dias úteis, sem prejuízo dos direitos legais referentes a vícios ocultos.","12.3. O uso comercial ou operacional da estação sem ressalva relevante constituirá evidência de recebimento, sem afastar garantia legal ou contratual.","12.4. Falhas causadas por veículo incompatível, limitação do veículo, rede elétrica, internet, plataforma de terceiros ou infraestrutura externa não caracterizam, por si só, defeito da estação."]},{"title":"CLÁUSULA DÉCIMA TERCEIRA - RESERVA DE DOMÍNIO","paragraphs":["13.1. Nos termos dos arts. 521 e seguintes do Código Civil, a FULLCHARGE reserva para si a propriedade da(s) estação(ões) de recarga e dos acessórios móveis perfeitamente identificáveis no Anexo I, na nota fiscal ou no Termo de Entrega, até o pagamento integral do preço desses bens.","13.2. A transferência da propriedade ao CONTRATANTE ocorrerá somente após a quitação integral do preço. Os riscos sobre os bens, contudo, serão do CONTRATANTE desde a entrega, que deverá mantê-los conservados, segurados quando previsto e livres de danos, ônus ou constrições.","13.3. Enquanto vigente a reserva, o CONTRATANTE não poderá vender, ceder, locar, dar em garantia, remover para outro endereço, alterar identificação, desmontar ou permitir penhora dos bens sem autorização escrita da FULLCHARGE, ressalvados os atos normais de uso e manutenção autorizada.","13.4. Para eficácia perante terceiros, as Partes autorizam o registro deste contrato no Cartório de Registro de Títulos e Documentos do domicílio do CONTRATANTE, correndo os custos por conta de [CONTRATANTE/FULLCHARGE]. O CONTRATANTE fornecerá documentos e assinaturas necessários ao registro.","13.5. A reserva de domínio incide sobre a estação e acessórios móveis identificáveis. Materiais consumíveis, cabos, eletrodutos, dispositivos e obras incorporados definitivamente ao imóvel serão tratados conforme sua natureza jurídica, sem prejuízo do dever de pagamento.","13.6. Em caso de inadimplemento, a FULLCHARGE somente exercerá os direitos de cobrança ou recuperação da posse após a constituição do CONTRATANTE em mora e mediante os procedimentos admitidos em lei, sendo vedada a retirada forçada ou o ingresso no imóvel sem consentimento válido ou ordem competente."]},{"title":"CLÁUSULA DÉCIMA QUARTA - INADIMPLEMENTO E MEDIDAS CABÍVEIS","paragraphs":["14.1. O não pagamento no vencimento constituirá mora, observados os meios legais de notificação, protesto e cobrança.","14.2. Constituído o CONTRATANTE em mora, a FULLCHARGE poderá, conforme a lei e sem cumulação incompatível: (i) cobrar parcelas vencidas e, quando juridicamente cabível, as vincendas; ou (ii) requerer a recuperação da posse dos bens sujeitos à reserva de domínio.","14.3. Na recuperação do bem, serão apurados pagamentos realizados, depreciação, avarias, despesas, tributos, transporte, desmontagem e demais valores legalmente admitidos, devolvendo-se eventual saldo ao CONTRATANTE ou cobrando-se diferença remanescente.","14.4. A FULLCHARGE poderá suspender serviços ainda não executados, licenças ou acessos contratualmente dependentes de pagamento, desde que a suspensão seja permitida em lei, comunicada e não comprometa segurança essencial."]},{"title":"CLÁUSULA DÉCIMA QUINTA - GARANTIA DOS EQUIPAMENTOS E SERVIÇOS","paragraphs":["15.1. A garantia contratual será a indicada no Quadro-Resumo e no termo do fabricante, sendo complementar à garantia legal aplicável. O prazo contará de [ENTREGA/COMISSIONAMENTO], conforme especificado.","15.2. Durante a garantia, constatado defeito coberto, a FULLCHARGE ou assistência autorizada poderá reparar, atualizar, substituir componente ou substituir o equipamento, observados os prazos e direitos previstos em lei.","15.3. A análise técnica poderá exigir acesso remoto, envio de logs, fotografias, vídeos, medições, disponibilização do equipamento ou visita técnica.","15.4. Custos de deslocamento, desmontagem, transporte e reinstalação serão suportados conforme termo de garantia, proposta e legislação aplicável. Em relações de consumo, não haverá exclusão de direitos legalmente assegurados.","15.5. Peças ou equipamentos substituídos poderão ser recolhidos pela FULLCHARGE ou fabricante, passando a integrar o processo de garantia, salvo disposição legal ou comercial diversa."]},{"title":"CLÁUSULA DÉCIMA SEXTA - EXCLUSÕES DE GARANTIA","paragraphs":["16.1. Sem prejuízo da garantia legal, a garantia contratual não cobre defeitos comprovadamente causados por: instalação por terceiro em desacordo com manual; modificação não autorizada; acidente, colisão ou vandalismo; descarga atmosférica ou surto fora das condições de proteção; inundação; incêndio externo; rede elétrica inadequada; falta de aterramento; uso fora das especificações; desgaste normal; limpeza imprópria; pragas; agentes químicos; ou intervenção de pessoa não autorizada.","16.2. A exclusão somente será aplicada quando houver relação comprovada entre a causa externa ou uso inadequado e o defeito reclamado, respeitada a legislação obrigatória.","16.3. Itens consumíveis, acessórios sujeitos a desgaste e danos estéticos que não afetem o funcionamento terão tratamento conforme termo do fabricante e legislação aplicável."]},{"title":"CLÁUSULA DÉCIMA SÉTIMA - PLATAFORMA, CONECTIVIDADE, OCPP E SERVIÇOS DIGITAIS","paragraphs":["17.1. Recursos de monitoramento, cobrança, gestão, aplicativo, conexão por chip, Wi-Fi, Ethernet, OCPP ou plataforma em nuvem somente estarão incluídos pelo prazo e plano expressamente contratados.","17.2. Compatibilidade com plataforma de terceiro dependerá da versão do protocolo, integrações disponíveis, homologação, credenciais e eventuais custos. A simples referência a OCPP não representa garantia de compatibilidade irrestrita com qualquer sistema.","17.3. O CONTRATANTE deverá manter internet, cobertura de sinal, roteador, chip, energia e contas de terceiros, salvo quando incluídos no plano da FULLCHARGE.","17.4. Atualizações de firmware poderão ser realizadas para segurança, correção ou compatibilidade. Alterações que reduzam funcionalidade contratada dependerão de justificativa e tratamento conforme a legislação.","17.5. Serviços recorrentes de plataforma, suporte, meios de pagamento ou gestão de recarga poderão ser regidos por instrumento próprio e não se tornam gratuitos ou perpétuos pela compra da estação."]},{"title":"CLÁUSULA DÉCIMA OITAVA - MANUTENÇÃO PREVENTIVA E ASSISTÊNCIA TÉCNICA","paragraphs":["18.1. A manutenção preventiva deverá seguir o manual, a intensidade de uso e o ambiente de instalação. Salvo contratação expressa, manutenção periódica, limpeza, inspeções e peças de desgaste não estão incluídas no preço de venda.","18.2. Chamados serão registrados pelos canais oficiais [E-MAIL/TELEFONE/PORTAL], com identificação da estação, local, número de série, descrição da falha e evidências disponíveis.","18.3. Atendimento fora da garantia ou decorrente de causa não coberta será orçado previamente."]},{"title":"CLÁUSULA DÉCIMA NONA - ALTERAÇÕES, SERVIÇOS ADICIONAIS E PARALISAÇÃO","paragraphs":["19.1. Alterações solicitadas pelo CONTRATANTE serão formalizadas por proposta complementar ou aditivo, com impacto em preço, prazo e responsabilidades.","19.2. O prazo será prorrogado pelo período de atraso imputável ao CONTRATANTE, caso fortuito, força maior, indisponibilidade de importação, restrição logística, greve, ato de autoridade, condição climática impeditiva ou falta de segurança, desde que o evento seja comunicado e comprovado quando possível.","19.3. A paralisação prolongada por responsabilidade do CONTRATANTE poderá gerar custos de desmobilização, armazenamento e remobilização."]},{"title":"CLÁUSULA VIGÉSIMA - RESCISÃO E CANCELAMENTO","paragraphs":["20.1. O contrato poderá ser rescindido por descumprimento relevante não sanado no prazo de [10] dias úteis após notificação, salvo urgência, impossibilidade de cura ou hipótese legal de rescisão imediata.","20.2. No cancelamento imotivado pelo CONTRATANTE após aceite do pedido, serão apurados equipamentos já adquiridos ou personalizados, serviços executados, despesas não recuperáveis, tributos e perdas comprovadas, observada a legislação aplicável e vedada vantagem excessiva.","20.3. Quando a contratação ocorrer fora do estabelecimento comercial e estiver submetida ao Código de Defesa do Consumidor, será respeitado o direito de arrependimento no prazo legal, quando aplicável.","20.4. A rescisão não prejudicará valores vencidos, garantias, confidencialidade, proteção de dados, propriedade intelectual e direitos decorrentes da reserva de domínio."]},{"title":"CLÁUSULA VIGÉSIMA PRIMEIRA - RESPONSABILIDADE E SEGURANÇA","paragraphs":["21.1. Cada Parte responderá pelos danos diretos que causar por ação ou omissão comprovada, na medida de sua responsabilidade, sem exclusão de direitos indisponíveis.","21.2. A FULLCHARGE não responderá por indisponibilidade causada por veículo, rede elétrica, concessionária, internet, plataforma ou meio de pagamento de terceiro, obra civil, uso indevido ou intervenção não autorizada.","21.3. O CONTRATANTE deverá manter sinalização, proteção contra impacto, iluminação, controle de acesso, inspeção visual e regras de uso compatíveis com o local e o público atendido.","21.4. Nenhuma cláusula excluirá responsabilidade que não possa ser afastada por lei, inclusive por vício, defeito, dolo, culpa grave ou violação de direitos do consumidor, quando aplicável."]},{"title":"CLÁUSULA VIGÉSIMA SEGUNDA - CASO FORTUITO E FORÇA MAIOR","paragraphs":["22.1. A Parte impedida por evento imprevisível ou inevitável deverá comunicar a outra com brevidade, indicando impactos e medidas de mitigação.","22.2. Os prazos afetados serão suspensos ou prorrogados pelo período razoavelmente necessário. Se a impossibilidade persistir por mais de [90] dias, as Partes negociarão continuidade, substituição ou encerramento, com acerto dos valores já executados."]},{"title":"CLÁUSULA VIGÉSIMA TERCEIRA - PROTEÇÃO DE DADOS PESSOAIS","paragraphs":["23.1. As Partes tratarão dados pessoais necessários à proposta, faturamento, entrega, instalação, suporte, garantia, cobrança, segurança e execução do contrato, observando a Lei Geral de Proteção de Dados e princípios de finalidade, adequação, necessidade e segurança.","23.2. Dados poderão ser compartilhados, no limite necessário, com transportadoras, instaladores, fabricantes, plataformas, instituições financeiras, seguradoras, autoridades e prestadores envolvidos na execução ou no cumprimento de obrigação legal.","23.3. Quando a estação ou plataforma coletar dados de usuários finais, a definição de controlador e operador, finalidades, retenção, segurança e atendimento aos titulares deverá constar do plano de plataforma ou instrumento específico.","23.4. Solicitações de titulares poderão ser encaminhadas para [CANAL DE PRIVACIDADE DA FULLCHARGE]."]},{"title":"CLÁUSULA VIGÉSIMA QUARTA - CONFIDENCIALIDADE E PROPRIEDADE INTELECTUAL","paragraphs":["24.1. Informações técnicas, comerciais, credenciais, projetos, desenhos, software e documentação não pública recebidos em razão do contrato serão usados somente para sua execução e protegidos contra acesso indevido.","24.2. A venda do equipamento não transfere ao CONTRATANTE direitos sobre marcas, firmware, software, código-fonte, projetos ou documentação proprietária, além da licença de uso necessária à operação contratada.","24.3. É vedada engenharia reversa, cópia, remoção de marca ou exploração comercial de software e documentação, salvo autorização ou permissão legal."]},{"title":"CLÁUSULA VIGÉSIMA QUINTA - INTEGRIDADE E CONFORMIDADE","paragraphs":["25.1. As Partes declaram que atuarão em conformidade com a legislação aplicável, incluindo normas anticorrupção, trabalhistas, ambientais, fiscais e de segurança.","25.2. Nenhuma Parte oferecerá vantagem indevida a agente público ou privado em conexão com este contrato."]},{"title":"CLÁUSULA VIGÉSIMA SEXTA - COMUNICAÇÕES E ASSINATURA ELETRÔNICA","paragraphs":["26.1. Comunicações formais serão enviadas aos endereços e e-mails indicados no cadastro ou no Quadro-Resumo. Alterações deverão ser informadas por escrito.","26.2. O contrato poderá ser assinado fisicamente ou por meio eletrônico capaz de comprovar autoria e integridade, inclusive plataforma de assinatura, produzindo os mesmos efeitos jurídicos.","26.3. A assinatura por duas testemunhas é recomendada para reforço da força executiva do instrumento, quando cabível."]},{"title":"CLÁUSULA VIGÉSIMA SÉTIMA - DISPOSIÇÕES FINAIS","paragraphs":["27.1. A nulidade de uma disposição não afetará as demais, devendo as Partes substituí-la por condição válida que preserve, na maior medida possível, sua finalidade econômica e jurídica.","27.2. A cessão do contrato pelo CONTRATANTE dependerá de anuência escrita da FULLCHARGE enquanto houver saldo em aberto ou reserva de domínio, sem prejuízo dos direitos legais aplicáveis.","27.3. A eventual omissão será resolvida pela legislação brasileira, observados boa-fé, equilíbrio contratual e normas obrigatórias de proteção do consumidor."]},{"title":"CLÁUSULA VIGÉSIMA OITAVA - FORO","paragraphs":["28.1. Fica eleito o foro da Comarca de [CIDADE/UF DA SEDE DA FULLCHARGE], com renúncia a outro, quando legalmente permitido. Nas relações de consumo, prevalecerá o foro assegurado pela legislação ao consumidor.","E, por estarem de acordo, as Partes assinam este instrumento em [NÚMERO] vias ou eletronicamente, juntamente com as testemunhas."]}];
-        window.FC_CONTRACT_FIELD_IDS = [
-            'c-contract-number','c-sign-city','c-sign-date','c-full-razao','c-full-cnpj','c-full-end',
-            'c-full-rep','c-full-rep-cpf','c-full-rep-cargo','c-full-foro','c-full-support','c-full-privacy',
-            'c-client-name','c-client-doc','c-client-end','c-client-rep','c-client-rep-cpf','c-client-rep-cargo',
-            'c-payment','c-freight','c-delivery-deadline','c-install-deadline','c-guarantee',
-            'c-correction-index','c-registration-cost','c-warranty-start','c-platform','c-install-scope',
-            'c-witness1','c-witness1-cpf','c-witness2','c-witness2-cpf'
-        ];
+        window.FC_CONTRACT_CLAUSES = [{"title":"CLÁUSULA PRIMEIRA - DOCUMENTOS INTEGRANTES E ORDEM DE PREVALÊNCIA","paragraphs":["1.1. Integram este contrato: (i) o Quadro-Resumo; (ii) a proposta comercial identificada no Quadro-Resumo; (iii) o Anexo I - Equipamentos e Condições Comerciais; (iv) o Anexo II - Escopo de Instalação e Requisitos Técnicos, quando aplicável; e (v) o Anexo III - Termo de Entrega, Instalação e Comissionamento.","1.2. Em caso de conflito, prevalecerão, nesta ordem: o Quadro-Resumo, os aditivos assinados, este contrato, a proposta comercial e os anexos técnicos."]},{"title":"CLÁUSULA SEGUNDA - OBJETO","paragraphs":["2.1. O objeto é o fornecimento, pela FULLCHARGE ao CONTRATANTE, da(s) estação(ões) de recarga para veículos elétricos descrita(s) no Anexo I, com seus acessórios, documentos e, quando expressamente contratado, serviços de entrega, instalação elétrica, configuração, integração, ativação e comissionamento.","2.2. A modalidade efetivamente contratada será exclusivamente a marcada no Quadro-Resumo e detalhada na proposta comercial.","2.3. Serviços, materiais, obras, adequações ou integrações não descritos de modo expresso serão considerados fora do escopo e dependerão de orçamento e aceite adicionais."]},{"title":"CLÁUSULA TERCEIRA - IDENTIFICAÇÃO E ESPECIFICAÇÕES DOS EQUIPAMENTOS","paragraphs":["3.1. Cada estação deverá ser perfeitamente individualizada por marca, modelo, potência, padrão e quantidade de conectores e, antes da entrega definitiva, por número de série. A identificação constará do Anexo I, da nota fiscal ou do Termo de Entrega.","3.2. A FULLCHARGE poderá substituir componente ou equipamento por outro de desempenho e qualidade equivalentes ou superiores somente mediante comunicação e concordância do CONTRATANTE, quando a substituição alterar característica relevante da proposta.","3.3. A potência nominal da estação não significa que todo veículo receberá a potência máxima. A potência efetiva depende, entre outros fatores, do veículo, estado de carga da bateria, temperatura, protocolo de comunicação, disponibilidade elétrica do local, compartilhamento de potência e configuração operacional."]},{"title":"CLÁUSULA QUARTA - PREÇO","paragraphs":["4.1. O preço total da contratação é de R$ [VALOR] ([VALOR POR EXTENSO]), conforme composição prevista no Quadro-Resumo e no Anexo I.","4.2. O preço abrange somente os equipamentos, serviços e materiais expressamente descritos. Tributos, frete, seguro, instalação, obras civis, aumento de demanda, adequações da entrada de energia, transformadores, subestações, internet, chip de dados e licenças de plataforma somente estarão incluídos quando assim indicado.","4.3. Qualquer mudança de escopo, quantidade, distância de cabos, condição do local ou requisito técnico poderá gerar aditivo de preço e prazo, sujeito a aceite prévio do CONTRATANTE."]},{"title":"CLÁUSULA QUINTA - CONDIÇÕES DE PAGAMENTO, REAJUSTE E VARIAÇÃO CAMBIAL","paragraphs":["5.1. O pagamento será realizado conforme datas, percentuais, valores e meios indicados no Quadro-Resumo e na proposta comercial.","5.2. O atraso sujeitará o CONTRATANTE, sem prejuízo de cobrança e demais medidas admitidas em lei, à multa moratória de 2% sobre a parcela vencida, juros de mora de 1% ao mês calculados proporcionalmente aos dias de atraso e atualização monetária pelo índice INPC.","5.3. A tolerância eventual da FULLCHARGE quanto ao atraso ou descumprimento não constituirá novação, renúncia ou alteração contratual.","5.4. Quando a opção “variação cambial aplicável” estiver marcada, a parcela do preço expressamente vinculada a equipamento importado será ajustada conforme a fórmula e a data-base indicadas na proposta comercial, utilizando a taxa PTAX de venda do dólar dos Estados Unidos divulgada pelo Banco Central do Brasil ou outro critério objetivo ali definido. Na ausência de marcação e fórmula, não haverá ajuste cambial.","5.5. Em venda parcelada a consumidor, o contrato e a proposta deverão informar, quando aplicável, preço à vista, total a prazo, quantidade e valor das parcelas, juros e demais acréscimos exigidos pela legislação."]},{"title":"CLÁUSULA SEXTA - FATURAMENTO, TRIBUTOS E DOCUMENTOS FISCAIS","paragraphs":["6.1. A nota fiscal será emitida conforme a natureza da operação e os dados cadastrais fornecidos pelo CONTRATANTE.","6.2. O CONTRATANTE deverá conferir razão social, CNPJ/CPF, inscrição estadual, endereço e demais dados antes do faturamento, respondendo pelos custos decorrentes de correções causadas por informação incorreta.","6.3. Benefícios fiscais, retenções ou regimes especiais somente serão considerados se comprovados tempestivamente pelo CONTRATANTE e aceitos segundo a legislação aplicável."]},{"title":"CLÁUSULA SÉTIMA - PRAZO, ENTREGA, FRETE E TRANSFERÊNCIA DOS RISCOS","paragraphs":["7.1. O prazo de entrega começará no evento indicado no Quadro-Resumo, podendo ser condicionado ao pagamento da entrada, aprovação do projeto, confirmação do pedido, disponibilidade do equipamento, liberação de crédito ou envio de documentos.","7.2. O frete seguirá a modalidade marcada no Quadro-Resumo. Na entrega, o CONTRATANTE deverá disponibilizar acesso, responsável para recebimento e condições seguras para descarga e armazenamento.","7.3. Os riscos de perda, avaria, furto e deterioração passam ao CONTRATANTE a partir da entrega física e assinatura do comprovante de recebimento, ainda que a propriedade permaneça reservada à FULLCHARGE até a quitação integral do preço.","7.4. A recusa injustificada, impossibilidade de acesso, ausência de responsável ou falta de condições para descarga poderá gerar armazenagem, nova tentativa de entrega, frete adicional e prorrogação do prazo, que correrão às expensas do CONTRATANTE."]},{"title":"CLÁUSULA OITAVA - ESCOPO DA INSTALAÇÃO","paragraphs":["8.1. A instalação somente integra o objeto quando expressamente marcada no Quadro-Resumo e detalhada no Anexo II.","8.2. Quando contratada a instalação padrão para estações de 30 kW, 40 kW ou 60 kW, e desde que essa condição conste da proposta, o escopo comercial padrão poderá compreender instalação elétrica com até 20 metros de percurso e cabo de 50 mm², pelo valor de R$ 6.000,00 (seis mil reais). Distâncias excedentes poderão ser cobradas a R$ 360,00 (trezentos sessenta reais) por metro adicional, após medição e aceite. Essas referências não se aplicam automaticamente a outras potências, configurações ou condições de obra.","8.3. A parte civil não está incluída, salvo previsão expressa. Consideram-se parte civil, entre outros: escavações, valas, recomposição de piso, concreto, base, cobertura, defensas, pintura, sinalização horizontal, drenagem, alvenaria, perfurações especiais e adequações arquitetônicas.","8.4. Também não estão incluídos, salvo previsão expressa: padrão de entrada, aumento de carga ou demanda, transformador, subestação, quadro geral, geração de energia, licenças, aprovações da distribuidora, projeto civil, laudos estruturais, aterramento geral do imóvel e infraestrutura de telecomunicações.","8.5. O comprimento será medido pelo percurso real tecnicamente executável dos cabos, incluindo subidas, descidas, desvios e folgas necessárias, e não pela distância em linha reta."]},{"title":"CLÁUSULA NONA - REQUISITOS TÉCNICOS E CONDIÇÕES DO LOCAL","paragraphs":["9.1. Antes da instalação, o CONTRATANTE deverá garantir que o local disponha de capacidade elétrica, tensão, demanda, proteção, aterramento, ventilação, acessibilidade, espaço e condições estruturais compatíveis com o equipamento.","9.2. Compete ao CONTRATANTE providenciar, quando necessário, estudo de carga, aumento de demanda, aprovação da concessionária, reforço da rede interna, transformador, subestação, sistema de medição, projeto civil e licenças públicas ou condominiais.","9.3. A FULLCHARGE poderá suspender ou adiar a instalação quando identificar risco, divergência de projeto, ausência de energia, inadequação do local, interferência de terceiros ou falta de autorização. O prazo será retomado após a regularização.","9.4. O CONTRATANTE deverá fornecer acesso seguro, autorização para desligamentos, responsável local, área isolada, banheiros quando legalmente exigidos e condições para circulação de equipe e equipamentos.","9.5. Despesas de retorno, mobilização adicional, espera, hospedagem, equipamento de içamento ou trabalho extraordinário causado por condição não informada poderão ser cobradas do CONTRATANTE mediante comprovação e aceite, observada a legislação aplicável."]},{"title":"CLÁUSULA DÉCIMA - OBRIGAÇÕES DA FULLCHARGE","paragraphs":["10.1. Fornecer os equipamentos contratados, acompanhados dos documentos aplicáveis, e executar os serviços incluídos com pessoal próprio ou terceiros qualificados.","10.2. Observar as normas técnicas, de segurança e regulamentares aplicáveis ao escopo contratado, bem como as recomendações do fabricante.","10.3. Informar ao CONTRATANTE os requisitos relevantes de instalação, uso, conectividade, garantia e manutenção.","10.4. Entregar manual, termo de garantia e orientações de operação disponíveis para o modelo contratado, em meio físico ou digital.","10.5. Manter canal de atendimento para abertura de chamados durante o período e nas condições de garantia."]},{"title":"CLÁUSULA DÉCIMA PRIMEIRA - OBRIGAÇÕES DO CONTRATANTE","paragraphs":["11.1. Pagar pontualmente os valores contratados e fornecer informações, documentos e aprovações necessários.","11.2. Preparar o local e cumprir os requisitos técnicos, civis, elétricos, de rede e de segurança não incluídos no escopo da FULLCHARGE.","11.3. Utilizar o equipamento conforme manual, finalidade, limites de potência e orientações técnicas, impedindo intervenção de pessoas não autorizadas.","11.4. Zelar pela estação desde a entrega, protegendo-a contra impacto, vandalismo, inundação, agentes químicos, sobretemperatura, uso indevido e acesso não autorizado.","11.5. Manter conectividade, energia, licenças e serviços de terceiros necessários ao funcionamento, quando não contratados da FULLCHARGE.","11.6. Comunicar defeitos sem demora, preservar registros e permitir diagnóstico e acesso técnico em data razoável."]},{"title":"CLÁUSULA DÉCIMA SEGUNDA - INSTALAÇÃO, TESTES, COMISSIONAMENTO E ACEITE","paragraphs":["12.1. Quando contratado, o comissionamento (configuração do equipamento, plataforma de monitoramento, plataforma de cobrança) compreenderá os testes funcionais definidos pela FULLCHARGE e pelo fabricante, configuração básica e orientação inicial ao responsável indicado pelo CONTRATANTE.","12.2. A conclusão será formalizada pelo Termo de Entrega, Instalação e Comissionamento. O CONTRATANTE deverá registrar ressalvas aparentes no próprio termo ou em até 05 (cinco) dias úteis, sem prejuízo dos direitos legais referentes a vícios ocultos.","12.3. O uso comercial ou operacional da estação sem ressalva relevante constituirá evidência de recebimento, sem afastar garantia legal ou contratual.","12.4. Falhas causadas por veículo incompatível, limitação do veículo, rede elétrica, internet, plataforma de terceiros ou infraestrutura externa não caracterizam, por si só, defeito da estação."]},{"title":"CLÁUSULA DÉCIMA TERCEIRA - RESERVA DE DOMÍNIO","paragraphs":["13.1. Nos termos dos arts. 521 e seguintes do Código Civil, a FULLCHARGE reserva para si a propriedade da(s) estação(ões) de recarga e dos acessórios móveis perfeitamente identificáveis no Anexo I, na nota fiscal ou no Termo de Entrega, até o pagamento integral do preço desses bens.","13.2. A transferência da propriedade ao CONTRATANTE ocorrerá somente após a quitação integral do preço. Os riscos sobre os bens, contudo, serão do CONTRATANTE desde a entrega, que deverá mantê-los conservados, segurados quando previsto e livres de danos, ônus ou constrições.","13.3. Enquanto vigente a reserva, o CONTRATANTE não poderá vender, ceder, locar, dar em garantia, remover para outro endereço, alterar identificação, desmontar ou permitir penhora dos bens sem autorização escrita da FULLCHARGE, ressalvados os atos normais de uso e manutenção autorizada.","13.4. A reserva de domínio incide sobre a estação e acessórios móveis identificáveis. Materiais consumíveis, cabos, eletrodutos, dispositivos e obras incorporados definitivamente ao imóvel serão tratados conforme sua natureza jurídica, sem prejuízo do dever de pagamento.","13.5. Em caso de inadimplemento, a FULLCHARGE somente exercerá os direitos de cobrança ou recuperação da posse após a constituição do CONTRATANTE em mora e mediante os procedimentos admitidos em lei, sendo vedada a retirada forçada ou o ingresso no imóvel sem consentimento válido ou ordem competente."]},{"title":"CLÁUSULA DÉCIMA QUARTA - INADIMPLEMENTO E MEDIDAS CABÍVEIS","paragraphs":["14.1. O não pagamento no vencimento constituirá mora, observados os meios legais de notificação, protesto e cobrança.","14.2. Constituído o CONTRATANTE em mora, a FULLCHARGE poderá, conforme a lei e sem cumulação incompatível: (i) cobrar parcelas vencidas e, quando juridicamente cabível, as vincendas; ou (ii) requerer a recuperação da posse dos bens sujeitos à reserva de domínio.","14.3. Na recuperação do bem, serão apurados pagamentos realizados, depreciação, avarias, despesas, tributos, transporte, desmontagem e demais valores legalmente admitidos, devolvendo-se eventual saldo ao CONTRATANTE ou cobrando-se diferença remanescente.","14.4. A FULLCHARGE poderá suspender serviços ainda não executados, licenças ou acessos contratualmente dependentes de pagamento, desde que a suspensão seja permitida em lei, comunicada e não comprometa segurança essencial."]},{"title":"CLÁUSULA DÉCIMA QUINTA - GARANTIA DOS EQUIPAMENTOS E SERVIÇOS","paragraphs":["15.1. A garantia contratual será a indicada no Quadro-Resumo e no termo do fabricante, sendo complementar à garantia legal aplicável. O prazo contará da emissão da respectiva nota fiscal.","15.2. Durante a garantia, constatado defeito coberto, a FULLCHARGE ou assistência autorizada poderá reparar, atualizar, substituir componente ou substituir o equipamento, observados os prazos e direitos previstos em lei.","15.3. A análise técnica poderá exigir acesso remoto, envio de logs, fotografias, vídeos, medições, disponibilização do equipamento ou visita técnica.","15.4. Custos de deslocamento, desmontagem, transporte e reinstalação serão suportados conforme termo de garantia, proposta e legislação aplicável. Em relações de consumo, não haverá exclusão de direitos legalmente assegurados.","15.5. Peças ou equipamentos substituídos poderão ser recolhidos pela FULLCHARGE ou fabricante, passando a integrar o processo de garantia, salvo disposição legal ou comercial diversa."]},{"title":"CLÁUSULA DÉCIMA SEXTA - EXCLUSÕES DE GARANTIA","paragraphs":["16.1. Sem prejuízo da garantia legal, a garantia contratual não cobre defeitos comprovadamente causados por: instalação por terceiro em desacordo com manual; modificação não autorizada; acidente, colisão ou vandalismo; descarga atmosférica ou surto fora das condições de proteção; inundação; incêndio externo; rede elétrica inadequada; falta de aterramento; uso fora das especificações; desgaste normal; limpeza imprópria; pragas; agentes químicos; ou intervenção de pessoa não autorizada.","16.2. A exclusão somente será aplicada quando houver relação comprovada entre a causa externa ou uso inadequado e o defeito reclamado, respeitada a legislação obrigatória.","16.3. Itens consumíveis, acessórios sujeitos a desgaste e danos estéticos que não afetem o funcionamento terão tratamento conforme termo do fabricante e legislação aplicável."]},{"title":"CLÁUSULA DÉCIMA SÉTIMA - PLATAFORMA, CONECTIVIDADE, OCPP E SERVIÇOS DIGITAIS","paragraphs":["17.1. Recursos de monitoramento, cobrança, gestão, aplicativo, conexão por chip, Wi-Fi, Ethernet, OCPP ou plataforma em nuvem somente estarão incluídos pelo prazo e plano expressamente contratados.","17.2. Compatibilidade com plataforma de terceiro dependerá da versão do protocolo, integrações disponíveis, homologação, credenciais e eventuais custos. A simples referência a OCPP não representa garantia de compatibilidade irrestrita com qualquer sistema.","17.3. O CONTRATANTE deverá manter internet, cobertura de sinal, roteador, chip, energia e contas de terceiros, salvo quando incluídos no plano da FULLCHARGE.","17.4. Atualizações de firmware poderão ser realizadas para segurança, correção ou compatibilidade. Alterações que reduzam funcionalidade contratada dependerão de justificativa e tratamento conforme a legislação.","17.5. Serviços recorrentes de plataforma, suporte, meios de pagamento ou gestão de recarga poderão ser regidos por instrumento próprio e não se tornam gratuitos ou perpétuos pela compra da estação."]},{"title":"CLÁUSULA DÉCIMA OITAVA - MANUTENÇÃO PREVENTIVA E ASSISTÊNCIA TÉCNICA","paragraphs":["18.1. A manutenção preventiva deverá seguir o manual, a intensidade de uso e o ambiente de instalação. Salvo contratação expressa, manutenção periódica, limpeza, inspeções e peças de desgaste não estão incluídas no preço de venda.","18.2. Chamados serão registrados pelos canais oficiais, qual seja, telefone (47)99173-2123, com identificação da estação, local, número de série, descrição da falha e evidências disponíveis.","18.3. Atendimento fora da garantia ou decorrente de causa não coberta será orçado previamente."]},{"title":"CLÁUSULA DÉCIMA NONA - ALTERAÇÕES, SERVIÇOS ADICIONAIS E PARALISAÇÃO","paragraphs":["19.1. Alterações solicitadas pelo CONTRATANTE serão formalizadas por proposta complementar ou aditivo, com impacto em preço, prazo e responsabilidades.","19.2. O prazo será prorrogado pelo período de atraso imputável ao CONTRATANTE, caso fortuito, força maior, indisponibilidade de importação, restrição logística, greve, ato de autoridade, condição climática impeditiva ou falta de segurança, desde que o evento seja comunicado e comprovado quando possível.","19.3. A paralisação prolongada por responsabilidade do CONTRATANTE poderá gerar custos de desmobilização, armazenamento e remobilização."]},{"title":"CLÁUSULA VIGÉSIMA - RESCISÃO","paragraphs":["20.1. O presente contrato é celebrado em caráter irrevogável e irretratável, obrigando as partes e seus sucessores ao integral cumprimento das obrigações assumidas, não podendo ser rescindido ou cancelado unilateralmente pelo CONTRATANTE, salvo nas hipóteses expressamente previstas em lei ou mediante concordância formal e escrita da FULLCHARGE.","20.2. Caso o CONTRATANTE, sem justificativa legal ou contratual, manifeste interesse em cancelar, desistir ou deixar de cumprir o contrato após a aceitação da proposta comercial, permanecerá obrigado ao cumprimento integral das obrigações assumidas, facultando-se à FULLCHARGE, a seu exclusivo critério:","20.3. I – exigir o cumprimento específico da obrigação contratual;","20.4. II – promover a cobrança integral dos valores contratados, vencidos e vincendos, quando juridicamente cabível;","20.5. III – aplicar multa contratual equivalente a 20% (vinte por cento) do valor total do contrato, sem prejuízo da cobrança de perdas e danos, lucros cessantes, atualização monetária e juros de mora;","20.6. IV – cobrar todas as despesas decorrentes da inadimplência, inclusive custas judiciais e extrajudiciais, despesas cartorárias, honorários periciais e honorários advocatícios convencionais fixados em 20% (vinte por cento) sobre o valor atualizado do débito, sem prejuízo daqueles eventualmente arbitrados judicialmente;","20.7. V – exercer todos os direitos decorrentes da cláusula de reserva de domínio e das demais garantias previstas neste contrato.","20.8. O eventual encerramento da relação contratual, por qualquer motivo, não prejudicará a exigibilidade dos valores já constituídos, das multas, das indenizações, das garantias, da cláusula de reserva de domínio, das obrigações de confidencialidade, de proteção de dados e de propriedade intelectual, que permanecerão plenamente válidas e exigíveis."]},{"title":"CLÁUSULA VIGÉSIMA PRIMEIRA - RESPONSABILIDADE E SEGURANÇA","paragraphs":["21.1. Cada Parte responderá pelos danos diretos que causar por ação ou omissão comprovada, na medida de sua responsabilidade, sem exclusão de direitos indisponíveis.","21.2. A FULLCHARGE não responderá por indisponibilidade causada por veículo, rede elétrica, concessionária, internet, plataforma ou meio de pagamento de terceiro, obra civil, uso indevido ou intervenção não autorizada.","21.3. O CONTRATANTE deverá manter sinalização, proteção contra impacto, iluminação, controle de acesso, inspeção visual e regras de uso compatíveis com o local e o público atendido.","21.4. Nenhuma cláusula excluirá responsabilidade que não possa ser afastada por lei, inclusive por vício, defeito, dolo, culpa grave ou violação de direitos do consumidor, quando aplicável."]},{"title":"CLÁUSULA VIGÉSIMA SEGUNDA - CASO FORTUITO E FORÇA MAIOR","paragraphs":["22.1. A Parte impedida por evento imprevisível ou inevitável deverá comunicar a outra com brevidade, indicando impactos e medidas de mitigação.","22.2. Os prazos afetados serão suspensos ou prorrogados pelo período razoavelmente necessário. Se a impossibilidade persistir por mais de 90 (noventa) dias, as Partes negociarão continuidade, substituição ou encerramento, com acerto dos valores já executados."]},{"title":"CLÁUSULA VIGÉSIMA TERCEIRA - PROTEÇÃO DE DADOS PESSOAIS","paragraphs":["23.1. As Partes tratarão dados pessoais necessários à proposta, faturamento, entrega, instalação, suporte, garantia, cobrança, segurança e execução do contrato, observando a Lei Geral de Proteção de Dados e princípios de finalidade, adequação, necessidade e segurança.","23.2. Dados poderão ser compartilhados, no limite necessário, com transportadoras, instaladores, fabricantes, plataformas, instituições financeiras, seguradoras, autoridades e prestadores envolvidos na execução ou no cumprimento de obrigação legal.","23.3. Quando a estação ou plataforma coletar dados de usuários finais, a definição de controlador e operador, finalidades, retenção, segurança e atendimento aos titulares deverá constar do plano de plataforma ou instrumento específico.","23.4. Solicitações de titulares poderão ser encaminhadas para [CANAL DE PRIVACIDADE DA FULLCHARGE]."]},{"title":"CLÁUSULA VIGÉSIMA QUARTA - CONFIDENCIALIDADE E PROPRIEDADE INTELECTUAL","paragraphs":["24.1. Informações técnicas, comerciais, credenciais, projetos, desenhos, software e documentação não pública recebidos em razão do contrato serão usados somente para sua execução e protegidos contra acesso indevido.","24.2. A venda do equipamento não transfere ao CONTRATANTE direitos sobre marcas, firmware, software, código-fonte, projetos ou documentação proprietária, além da licença de uso necessária à operação contratada.","24.3. É vedada engenharia reversa, cópia, remoção de marca ou exploração comercial de software e documentação, salvo autorização ou permissão legal."]},{"title":"CLÁUSULA VIGÉSIMA QUINTA - INTEGRIDADE E CONFORMIDADE","paragraphs":["25.1. As Partes declaram que atuarão em conformidade com a legislação aplicável, incluindo normas anticorrupção, trabalhistas, ambientais, fiscais e de segurança.","25.2. Nenhuma Parte oferecerá vantagem indevida a agente público ou privado em conexão com este contrato."]},{"title":"CLÁUSULA VIGÉSIMA SEXTA - COMUNICAÇÕES E ASSINATURA ELETRÔNICA","paragraphs":["26.1. Comunicações formais serão enviadas aos endereços e e-mails indicados no cadastro ou no Quadro-Resumo. Alterações deverão ser informadas por escrito.","26.2. O contrato poderá ser assinado fisicamente ou por meio eletrônico capaz de comprovar autoria e integridade, inclusive plataforma de assinatura, produzindo os mesmos efeitos jurídicos.","26.3. A assinatura por duas testemunhas é recomendada para reforço da força executiva do instrumento, quando cabível."]},{"title":"CLÁUSULA VIGÉSIMA SÉTIMA - DISPOSIÇÕES FINAIS","paragraphs":["27.1. A nulidade de uma disposição não afetará as demais, devendo as Partes substituí-la por condição válida que preserve, na maior medida possível, sua finalidade econômica e jurídica.","27.2. A cessão do contrato pelo CONTRATANTE dependerá de anuência escrita da FULLCHARGE enquanto houver saldo em aberto ou reserva de domínio, sem prejuízo dos direitos legais aplicáveis.","27.3. A eventual omissão será resolvida pela legislação brasileira, observados boa-fé, equilíbrio contratual.","27.4. O presente contrato constitui título executivo extrajudicial, nos termos do art. 784, III, do Código de Processo Civil.","27.5. O presente contrato é celebrado em caráter irrevogável e irretratável, obrigando as partes, seus herdeiros e sucessores.","27.6. As partes desde já acordam que, responderão por perdas e danos aquela que infringir quaisquer cláusulas deste contrato.","27.7. As Partes declaram entre si e perante a quem possa interessar que tiveram conhecimento prévio dos termos deste contrato e demais documentos nele referidos, compreendem com exatidão todo o seu alcance, bem como, todas as informações do negócio ora celebrado foram colocadas de forma adequada e clara com especificação correta.","27.8. Declaram as partes que foram devidamente esclarecidas de todos os termos do contrato ora firmado, bem como lhes foi franqueado a análise e assessoria jurídica para esclarecimentos de dúvidas sobre os termos do contrato, documentos relacionados e anexos ao instrumento."]},{"title":"CLÁUSULA VIGÉSIMA OITAVA - DA ASSINATURA ELETRÔNICA","paragraphs":["28.1. As Partes desde já acordam que o presente Contrato poderá ser assinado eletronicamente, sendo este considerado meio válido e eficaz entre as Partes e suficiente para sua vinculação e comprovação de sua autoria e integridade nos termos do artigo 10, §2º, da Medida Provisória nº 2.200-02, de 24 de agosto de 2001, ainda que realizada com a utilização de processo de certificação diferente do disponibilizado pela Infraestrutura de Chaves Públicas Brasileira - ICP-Brasil, que equivalerá a via original deste Contrato para todos os fins, incluindo para os fins do Artigo 425 do Código de Processo Civil."]},{"title":"CLÁUSULA VIGÉSIMA NONA - FORO","paragraphs":["29.1. Fica eleito o foro da Comarca de Jaraguá do Sul/SC, com renúncia a outro, quando legalmente permitido. Nas relações de consumo, prevalecerá o foro assegurado pela legislação ao consumidor."]}];
         window.FC_CONTRACT_COMPANY_FIELDS = [
             'c-full-razao','c-full-cnpj','c-full-end','c-full-rep','c-full-rep-cpf',
             'c-full-rep-cargo','c-full-foro','c-full-support','c-full-privacy'
         ];
+
+        // Lista centralizada dos campos editáveis do contrato.
+        // Esta definição é necessária para carregar/salvar os dados e evita que o botão
+        // "Gerar contrato automático" seja interrompido durante o preenchimento.
+        window.FC_CONTRACT_FIELD_IDS = Array.from(document.querySelectorAll(
+            '#screen-contract input[id^="c-"]:not([type="checkbox"]), ' +
+            '#screen-contract select[id^="c-"], ' +
+            '#screen-contract textarea[id^="c-"]'
+        )).map(el => el.id).filter(Boolean);
 
         window.isTipoVendaContrato = function(tipo) {
             const t = tipo === 'venda' ? 'venda_entrega' : String(tipo || 'venda_entrega');
@@ -4983,7 +5282,7 @@ ${dica}`;
             window.setContractValue('c-delivery-deadline', p.implantacao || 'Conforme proposta comercial');
             window.setContractValue('c-install-deadline', installation ? (p.implantacao || 'Conforme cronograma comercial') : 'Não aplicável');
             window.setContractValue('c-guarantee', p.garantia || '12 meses');
-            window.setContractValue('c-correction-index', 'IPCA');
+            window.setContractValue('c-correction-index', 'INPC');
             window.setContractValue('c-registration-cost', 'CONTRATANTE');
             window.setContractValue('c-warranty-start', installation ? 'comissionamento' : 'entrega');
             window.setContractValue('c-platform', 'Não incluída, salvo item expresso na proposta comercial');
@@ -5044,7 +5343,7 @@ ${dica}`;
                 deliveryDeadline: window.contractPlaceholder(window.contractValue('c-delivery-deadline'), 'PRAZO DE ENTREGA'),
                 installationDeadline: window.contractValue('c-install-deadline', installation ? 'Conforme cronograma' : 'Não aplicável'),
                 guarantee: window.contractValue('c-guarantee', p.garantia || '12 meses'),
-                correctionIndex: window.contractValue('c-correction-index', 'IPCA'),
+                correctionIndex: window.contractValue('c-correction-index', 'INPC'),
                 registrationCost: window.contractValue('c-registration-cost', 'CONTRATANTE'),
                 warrantyStart: window.contractValue('c-warranty-start', installation ? 'comissionamento' : 'entrega'),
                 platform: window.contractValue('c-platform', 'Não incluída, salvo item expresso'),
@@ -5085,33 +5384,13 @@ ${dica}`;
 
         window.personalizeContractClauseText = function(text, d) {
             let out = String(text || '');
-            out = out.replace('R$ [VALOR] ([VALOR POR EXTENSO])', `${d.total} (valor total indicado no Quadro-Resumo)`);
-            out = out.replace('[IPCA/OUTRO ÍNDICE CONTRATADO]', d.correctionIndex);
-            out = out.replace('[CONTRATANTE/FULLCHARGE]', d.registrationCost);
-            out = out.replace('[ENTREGA/COMISSIONAMENTO]', d.warrantyStart);
-            out = out.replace('[E-MAIL/TELEFONE/PORTAL]', d.company.suporte);
-            out = out.replace('[CANAL DE PRIVACIDADE DA FULLCHARGE]', d.company.privacidade);
-            out = out.replace('[CIDADE/UF DA SEDE DA FULLCHARGE]', d.company.foro);
-            out = out.replace('[NÚMERO]', '2 (duas)');
-            out = out.replace('[5]', '5');
-            out = out.replace('[10]', '10');
-            out = out.replace('[90]', '90');
-            if (out.startsWith('2.1.')) out += ` Para esta contratação, os equipamentos adquiridos são: ${d.equipmentSummary}.`;
-            if (out.startsWith('3.1.')) out += ` A relação individualizada consta do Quadro do Objeto Adquirido e do Anexo I deste instrumento.`;
-            if (out.startsWith('5.1.')) out += ` Condição preenchida: ${d.payment}.`;
-            if (out.startsWith('5.4.')) out += d.currency
-                ? ' Para esta contratação, a variação cambial foi marcada como aplicável nos limites da proposta comercial.'
-                : ' Para esta contratação, a variação cambial não foi marcada como aplicável.';
-            if (out.startsWith('7.2.')) out += ` Modalidade desta contratação: ${d.freight}.`;
-            if (out.startsWith('8.1.')) out += d.installation
-                ? ' Nesta contratação, a instalação está incluída nos limites descritos no Anexo II e na proposta.'
-                : ' Nesta contratação, a instalação não está incluída.';
-            if (out.startsWith('12.1.')) out += d.installation
-                ? ' O comissionamento integra o escopo contratado.'
-                : ' O comissionamento não integra o objeto, salvo item expresso.';
-            if (out.startsWith('15.1.')) out += ` Garantia indicada: ${d.guarantee}.`;
+            const precoTotalComExtenso = window.contractPriceWithWords(d.total);
+            out = out.replace(/R\$ \[VALOR\] \(\[VALOR POR EXTENSO\]\)/g, precoTotalComExtenso);
+            out = out.replace(/\[CANAL DE PRIVACIDADE DA FULLCHARGE\]/g, d.company.privacidade);
+            out = out.replace(/\[NÚMERO \/ REVISÃO \/ DATA\]/g, `${d.proposal.id || '—'} / ${d.proposal.revisao || '00'} / ${d.proposal.data || '—'}`);
             return out;
         };
+
 
         window.contractClauseHtml = function(clause, d) {
             const isDomain = String(clause.title || '').includes('DÉCIMA TERCEIRA');
@@ -5124,37 +5403,49 @@ ${dica}`;
 
         window.renderContractCoverPage = function(d, totalPages) {
             const p = d.proposal;
-            const mode = d.noDelivery
-                ? 'Somente fornecimento — retirada pelo cliente'
-                : (d.installation ? 'Fornecimento + entrega + instalação e comissionamento' : 'Fornecimento + entrega');
+            const location = window.contractProposalAddress(p) || d.client.endereco;
             return `<section class="contract-page contract-cover-page">
                 ${window.contractPageHeader(d, 1, 'Contrato comercial')}
-                <div class="contract-cover-title">Contrato de fornecimento de estação de recarga veicular</div>
+                <div class="contract-cover-title">Fornecimento de estações de recarga veicular</div>
                 <div class="contract-cover-subtitle">Com reserva de domínio</div>
-                <p class="contract-kicker">Resumo da contratação</p>
-                <div class="contract-summary-grid">
-                    <div class="contract-summary-card"><small>Contrato</small><strong>${window.contractEscape(d.contractNumber)}</strong></div>
-                    <div class="contract-summary-card"><small>Proposta integrante</small><strong>${window.contractEscape(p.id || '—')} · ${window.contractEscape(p.data || '—')}</strong></div>
-                    <div class="contract-summary-card"><small>Contratante</small><strong>${window.contractEscape(d.client.nome)}</strong></div>
-                    <div class="contract-summary-card"><small>CPF / CNPJ</small><strong>${window.contractEscape(d.client.documento)}</strong></div>
-                    <div class="contract-summary-card"><small>Modalidade</small><strong>${window.contractEscape(mode)}</strong></div>
-                    <div class="contract-summary-card"><small>Preço total</small><strong>${window.contractEscape(d.total)}</strong></div>
-                    <div class="contract-summary-card"><small>Pagamento</small><strong>${window.contractEscape(d.payment)}</strong></div>
-                    <div class="contract-summary-card"><small>Prazo de entrega</small><strong>${window.contractEscape(d.deliveryDeadline)}</strong></div>
-                </div>
-                <div class="contract-object-notice">
-                    <strong>Equipamentos objeto desta compra</strong>
-                    <p>${window.contractEscape(d.equipmentSummary)}</p>
-                    <small>A identificação completa, quantidades, códigos, potência, conectores, valores e números de série constam no Quadro do Objeto Adquirido.</small>
-                </div>
-                <div class="contract-domain-notice">
-                    <strong>Reserva de domínio</strong>
-                    Até a quitação integral do preço, a propriedade das estações e acessórios móveis identificáveis permanece com a FULLCHARGE. Os riscos passam ao CONTRATANTE desde a entrega.
-                </div>
-                <div class="contract-cover-note">
-                    A qualificação completa das Partes, o local de entrega ou instalação e as demais condições específicas constam na página seguinte. A proposta comercial integra este instrumento.
-                </div>
+                <p class="contract-kicker">Dados da contratação</p>
+                <table class="contract-table"><tbody>
+                    <tr><th>Contratada</th><td>${window.contractEscape(d.company.razao)} - “FULLCHARGE”</td></tr>
+                    <tr><th>Contratante</th><td>${window.contractEscape(d.client.nome)}</td></tr>
+                    <tr><th>Proposta comercial</th><td>${window.contractEscape(p.id || '—')} - ${window.contractEscape(p.data || '—')}</td></tr>
+                    <tr><th>Projeto / local</th><td>${window.contractEscape(location)}</td></tr>
+                    <tr><th>Data</th><td>${window.contractEscape(d.signDate)}</td></tr>
+                </tbody></table>
+                <div class="contract-cover-note"><strong>Energia que conecta. Mobilidade que transforma.</strong><br>Soluções de recarga FullCharge</div>
                 ${window.contractPageFooter(d, 1, totalPages)}
+            </section>`;
+        };
+
+        window.renderContractSummaryPage = function(d, pageNumber, totalPages) {
+            const mode = d.noDelivery ? '☒ Somente fornecimento ☐ Fornecimento + instalação ☐ Fornecimento + instalação + comissionamento' : (d.installation ? '☐ Somente fornecimento ☐ Fornecimento + instalação ☒ Fornecimento + instalação + comissionamento' : '☐ Somente fornecimento ☒ Fornecimento + instalação ☐ Fornecimento + instalação + comissionamento');
+            const location = window.contractProposalAddress(d.proposal) || d.client.endereco;
+            return `<section class="contract-page">
+                ${window.contractPageHeader(d, pageNumber, 'Contrato comercial | Estações de recarga')}
+                <main class="contract-page-body">
+                    <div class="contract-page-title-row"><h2>Quadro-resumo da contratação</h2></div>
+                    <table class="contract-table"><thead><tr><th>Item</th><th>Condição contratada</th></tr></thead><tbody>
+                        <tr><td>Estação(ões)</td><td>${window.contractEscape(d.equipmentSummary)}</td></tr>
+                        <tr><td>Conector(es)</td><td>${window.contractEscape(d.items.map(window.contractConnectorFromItem).filter(Boolean).join(' / ') || 'Conforme proposta')}</td></tr>
+                        <tr><td>Número(s) de série</td><td>Preencher na emissão da nota fiscal ou no Termo de Entrega</td></tr>
+                        <tr><td>Modalidade</td><td>${mode}</td></tr>
+                        <tr><td>Preço total</td><td>${window.contractEscape(window.contractPriceWithWords(d.total))}</td></tr>
+                        <tr><td>Pagamento</td><td>${window.contractEscape(d.payment)}</td></tr>
+                        <tr><td>Frete</td><td>${window.contractEscape(d.freight)}</td></tr>
+                        <tr><td>Prazo de entrega</td><td>${window.contractEscape(d.deliveryDeadline)}</td></tr>
+                        <tr><td>Prazo de instalação</td><td>${window.contractEscape(d.installationDeadline)}</td></tr>
+                        <tr><td>Garantia contratual</td><td>${window.contractEscape(d.guarantee)}, sem prejuízo da garantia legal aplicável</td></tr>
+                        <tr><td>Local</td><td>${window.contractEscape(location)}</td></tr>
+                        <tr><td>Reserva de domínio</td><td>SIM - a propriedade da estação identificável permanece com a FULLCHARGE até a quitação integral do preço</td></tr>
+                        <tr><td>Variação cambial</td><td>${d.currency ? '☐ Não aplicável ☒ Aplicável conforme Cláusula 5ª e proposta comercial' : '☒ Não aplicável ☐ Aplicável conforme Cláusula 5ª e proposta comercial'}</td></tr>
+                        <tr><td>Proposta integrante</td><td>${window.contractEscape(d.proposal.id || '—')}, revisão ${window.contractEscape(d.proposal.revisao || '00')}, ${window.contractEscape(d.proposal.data || '—')}</td></tr>
+                    </tbody></table>
+                    <p>Este Quadro-Resumo integra o contrato. Em caso de divergência, prevalecerá a condição específica expressamente indicada na proposta comercial e neste quadro, desde que não contrarie norma legal obrigatória.</p>
+                </main>${window.contractPageFooter(d, pageNumber, totalPages)}
             </section>`;
         };
 
@@ -5167,10 +5458,10 @@ ${dica}`;
                 <main class="contract-page-body">
                     <div class="contract-page-title-row">
                         <span class="contract-kicker">Instrumento contratual</span>
-                        <h2>Qualificação das Partes</h2>
-                        <p>Identificação da vendedora e do comprador vinculados ao contrato ${window.contractEscape(d.contractNumber)}.</p>
+                        <h2>Contrato de fornecimento e, quando contratada, instalação de estação de recarga veicular com reserva de domínio</h2>
+                        <p>Pelo presente instrumento particular, de um lado:</p>
                     </div>
-                    <div class="contract-party-box"><strong>CONTRATADA / VENDEDORA:</strong> ${window.contractEscape(d.company.razao)}, nome fantasia IG ENERGIA, inscrita no CNPJ sob nº ${window.contractEscape(d.company.cnpj)}, com sede em ${window.contractEscape(d.company.endereco)}, representada por ${window.contractEscape(d.company.representante)}, CPF ${window.contractEscape(d.company.representanteCpf)}, ${window.contractEscape(d.company.representanteCargo)}.</div>
+                    <div class="contract-party-box"><strong>CONTRATADA / VENDEDORA:</strong> ${window.contractEscape(d.company.razao)}, nome fantasia FULLCHARGE, inscrita no CNPJ sob nº ${window.contractEscape(d.company.cnpj)}, com sede em ${window.contractEscape(d.company.endereco)}, representada por ${window.contractEscape(d.company.representante)}, CPF ${window.contractEscape(d.company.representanteCpf)}, ${window.contractEscape(d.company.representanteCargo)}.</div>
                     <div class="contract-party-box"><strong>CONTRATANTE / COMPRADOR:</strong> ${window.contractEscape(d.client.nome)}, inscrito(a) no CPF/CNPJ sob nº ${window.contractEscape(d.client.documento)}, com endereço/sede em ${window.contractEscape(d.client.endereco)}, representado(a) por ${window.contractEscape(d.client.representante)}, CPF ${window.contractEscape(d.client.representanteCpf)}, ${window.contractEscape(d.client.representanteCargo)}.</div>
                     <p class="contract-kicker">Condições específicas</p>
                     <div class="contract-summary-grid">
@@ -5250,7 +5541,7 @@ ${dica}`;
                     <td>${window.contractEscape(power)}</td>
                     <td>${window.contractEscape(connectors)}</td>
                     <td>A preencher na entrega / nota fiscal</td>
-                    <td>${window.contractEscape(item.p || 'Conforme proposta')}</td>
+                    <td>${window.contractEscape(window.contractPriceWithWordsIfMonetary(item.p || 'Conforme proposta'))}</td>
                 </tr>`;
             }).join('') : `<tr><td colspan="7"><strong>Nenhum equipamento foi localizado.</strong> O contrato não deve ser assinado até que os itens da proposta sejam recuperados ou preenchidos.</td></tr>`;
 
@@ -5269,7 +5560,7 @@ ${dica}`;
                     <div class="contract-summary-grid compact">
                         <div><span>Contratante</span><strong>${window.contractEscape(d.client.nome)}</strong></div>
                         <div><span>Documento</span><strong>${window.contractEscape(d.client.documento)}</strong></div>
-                        <div><span>Valor total</span><strong>${window.contractEscape(d.total)}</strong></div>
+                        <div><span>Valor total</span><strong>${window.contractEscape(window.contractPriceWithWords(d.total))}</strong></div>
                     </div>
                     <div class="contract-domain-notice">
                         <strong>Bens submetidos à reserva de domínio</strong>
@@ -5446,16 +5737,17 @@ ${dica}`;
 
         window.contractSignatureSectionHtml = function(d) {
             return `<section class="contract-final-signatures">
-                <p>E, por estarem justas e contratadas, as Partes assinam este instrumento, inclusive por meio eletrônico, juntamente com as testemunhas abaixo.</p>
-                <p class="contract-sign-date">${window.contractEscape(d.signCity)}, ${window.contractEscape(d.signDate)}.</p>
+                <p>E, por estarem de acordo, as Partes assinam este instrumento em 02 (duas) vias ou eletronicamente, juntamente com as testemunhas.</p>
+                <p class="contract-sign-date">${window.contractEscape(d.signCity)}, ${window.contractEscape(d.signDate)}. Proposta integrante: ${window.contractEscape(d.proposal.id || '—')} / ${window.contractEscape(d.proposal.revisao || '00')} / ${window.contractEscape(d.proposal.data || '—')}</p>
                 <div class="contract-signature-grid">
-                    <div><span></span><strong>${window.contractEscape(d.company.razao)}</strong><small>FULLCHARGE / CONTRATADA</small></div>
-                    <div><span></span><strong>${window.contractEscape(d.client.nome)}</strong><small>CONTRATANTE</small></div>
-                    <div><span></span><strong>${window.contractEscape(d.witness1 || 'TESTEMUNHA 1')}</strong><small>CPF: ${window.contractEscape(d.witness1Cpf || '________________')}</small></div>
-                    <div><span></span><strong>${window.contractEscape(d.witness2 || 'TESTEMUNHA 2')}</strong><small>CPF: ${window.contractEscape(d.witness2Cpf || '________________')}</small></div>
+                    <div><span></span><strong>FULLCHARGE / CONTRATADA</strong><small>Nome: ${window.contractEscape(d.company.representante)} | Cargo: ${window.contractEscape(d.company.representanteCargo)}</small></div>
+                    <div><span></span><strong>CONTRATANTE</strong><small>Nome: ${window.contractEscape(d.client.representante)} | Cargo: ${window.contractEscape(d.client.representanteCargo)}</small></div>
+                    <div><span></span><strong>TESTEMUNHA 1</strong><small>Nome: ${window.contractEscape(d.witness1 || '________________')} | CPF: ${window.contractEscape(d.witness1Cpf || '________________')}</small></div>
+                    <div><span></span><strong>TESTEMUNHA 2</strong><small>Nome: ${window.contractEscape(d.witness2 || '________________')} | CPF: ${window.contractEscape(d.witness2Cpf || '________________')}</small></div>
                 </div>
             </section>`;
         };
+
 
         window.createContractClausePageElement = function(d, continuation = false) {
             const wrapper = document.createElement('div');
@@ -5584,15 +5876,17 @@ ${dica}`;
             // As cláusulas são paginadas pela altura real do conteúdo. Assim, a próxima
             // cláusula ocupa imediatamente o espaço disponível, sem páginas com grandes vazios.
             const clausePages = window.paginateContractClauses(d);
-            const preliminaryTotal = 5 + clausePages.length;
+            const preliminaryTotal = 6 + clausePages.length;
             let page = 1;
             const pages = [window.renderContractCoverPage(d, preliminaryTotal)];
             page += 1;
-            pages.push(window.renderContractPartiesPage(d, page, preliminaryTotal));
+            pages.push(window.renderContractSummaryPage(d, page, preliminaryTotal));
             page += 1;
-            pages.push(window.renderContractAnnexOne(d, page, preliminaryTotal));
+            pages.push(window.renderContractPartiesPage(d, page, preliminaryTotal));
             pages.push(...clausePages);
             page = 3 + clausePages.length + 1;
+            pages.push(window.renderContractAnnexOne(d, page, preliminaryTotal));
+            page += 1;
             pages.push(window.renderContractAnnexTwo(d, page, preliminaryTotal));
             page += 1;
             pages.push(window.renderContractAnnexThree(d, page, preliminaryTotal));
@@ -5674,12 +5968,21 @@ ${dica}`;
         };
 
         window.abrirContratoDaPropostaAtual = async function() {
-            const proposal = window._previewData || window.todasPropostas?.[window._previewPropostaId];
-            if (!proposal) {
-                alert('Gere ou abra uma proposta antes de criar o contrato.');
-                return;
+            try {
+                const proposal = window._previewData || window.todasPropostas?.[window._previewPropostaId];
+                if (!proposal) {
+                    alert('Gere ou abra uma proposta antes de criar o contrato.');
+                    return;
+                }
+                if (!proposal.id) {
+                    alert('A proposta atual não possui um identificador válido. Salve a proposta e tente novamente.');
+                    return;
+                }
+                await window.abrirContrato(proposal.id, 'preview');
+            } catch (error) {
+                console.error('Erro ao gerar contrato:', error);
+                alert('Não foi possível gerar o contrato.\n\n' + (error?.message || error));
             }
-            return window.abrirContrato(proposal.id, 'preview');
         };
 
         window.voltarDoContrato = function() {
@@ -5702,6 +6005,9 @@ ${dica}`;
                 tipoProposta: window._contractProposal.tipoProposta || 'venda_entrega',
                 cliente: window._contractProposal.cli || '',
                 documento: window._contractProposal.cnpj || '',
+                cliente2: window._contractProposal.cli2 || '',
+                documento2: window._contractProposal.cnpj2 || '',
+                multiDelivery: !!window._contractProposal.multiDelivery,
                 valor: window._contractProposal.total || '',
                 campos: fields,
                 status: 'rascunho',
@@ -5819,6 +6125,279 @@ ${dica}`;
             }
         };
 
+
+        /* ——— Extensão: dois CNPJs e duas entregas no mesmo contrato ——— */
+        window.toggleSecondContractClientUI = function() {
+            const enabled = !!window.contractField('c-second-enabled')?.checked;
+            const panel = document.getElementById('contract-second-client-fields');
+            if (panel) panel.hidden = !enabled;
+            window.scheduleContractRender?.();
+        };
+
+        const fcOriginalCollectContractFormData = window.collectContractFormData;
+        window.collectContractFormData = function() {
+            const data = fcOriginalCollectContractFormData();
+            data['c-second-enabled'] = !!window.contractField('c-second-enabled')?.checked;
+            return data;
+        };
+
+        const fcOriginalApplyContractSavedFields = window.applyContractSavedFields;
+        window.applyContractSavedFields = function(saved) {
+            fcOriginalApplyContractSavedFields(saved);
+            if (saved && saved['c-second-enabled'] !== undefined && window.contractField('c-second-enabled')) {
+                window.contractField('c-second-enabled').checked = !!saved['c-second-enabled'];
+            }
+            window.toggleSecondContractClientUI();
+        };
+
+        const fcOriginalPrefillContractFromProposal = window.prefillContractFromProposal;
+        window.prefillContractFromProposal = function(proposal, companyData = {}, savedContract = {}) {
+            fcOriginalPrefillContractFromProposal(proposal, companyData, savedContract);
+            const p = proposal || {};
+            const hasSecond = !!p.multiDelivery || !!p.cnpj2 || (p.items || []).some(item => String(item.destino) === '2');
+            const useSavedFlag = savedContract && savedContract['c-second-enabled'] !== undefined;
+            if (window.contractField('c-second-enabled')) {
+                window.contractField('c-second-enabled').checked = useSavedFlag ? !!savedContract['c-second-enabled'] : hasSecond;
+            }
+            const address2 = [p.end2, p.bairro2, p.cidade2].filter(Boolean).join(', ');
+            const defaults = {
+                'c-client2-name': p.cli2 || '',
+                'c-client2-doc': p.cnpj2 || '',
+                'c-client2-end': address2,
+                'c-client2-rep': window.contractDigits(p.cnpj2).length === 11 ? (p.cli2 || '') : '',
+                'c-client2-rep-cpf': window.contractDigits(p.cnpj2).length === 11 ? (p.cnpj2 || '') : '',
+                'c-client2-rep-cargo': window.contractDigits(p.cnpj2).length === 11 ? 'Contratante' : '',
+                'c-freight2': p.frete2 || window.extractProposalLine(p.obs, 'Frete') || 'Conforme proposta comercial',
+                'c-delivery2-deadline': p.implantacao2 || p.implantacao || 'Conforme proposta comercial'
+            };
+            Object.entries(defaults).forEach(([id, value]) => {
+                if (!window.contractValue(id) && value) window.setContractValue(id, value);
+            });
+            window.toggleSecondContractClientUI();
+        };
+
+        const fcOriginalContractViewData = window.contractViewData;
+        window.contractViewData = function() {
+            const d = fcOriginalContractViewData();
+            const p = d.proposal || {};
+            const enabled = !!window.contractField('c-second-enabled')?.checked;
+            const client2 = {
+                nome: window.contractPlaceholder(window.contractValue('c-client2-name'), 'NOME / RAZÃO SOCIAL DO CLIENTE 2'),
+                documento: window.contractPlaceholder(window.contractValue('c-client2-doc'), 'CPF / CNPJ DO CLIENTE 2'),
+                endereco: window.contractPlaceholder(window.contractValue('c-client2-end'), 'ENDEREÇO DA ENTREGA 2'),
+                representante: window.contractPlaceholder(window.contractValue('c-client2-rep'), 'REPRESENTANTE DO CLIENTE 2'),
+                representanteCpf: window.contractPlaceholder(window.contractValue('c-client2-rep-cpf'), 'CPF DO REPRESENTANTE 2'),
+                representanteCargo: window.contractPlaceholder(window.contractValue('c-client2-rep-cargo'), 'CARGO DO REPRESENTANTE 2')
+            };
+            const items = Array.isArray(d.items) ? d.items : [];
+            const firstItems = items.filter(item => String(item.destino || '1') !== '2');
+            const secondItems = items.filter(item => String(item.destino || '1') === '2');
+            const group1 = {
+                slot: '1', label: 'Entrega 1', client: d.client,
+                location: d.client.endereco,
+                freight: d.freight,
+                deadline: d.deliveryDeadline,
+                items: firstItems.length || !enabled ? firstItems : items.slice(0, 1)
+            };
+            const group2 = {
+                slot: '2', label: 'Entrega 2', client: client2,
+                location: client2.endereco,
+                freight: window.contractValue('c-freight2', p.frete2 || d.freight),
+                deadline: window.contractValue('c-delivery2-deadline', p.implantacao2 || d.deliveryDeadline),
+                items: secondItems
+            };
+            d.multiDelivery = enabled;
+            d.client2 = client2;
+            d.clients = enabled ? [d.client, client2] : [d.client];
+            d.deliveryGroups = enabled ? [group1, group2] : [group1];
+            d.clientDisplayName = d.clients.map(client => client.nome).join(' e ');
+            d.clientDocumentDisplay = d.clients.map(client => client.documento).join(' / ');
+            return d;
+        };
+
+        window.contractGroupEquipmentSummary = function(group) {
+            const summary = window.contractEquipmentSummary(group?.items || []);
+            return summary || 'Equipamentos conforme proposta comercial';
+        };
+
+        const fcOriginalRenderContractCoverPage = window.renderContractCoverPage;
+        window.renderContractCoverPage = function(d, totalPages) {
+            if (!d.multiDelivery) return fcOriginalRenderContractCoverPage(d, totalPages);
+            const p = d.proposal;
+            const clientsHtml = d.deliveryGroups.map(group => `<strong>${window.contractEscape(group.label)}:</strong> ${window.contractEscape(group.client.nome)} — ${window.contractEscape(group.client.documento)}`).join('<br>');
+            const locationsHtml = d.deliveryGroups.map(group => `<strong>${window.contractEscape(group.label)}:</strong> ${window.contractEscape(group.location)}`).join('<br>');
+            return `<section class="contract-page contract-cover-page">
+                ${window.contractPageHeader(d, 1, 'Contrato comercial')}
+                <div class="contract-cover-title">Fornecimento de estações de recarga veicular</div>
+                <div class="contract-cover-subtitle">Com reserva de domínio</div>
+                <p class="contract-kicker">Dados da contratação</p>
+                <table class="contract-table"><tbody>
+                    <tr><th>Contratada</th><td>${window.contractEscape(d.company.razao)} - “FULLCHARGE”</td></tr>
+                    <tr><th>Contratantes</th><td>${clientsHtml}</td></tr>
+                    <tr><th>Proposta comercial</th><td>${window.contractEscape(p.id || '—')} - ${window.contractEscape(p.data || '—')}</td></tr>
+                    <tr><th>Projetos / locais</th><td>${locationsHtml}</td></tr>
+                    <tr><th>Data</th><td>${window.contractEscape(d.signDate)}</td></tr>
+                </tbody></table>
+                <div class="contract-cover-note"><strong>Energia que conecta. Mobilidade que transforma.</strong><br>Soluções de recarga FullCharge</div>
+                ${window.contractPageFooter(d, 1, totalPages)}
+            </section>`;
+        };
+
+        const fcOriginalRenderContractSummaryPage = window.renderContractSummaryPage;
+        window.renderContractSummaryPage = function(d, pageNumber, totalPages) {
+            if (!d.multiDelivery) return fcOriginalRenderContractSummaryPage(d, pageNumber, totalPages);
+            const mode = d.noDelivery ? '☒ Somente fornecimento ☐ Fornecimento + instalação ☐ Fornecimento + instalação + comissionamento' : (d.installation ? '☐ Somente fornecimento ☐ Fornecimento + instalação ☒ Fornecimento + instalação + comissionamento' : '☐ Somente fornecimento ☒ Fornecimento + instalação ☐ Fornecimento + instalação + comissionamento');
+            const groupLines = (formatter) => d.deliveryGroups.map(group => `<strong>${window.contractEscape(group.label)}:</strong> ${formatter(group)}`).join('<br>');
+            return `<section class="contract-page">
+                ${window.contractPageHeader(d, pageNumber, 'Contrato comercial | Estações de recarga')}
+                <main class="contract-page-body">
+                    <div class="contract-page-title-row"><h2>Quadro-resumo da contratação</h2></div>
+                    <table class="contract-table"><thead><tr><th>Item</th><th>Condição contratada</th></tr></thead><tbody>
+                        <tr><td>Estação(ões)</td><td>${groupLines(group => window.contractEscape(window.contractGroupEquipmentSummary(group)))}</td></tr>
+                        <tr><td>Conector(es)</td><td>${groupLines(group => window.contractEscape((group.items || []).map(window.contractConnectorFromItem).filter(Boolean).join(' / ') || 'Conforme proposta'))}</td></tr>
+                        <tr><td>Número(s) de série</td><td>Preencher na emissão das notas fiscais ou nos Termos de Entrega de cada destino</td></tr>
+                        <tr><td>Modalidade</td><td>${mode}</td></tr>
+                        <tr><td>Preço total</td><td>${window.contractEscape(window.contractPriceWithWords(d.total))}</td></tr>
+                        <tr><td>Pagamento</td><td>${window.contractEscape(d.payment)}</td></tr>
+                        <tr><td>Frete</td><td>${groupLines(group => window.contractEscape(group.freight))}</td></tr>
+                        <tr><td>Prazo de entrega</td><td>${groupLines(group => window.contractEscape(group.deadline))}</td></tr>
+                        <tr><td>Prazo de instalação</td><td>${window.contractEscape(d.installationDeadline)}</td></tr>
+                        <tr><td>Garantia contratual</td><td>${window.contractEscape(d.guarantee)}, sem prejuízo da garantia legal aplicável</td></tr>
+                        <tr><td>Locais</td><td>${groupLines(group => `${window.contractEscape(group.client.nome)} — ${window.contractEscape(group.location)}`)}</td></tr>
+                        <tr><td>Reserva de domínio</td><td>SIM - a propriedade das estações identificáveis permanece com a FULLCHARGE até a quitação integral do preço</td></tr>
+                        <tr><td>Variação cambial</td><td>${d.currency ? '☐ Não aplicável ☒ Aplicável conforme Cláusula 5ª e proposta comercial' : '☒ Não aplicável ☐ Aplicável conforme Cláusula 5ª e proposta comercial'}</td></tr>
+                        <tr><td>Proposta integrante</td><td>${window.contractEscape(d.proposal.id || '—')}, revisão ${window.contractEscape(d.proposal.revisao || '00')}, ${window.contractEscape(d.proposal.data || '—')}</td></tr>
+                    </tbody></table>
+                    <p>Este Quadro-Resumo integra o contrato. Em caso de divergência, prevalecerá a condição específica expressamente indicada na proposta comercial e neste quadro, desde que não contrarie norma legal obrigatória.</p>
+                </main>${window.contractPageFooter(d, pageNumber, totalPages)}
+            </section>`;
+        };
+
+        const fcOriginalRenderContractPartiesPage = window.renderContractPartiesPage;
+        window.renderContractPartiesPage = function(d, pageNumber, totalPages) {
+            if (!d.multiDelivery) return fcOriginalRenderContractPartiesPage(d, pageNumber, totalPages);
+            const p = d.proposal;
+            const partyBoxes = d.clients.map((client, index) => `<div class="contract-party-box"><strong>CONTRATANTE / COMPRADOR ${index + 1}:</strong> ${window.contractEscape(client.nome)}, inscrito(a) no CPF/CNPJ sob nº ${window.contractEscape(client.documento)}, com endereço/sede em ${window.contractEscape(client.endereco)}, representado(a) por ${window.contractEscape(client.representante)}, CPF ${window.contractEscape(client.representanteCpf)}, ${window.contractEscape(client.representanteCargo)}.</div>`).join('');
+            const deliveryCards = d.deliveryGroups.map(group => `<div class="contract-summary-card"><small>${window.contractEscape(group.label)} · ${window.contractEscape(group.client.nome)}</small><strong>${window.contractEscape(group.location)}<br>${window.contractEscape(window.contractGroupEquipmentSummary(group))}</strong></div>`).join('');
+            const objectLines = d.deliveryGroups.map(group => `${group.label}: ${window.contractGroupEquipmentSummary(group)}`).join(' | ');
+            return `<section class="contract-page contract-parties-page">
+                ${window.contractPageHeader(d, pageNumber, 'Identificação das partes e condições')}
+                <main class="contract-page-body">
+                    <div class="contract-page-title-row">
+                        <span class="contract-kicker">Instrumento contratual</span>
+                        <h2>Contrato de fornecimento e, quando contratada, instalação de estação de recarga veicular com reserva de domínio</h2>
+                        <p>Pelo presente instrumento particular, de um lado:</p>
+                    </div>
+                    <div class="contract-party-box"><strong>CONTRATADA / VENDEDORA:</strong> ${window.contractEscape(d.company.razao)}, nome fantasia FULLCHARGE, inscrita no CNPJ sob nº ${window.contractEscape(d.company.cnpj)}, com sede em ${window.contractEscape(d.company.endereco)}, representada por ${window.contractEscape(d.company.representante)}, CPF ${window.contractEscape(d.company.representanteCpf)}, ${window.contractEscape(d.company.representanteCargo)}.</div>
+                    ${partyBoxes}
+                    <p>Os COMPRADORES acima identificados são, em conjunto, denominados “CONTRATANTE”, ficando cada equipamento e respectiva entrega vinculados ao destinatário indicado no Quadro-Resumo e no Anexo I.</p>
+                    <p class="contract-kicker">Condições específicas por entrega</p>
+                    <div class="contract-summary-grid">${deliveryCards}</div>
+                    <div class="contract-object-notice"><strong>Objeto específico</strong><p>${window.contractEscape(objectLines)}</p><small>O quadro detalhado dos bens adquiridos e seus destinos está no Anexo I.</small></div>
+                    <div class="contract-notice">A proposta comercial ${window.contractEscape(p.id || '')}, seus anexos, especificações, valores e observações integram este contrato. Serviços, materiais e obras não descritos expressamente não estão incluídos.</div>
+                    <div class="contract-domain-notice"><strong>Regra de propriedade</strong>Os equipamentos identificados permanecem sob reserva de domínio em favor da FULLCHARGE até o pagamento integral, conforme a Cláusula Décima Terceira.</div>
+                </main>
+                ${window.contractPageFooter(d, pageNumber, totalPages)}
+            </section>`;
+        };
+
+        const fcOriginalContractSignatureSectionHtml = window.contractSignatureSectionHtml;
+        window.contractSignatureSectionHtml = function(d) {
+            if (!d.multiDelivery) return fcOriginalContractSignatureSectionHtml(d);
+            return `<section class="contract-final-signatures">
+                <p>E, por estarem de acordo, as Partes assinam este instrumento eletronicamente ou em vias de igual teor, juntamente com as testemunhas.</p>
+                <p class="contract-sign-date">${window.contractEscape(d.signCity)}, ${window.contractEscape(d.signDate)}. Proposta integrante: ${window.contractEscape(d.proposal.id || '—')} / ${window.contractEscape(d.proposal.revisao || '00')} / ${window.contractEscape(d.proposal.data || '—')}</p>
+                <div class="contract-signature-grid">
+                    <div><span></span><strong>FULLCHARGE / CONTRATADA</strong><small>Nome: ${window.contractEscape(d.company.representante)} | Cargo: ${window.contractEscape(d.company.representanteCargo)}</small></div>
+                    <div><span></span><strong>CONTRATANTE 1</strong><small>${window.contractEscape(d.client.nome)} | ${window.contractEscape(d.client.documento)}</small></div>
+                    <div><span></span><strong>CONTRATANTE 2</strong><small>${window.contractEscape(d.client2.nome)} | ${window.contractEscape(d.client2.documento)}</small></div>
+                    <div><span></span><strong>TESTEMUNHA 1</strong><small>Nome: ${window.contractEscape(d.witness1 || '________________')} | CPF: ${window.contractEscape(d.witness1Cpf || '________________')}</small></div>
+                    <div><span></span><strong>TESTEMUNHA 2</strong><small>Nome: ${window.contractEscape(d.witness2 || '________________')} | CPF: ${window.contractEscape(d.witness2Cpf || '________________')}</small></div>
+                </div>
+            </section>`;
+        };
+
+        const fcOriginalRenderContractClausesPage = window.renderContractClausesPage;
+        window.renderContractClausesPage = function(d, pageNumber, startIndex, endIndex, totalPages) {
+            if (!d.multiDelivery) return fcOriginalRenderContractClausesPage(d, pageNumber, startIndex, endIndex, totalPages);
+            const selected = window.FC_CONTRACT_CLAUSES.slice(startIndex, endIndex);
+            const isLastClausePage = endIndex >= window.FC_CONTRACT_CLAUSES.length;
+            const signatures = isLastClausePage ? `
+                <section class="contract-final-signatures">
+                    <p>E, por estarem justas e contratadas, as Partes assinam este instrumento, inclusive por meio eletrônico, juntamente com as testemunhas abaixo.</p>
+                    <p class="contract-sign-date">${window.contractEscape(d.signCity)}, ${window.contractEscape(d.signDate)}.</p>
+                    <div class="contract-signature-grid">
+                        <div><span></span><strong>${window.contractEscape(d.company.razao)}</strong><small>FULLCHARGE / CONTRATADA</small></div>
+                        <div><span></span><strong>${window.contractEscape(d.client.nome)}</strong><small>CONTRATANTE 1</small></div>
+                        <div><span></span><strong>${window.contractEscape(d.client2.nome)}</strong><small>CONTRATANTE 2</small></div>
+                        <div><span></span><strong>${window.contractEscape(d.witness1 || 'TESTEMUNHA 1')}</strong><small>CPF: ${window.contractEscape(d.witness1Cpf || '________________')}</small></div>
+                        <div><span></span><strong>${window.contractEscape(d.witness2 || 'TESTEMUNHA 2')}</strong><small>CPF: ${window.contractEscape(d.witness2Cpf || '________________')}</small></div>
+                    </div>
+                </section>` : '';
+            return `<section class="contract-page">
+                ${window.contractPageHeader(d, pageNumber, 'Contrato de fornecimento')}
+                <main class="contract-page-body">
+                    <div class="contract-page-title-row"><span class="contract-kicker">Instrumento contratual</span><h2>Condições gerais</h2></div>
+                    <div class="contract-clauses">${selected.map(clause => window.contractClauseHtml(clause, d)).join('')}</div>
+                    ${signatures}
+                </main>
+                ${window.contractPageFooter(d, pageNumber, totalPages)}
+            </section>`;
+        };
+
+        const fcOriginalRenderContractAnnexOne = window.renderContractAnnexOne;
+        window.renderContractAnnexOne = function(d, pageNumber, totalPages) {
+            if (!d.multiDelivery) return fcOriginalRenderContractAnnexOne(d, pageNumber, totalPages);
+            const renderRows = (items) => items.length ? items.map((item, index) => {
+                const data = window.contractItemCatalogData(item);
+                const technical = data.technical || {};
+                const description = String(item.d || data.product?.escopo || data.station?.escopo || '').trim();
+                const group = String(item.g || data.product?.nome || data.station?.nome || 'Equipamento').trim();
+                const code = String(item.codigo || data.product?.codigo || data.station?.codigo || 'Não informado').trim();
+                const identity = [technical.tensao ? `Tensão: ${technical.tensao}` : '', technical.corrente ? `Corrente: ${technical.corrente}` : '', technical.protecao ? `Proteção: ${technical.protecao}` : ''].filter(Boolean).join(' · ');
+                return `<tr><td>${index + 1}</td><td>${window.contractEscape(item.q || '1')}</td><td><strong>${window.contractEscape(group)}</strong><span>Código/modelo: ${window.contractEscape(code)}</span>${description ? `<span>${window.contractEscape(description)}</span>` : ''}${identity ? `<span>${window.contractEscape(identity)}</span>` : ''}</td><td>${window.contractEscape(window.contractPowerFromItem(item))}</td><td>${window.contractEscape(window.contractConnectorFromItem(item))}</td><td>A preencher na entrega / nota fiscal</td><td>${window.contractEscape(window.contractPriceWithWordsIfMonetary(item.p || 'Conforme proposta'))}</td></tr>`;
+            }).join('') : '<tr><td colspan="7">Nenhum item vinculado a esta entrega.</td></tr>';
+            const groupTables = d.deliveryGroups.map(group => `<section class="contract-delivery-group"><h3>${window.contractEscape(group.label)} · ${window.contractEscape(group.client.nome)} · ${window.contractEscape(group.client.documento)}</h3><p><strong>Local:</strong> ${window.contractEscape(group.location)}</p><p><strong>Frete / prazo:</strong> ${window.contractEscape(group.freight)} · ${window.contractEscape(group.deadline)}</p></section><div class="contract-table-wrap"><table class="contract-table contract-items-table"><thead><tr><th>Item</th><th>Qtd.</th><th>Equipamento / modelo adquirido</th><th>Potência</th><th>Conector</th><th>Nº de série</th><th>Valor</th></tr></thead><tbody>${renderRows(group.items || [])}</tbody></table></div>`).join('');
+            return `<section class="contract-page">
+                ${window.contractPageHeader(d, pageNumber, 'Quadro do objeto adquirido — equipamentos e destinos')}
+                <main class="contract-page-body">
+                    <div class="contract-page-title-row"><span class="contract-kicker">Objeto específico da compra</span><h2>Equipamentos adquiridos por entrega</h2><p>Esta relação identifica os bens, seus compradores/destinatários e locais vinculados à proposta comercial nº ${window.contractEscape(d.proposal.id || '—')}.</p></div>
+                    <div class="contract-summary-grid compact"><div><span>Contratantes</span><strong>${window.contractEscape(d.clientDisplayName)}</strong></div><div><span>Documentos</span><strong>${window.contractEscape(d.clientDocumentDisplay)}</strong></div><div><span>Valor total</span><strong>${window.contractEscape(window.contractPriceWithWords(d.total))}</strong></div></div>
+                    <div class="contract-domain-notice"><strong>Bens submetidos à reserva de domínio</strong>Os equipamentos relacionados abaixo permanecem de propriedade da FULLCHARGE até a quitação integral do preço, sem prejuízo da transferência dos riscos desde cada entrega.</div>
+                    ${groupTables}
+                    <div class="contract-note">Cada nota fiscal e cada Termo de Entrega deverá identificar o respectivo comprador/destinatário, endereço, equipamento, quantidade, modelo e número de série.</div>
+                </main>
+                ${window.contractPageFooter(d, pageNumber, totalPages)}
+            </section>`;
+        };
+
+        const fcOriginalRenderContractAnnexTwo = window.renderContractAnnexTwo;
+        window.renderContractAnnexTwo = function(d, pageNumber, totalPages) {
+            let html = fcOriginalRenderContractAnnexTwo(d, pageNumber, totalPages);
+            if (!d.multiDelivery) return html;
+            const block = `<section class="contract-product-scope"><h3>Destinos vinculados ao escopo</h3><div class="contract-table-wrap"><table class="contract-table"><thead><tr><th>Entrega / contratante</th><th>Local e equipamentos</th></tr></thead><tbody>${d.deliveryGroups.map(group => `<tr><td><strong>${window.contractEscape(group.label)}</strong><br>${window.contractEscape(group.client.nome)}<br>${window.contractEscape(group.client.documento)}</td><td>${window.contractEscape(group.location)}<br>${window.contractEscape(window.contractGroupEquipmentSummary(group))}</td></tr>`).join('')}</tbody></table></div></section>`;
+            return html.replace('<section class="contract-scope-highlight', block + '<section class="contract-scope-highlight');
+        };
+
+        const fcOriginalRenderContractAnnexThree = window.renderContractAnnexThree;
+        window.renderContractAnnexThree = function(d, pageNumber, totalPages) {
+            if (!d.multiDelivery) return fcOriginalRenderContractAnnexThree(d, pageNumber, totalPages);
+            return d.deliveryGroups.map((group, index) => {
+                const deliveryData = {
+                    ...d,
+                    client: group.client,
+                    clients: [group.client],
+                    items: group.items || [],
+                    equipmentSummary: window.contractGroupEquipmentSummary(group)
+                };
+                let html = fcOriginalRenderContractAnnexThree(deliveryData, pageNumber + index, totalPages + 1);
+                html = html.replace('Anexo III — Termo de entrega e comissionamento', `Anexo III-${index + 1} — ${group.label}`);
+                html = html.replace('<span class="contract-kicker">Anexo III</span>', `<span class="contract-kicker">Anexo III-${index + 1} · ${window.contractEscape(group.label)}</span>`);
+                html = html.replace('<h2>Termo de entrega, instalação e comissionamento</h2>', `<h2>Termo de entrega, instalação e comissionamento — ${window.contractEscape(group.label)}</h2>`);
+                html = html.replace('<tr><th>Equipamento / modelo</th><td colspan="3">________________________________________________________________________</td></tr>', `<tr><th>Equipamento / modelo</th><td colspan="3">${window.contractEscape(window.contractGroupEquipmentSummary(group))}</td></tr>`);
+                return html;
+            }).join('');
+        };
 
         window.initAutomaticContractGenerator = function() {
             const screen = document.getElementById('screen-contract');
