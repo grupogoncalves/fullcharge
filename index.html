@@ -620,8 +620,14 @@
         .proposal-type-option strong { display: block; color: var(--primary); font-size: 0.9375rem; margin-bottom: 2px; }
         .proposal-type-option span { display: block; color: var(--text-muted); font-size: 0.8125rem; line-height: 1.4; }
         .proposal-type-option:has(input:checked) { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-muted); background: #f8fbff; }
-        .investor-panel { margin: 6px 0 20px; padding: 18px; border: 1px solid rgba(0, 86, 255, 0.22); border-radius: var(--radius-md); background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%); }
-        .investor-panel h3 { margin: 0 0 12px; color: var(--primary); font-size: 1rem; letter-spacing: -0.01em; }
+        .investor-panel, .comodato-panel { margin: 6px 0 20px; padding: 18px; border: 1px solid rgba(0, 86, 255, 0.22); border-radius: var(--radius-md); background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%); }
+        .investor-panel h3, .comodato-panel h3 { margin: 0 0 12px; color: var(--primary); font-size: 1rem; letter-spacing: -0.01em; }
+        .comodato-panel { border-color: rgba(16, 185, 129, 0.28); background: linear-gradient(180deg, #f0fdf9 0%, #ffffff 100%); }
+        .comodato-panel h3 i { color: #059669; }
+        .percent-input-wrap { position: relative; }
+        .percent-input-wrap input { padding-right: 44px; font-size: 1.15rem; font-weight: 800; color: #047857; }
+        .percent-input-suffix { position: absolute; top: 50%; right: 14px; transform: translateY(-50%); color: #047857; font-size: 1rem; font-weight: 900; pointer-events: none; }
+        .field-help { display: block; margin-top: 6px; color: var(--text-muted); font-size: 0.75rem; line-height: 1.4; }
         .readonly-highlight { background: #f8fafc; color: var(--primary); font-weight: 800; }
         .proposal-note { margin: -4px 0 16px; color: var(--text-muted); font-size: 0.8125rem; }
         .installation-toggle-card { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 2px 0 18px; padding: 17px 18px; border: 1px solid var(--border); border-radius: var(--radius-md); background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); transition: border-color var(--transition), box-shadow var(--transition), background var(--transition); }
@@ -1209,7 +1215,7 @@
                             </label>
                             <label class="proposal-type-option">
                                 <input type="radio" name="tipo-proposta" value="comodato" onchange="window.onTipoPropostaChange()">
-                                <span><strong>Proposta de comodato</strong>Utiliza o preço de comodato cadastrado no catálogo de produtos.</span>
+                                <span><strong>Proposta de comodato</strong>Sem exibição de preços; condição comercial definida pela participação no lucro bruto.</span>
                             </label>
                         </div>
                     </div>
@@ -1381,6 +1387,25 @@
                             </div>
                         </div>
                     </div>
+                    <div class="comodato-panel" id="comodato-fields" hidden>
+                        <h3><i class="fa fa-percent" aria-hidden="true"></i> Participação no lucro bruto</h3>
+                        <p class="proposal-note">Informe o percentual do lucro bruto da operação que será destinado à FullCharge nesta proposta de comodato.</p>
+                        <div class="form-grid-equal">
+                            <div class="field" style="margin-bottom:0;">
+                                <label for="f-comodato-lucro-pct">Participação no lucro bruto (%)</label>
+                                <div class="percent-input-wrap">
+                                    <input type="text" id="f-comodato-lucro-pct" inputmode="decimal" autocomplete="off" placeholder="Ex.: 15" oninput="window.limparEntradaPercentual(this)" onblur="window.normalizarPercentualComodato(this)">
+                                    <span class="percent-input-suffix">%</span>
+                                </div>
+                                <small class="field-help">Exemplo: preenchendo 15, a proposta registrará participação de 15% sobre o lucro bruto.</small>
+                            </div>
+                            <div class="field" style="margin-bottom:0;">
+                                <label>Condição comercial</label>
+                                <input type="text" value="Percentual aplicado sobre o lucro bruto da operação" readonly aria-readonly="true" class="readonly-highlight">
+                                <small class="field-help">O percentual será salvo no histórico e exibido automaticamente no PDF da proposta.</small>
+                            </div>
+                        </div>
+                    </div>
                     <div class="field">
                         <label for="f-obs">Observações Comerciais</label>
                         <textarea id="f-obs" rows="7" placeholder="Condições comerciais, prazos, etc.">Condições Comerciais e Técnicas:
@@ -1467,7 +1492,6 @@
                             <div class="cover-order-card">
                                 <div class="cover-order-head">
                                     <div class="cover-order-title"><i class="fa fa-bolt" aria-hidden="true"></i><strong id="cover-products-title">Pedido da proposta</strong></div>
-                                    <div class="cover-total-chip" id="cover-total">R$ 42.000,00</div>
                                 </div>
                                 <div class="cover-product-list">
                                     <div class="cover-product-item" id="cover-product-1">1x Full Charge Swift 30 kW</div>
@@ -1487,11 +1511,11 @@
 
                             <div class="value-summary-grid">
                                 <div class="value-summary-card"><span class="value-summary-icon"><i class="fa fa-layer-group"></i></span><span class="value-summary-label">Modalidade</span><strong class="value-summary-number" id="p-resumo-modalidade">Venda</strong></div>
-                                <div class="value-summary-card"><span class="value-summary-icon"><i class="fa fa-charging-station"></i></span><span class="value-summary-label">Equipamentos</span><strong class="value-summary-number" id="p-resumo-equipamentos">1 unidade</strong></div>
+                                <div class="value-summary-card"><span class="value-summary-icon"><i class="fa fa-charging-station"></i></span><span class="value-summary-label">Estações de recarga</span><strong class="value-summary-number" id="p-resumo-equipamentos">1 unidade</strong></div>
                                 <div class="value-summary-card"><span class="value-summary-icon"><i class="fa fa-bolt"></i></span><span class="value-summary-label">Potência identificada</span><strong class="value-summary-number" id="p-resumo-potencia">Conforme projeto</strong></div>
                                 <div class="value-summary-card"><span class="value-summary-icon"><i class="fa fa-calendar-check"></i></span><span class="value-summary-label" id="p-resumo-prazo-label">Entrega estimada</span><strong class="value-summary-number" id="p-resumo-implantacao">15 dias úteis</strong></div>
                                 <div class="value-summary-card"><span class="value-summary-icon"><i class="fa fa-shield-halved"></i></span><span class="value-summary-label">Garantia comercial</span><strong class="value-summary-number" id="p-resumo-garantia">12 meses</strong></div>
-                                <div class="value-summary-card"><span class="value-summary-icon"><i class="fa fa-wallet"></i></span><span class="value-summary-label">Investimento</span><strong class="value-summary-number" id="p-resumo-investimento">R$ 0,00</strong></div>
+                                <div class="value-summary-card"><span class="value-summary-icon"><i class="fa fa-wallet"></i></span><span class="value-summary-label" id="p-resumo-investimento-label">Investimento</span><strong class="value-summary-number" id="p-resumo-investimento">R$ 0,00</strong></div>
                             </div>
 
                             <section class="value-section">
@@ -1601,6 +1625,14 @@
                                     <div class="p-investor-card"><span>Retorno projetado</span><strong id="p-renda-periodo">R$ 0,00</strong></div>
                                 </div>
                                 <div class="p-investor-disclaimer">Projeção calculada com base em rentabilidade simples mensal de 2,25% sobre o investimento informado. Condições finais dependem de aprovação contratual e confirmação formal da operação.</div>
+                            </section>
+                            <section class="p-investor-section" id="p-comodato-section" hidden aria-labelledby="p-comodato-heading">
+                                <h3 class="p-section-title" id="p-comodato-heading">Condição do Comodato</h3>
+                                <div class="p-investor-grid">
+                                    <div class="p-investor-card"><span>Participação no lucro bruto</span><strong id="p-comodato-lucro-pct">—</strong></div>
+                                    <div class="p-investor-card"><span>Base de participação</span><strong>Lucro bruto da operação</strong></div>
+                                </div>
+                                <div class="p-investor-disclaimer">O percentual acima representa a participação comercial definida para esta proposta de comodato e deverá ser observado na formalização contratual entre as partes.</div>
                             </section>
                             <section class="p-exchange-section" id="p-exchange-section" aria-labelledby="p-exchange-heading">
                                 <h3 class="p-section-title" id="p-exchange-heading">Referência cambial</h3>
@@ -2597,6 +2629,29 @@ ${dica}`;
             return prod.precoVenda || prod.preco || '';
         }
 
+        window.parsePercentual = function(valor) {
+            const texto = String(valor ?? '').trim().replace(/%/g, '').replace(/\s/g, '').replace(',', '.');
+            const numero = parseFloat(texto);
+            return Number.isFinite(numero) ? numero : 0;
+        }
+
+        window.formatPercentual = function(valor) {
+            const numero = window.parsePercentual(valor);
+            return `${numero.toLocaleString('pt-BR', { minimumFractionDigits: Number.isInteger(numero) ? 0 : 2, maximumFractionDigits: 2 })}%`;
+        }
+
+        window.limparEntradaPercentual = function(input) {
+            if (!input) return;
+            input.value = String(input.value || '').replace(/[^0-9,.]/g, '');
+        }
+
+        window.normalizarPercentualComodato = function(input) {
+            if (!input || !String(input.value || '').trim()) return;
+            let numero = window.parsePercentual(input.value);
+            numero = Math.max(0, Math.min(100, numero));
+            input.value = numero.toLocaleString('pt-BR', { minimumFractionDigits: Number.isInteger(numero) ? 0 : 2, maximumFractionDigits: 2 });
+        }
+
         window.calcularInvestimento = function(syncTotal = true) {
             const investimento = window.moneyToNumber(document.getElementById('f-investimento')?.value || '0');
             const meses = Math.max(1, parseInt(document.getElementById('f-invest-meses')?.value || '12', 10) || 12);
@@ -2622,6 +2677,7 @@ ${dica}`;
         window.defaultComodatoObs = function() {
             return `Condições Comerciais para Comodato:
 • Modalidade: disponibilização de equipamentos em comodato, conforme condições contratuais.
+• Participação no lucro bruto: percentual definido no campo específico desta proposta.
 • Validade da proposta: 
 • Serviços Inclusos: conforme escopo técnico e comercial descrito nesta proposta.
 • Responsabilidades: instalação, operação, manutenção e prazos dependem da formalização contratual entre as partes.
@@ -2655,8 +2711,10 @@ ${dica}`;
             const totalField = document.getElementById('f-total-field');
             const totalLabel = document.getElementById('f-total-label');
             const investorFields = document.getElementById('investor-fields');
+            const comodatoFields = document.getElementById('comodato-fields');
             const itemsWrap = document.getElementById('itens-proposta-wrap');
             const addBtn = document.getElementById('btn-add-item-venda');
+            const exchangeCard = document.getElementById('exchange-card');
             const obs = document.getElementById('f-obs');
 
             if (formTitle) {
@@ -2665,15 +2723,18 @@ ${dica}`;
                     : (isComodato ? 'Gerar proposta de comodato' : (isSemEntrega ? 'Gerar venda sem entrega' : 'Gerar venda com entrega'));
             }
             if (investorFields) investorFields.hidden = !isInvestidor;
+            if (comodatoFields) comodatoFields.hidden = !isComodato;
             if (itemsWrap) itemsWrap.style.display = '';
             if (addBtn) {
                 addBtn.style.display = '';
                 addBtn.textContent = isInvestidor ? '+ Adicionar carregador ao investimento' : (isComodato ? '+ Adicionar item em comodato' : '+ Adicionar item');
             }
             if (totalLabel) {
-                totalLabel.textContent = isInvestidor ? 'Total calculado pelo preço de investimento (R$)' : (isComodato ? 'Total calculado pelo preço de comodato (R$)' : 'Total Calculado (R$)');
+                totalLabel.textContent = isInvestidor ? 'Total calculado pelo preço de investimento (R$)' : 'Total Calculado (R$)';
             }
-            if (totalField) totalField.style.display = '';
+            // No comodato, nenhum preço é exibido: a condição comercial é somente a participação no lucro bruto.
+            if (totalField) totalField.style.display = isComodato ? 'none' : '';
+            if (exchangeCard) exchangeCard.style.display = isComodato ? 'none' : '';
 
             if (obs && (forceDefaultObs || !obs.value.trim())) {
                 obs.value = isInvestidor ? window.defaultInvestorObs() : (isComodato ? window.defaultComodatoObs() : window.defaultVendaObs(tipo));
@@ -2682,9 +2743,9 @@ ${dica}`;
             const thPreco = document.getElementById('th-preco');
             if (thPreco) {
                 thPreco.textContent = window.getPrecoLabelTipoProposta(tipo);
-                thPreco.style.display = '';
+                thPreco.style.display = isComodato ? 'none' : '';
             }
-            document.querySelectorAll('.td-preco').forEach(td => td.style.display = '');
+            document.querySelectorAll('.td-preco').forEach(td => td.style.display = isComodato ? 'none' : '');
 
             if (typeof window.atualizarModoInstalacaoUI === 'function') window.atualizarModoInstalacaoUI();
             if (typeof window.atualizarPrecosItensPorTipo === 'function') window.atualizarPrecosItensPorTipo();
@@ -3015,6 +3076,29 @@ ${dica}`;
             return candidates[0]?.[1] || null;
         };
 
+        // Regra da 2ª página: somente a estação de recarga é considerada "equipamento".
+        // Acessórios, cabos, serviços, instalação, frete, projetos e demais itens ficam fora
+        // da quantidade e da potência exibidas no resumo executivo.
+        window.isChargingStationItem = function(item) {
+            const raw = item || {};
+            const nome = String(raw.g || raw.nome || raw.produto || raw.modelo || raw.equipamento || '').trim();
+            const codigo = String(raw.codigo || raw.code || '').trim();
+
+            if (window.findStationSpec(codigo || nome)) return true;
+
+            const catalogProduct = Object.values(window.produtosCatalogo || {}).find(prod => {
+                const prodNome = String(prod?.nome || '').trim();
+                const prodCodigo = String(prod?.codigo || '').trim();
+                return (nome && prodNome === nome) || (codigo && prodCodigo === codigo);
+            });
+            if (catalogProduct && window.findStationSpec(catalogProduct.codigo || catalogProduct.nome)) return true;
+
+            const texto = `${codigo} ${nome} ${catalogProduct?.cat || ''}`.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            if (/\b(acessorio|cabo|suporte|pedestal|totem|frete|instalacao|mao de obra|projeto|art|configuracao|servico)\b/.test(texto)) return false;
+            if (/^fc[.\s-]?(ca|cc)[.\s-]?/i.test(codigo)) return true;
+            return /estacao(?: de)? recarga|carregador(?: veicular)?|full charge .*\d+(?:[.,]\d+)?\s*kw/i.test(texto);
+        };
+
         window.enrichCatalogProduct = function(product) {
             const p = product || {};
             const spec = window.findStationSpec(p.codigo || p.nome);
@@ -3295,23 +3379,23 @@ ${dica}`;
             const jornadaInstalacao = [
                 ['01', 'Validação técnica', 'Confirmação do ponto, infraestrutura e condições do projeto.'],
                 ['02', 'Planejamento', 'Definição de materiais, agenda e responsáveis pela implantação.'],
-                ['03', 'Instalação', 'Montagem dos equipamentos e execução do escopo contratado.'],
+                ['03', 'Instalação', 'Montagem da(s) estação(ões) de recarga e execução do escopo contratado.'],
                 ['04', 'Configuração', 'Comissionamento, testes e ativação da solução de recarga.'],
                 ['05', 'Entrega assistida', 'Orientação operacional e início do suporte FullCharge.']
             ];
             const jornadaEntrega = [
-                ['01', 'Confirmação do pedido', 'Validação dos equipamentos, quantidades e condições comerciais.'],
-                ['02', 'Preparação', 'Separação, conferência e preparação dos equipamentos para envio.'],
+                ['01', 'Confirmação do pedido', 'Validação da(s) estação(ões) de recarga, dos demais itens, quantidades e condições comerciais.'],
+                ['02', 'Preparação', 'Separação, conferência e preparação da(s) estação(ões) e dos demais itens para envio.'],
                 ['03', 'Expedição', 'Embalagem, documentação e liberação do pedido para transporte.'],
                 ['04', 'Transporte', 'Acompanhamento do envio até o destino informado pelo cliente.'],
-                ['05', 'Entrega', 'Recebimento dos equipamentos e início do suporte FullCharge.']
+                ['05', 'Entrega', 'Recebimento da(s) estação(ões), dos demais itens e início do suporte FullCharge.']
             ];
             const jornadaRetirada = [
-                ['01', 'Confirmação do pedido', 'Validação dos equipamentos, quantidades e condições comerciais.'],
-                ['02', 'Separação', 'Reserva dos equipamentos e acessórios descritos na proposta.'],
+                ['01', 'Confirmação do pedido', 'Validação da(s) estação(ões) de recarga, dos demais itens, quantidades e condições comerciais.'],
+                ['02', 'Separação', 'Reserva da(s) estação(ões) de recarga e dos demais itens e acessórios descritos na proposta.'],
                 ['03', 'Conferência', 'Verificação dos itens, documentação e condições de retirada.'],
                 ['04', 'Disponibilidade', 'Aviso ao cliente quando o pedido estiver liberado para retirada.'],
-                ['05', 'Retirada', 'Coleta dos equipamentos pelo cliente ou transportadora contratada por ele.']
+                ['05', 'Retirada', 'Coleta da(s) estação(ões) e dos demais itens pelo cliente ou transportadora contratada por ele.']
             ];
             const jornada = semEntrega ? jornadaRetirada : (ativo ? jornadaInstalacao : jornadaEntrega);
             setHtml('journey-grid', jornada.map(([n, titulo, descricao]) =>
@@ -3319,19 +3403,19 @@ ${dica}`;
             ).join(''));
 
             const entregaveis = semEntrega ? [
-                'Equipamentos e acessórios descritos na proposta.',
-                'Separação e conferência completa do pedido.',
+                'Estação(ões) de recarga descrita(s) na proposta, além dos demais itens e acessórios contratados.',
+                'Separação e conferência completa da estação e dos demais itens do pedido.',
                 'Documentação comercial para retirada.',
                 'Suporte comercial após a retirada.'
             ] : (ativo ? [
-                'Equipamentos e acessórios descritos na proposta.',
-                'Instalação, configuração e testes de funcionamento.',
-                'Comissionamento e orientação operacional inicial.',
+                'Estação(ões) de recarga descrita(s) na proposta, além dos demais itens e acessórios contratados.',
+                'Instalação, configuração e testes de funcionamento da estação de recarga.',
+                'Comissionamento da estação e orientação operacional inicial.',
                 'Documentação comercial e suporte após a entrega.'
             ] : [
-                'Equipamentos e acessórios descritos na proposta.',
+                'Estação(ões) de recarga descrita(s) na proposta, além dos demais itens e acessórios contratados.',
                 'Conferência e preparação completa do pedido.',
-                'Embalagem, documentação e despacho dos equipamentos.',
+                'Embalagem, documentação e despacho da estação e dos demais itens do pedido.',
                 'Suporte comercial após o recebimento.'
             ]);
             setHtml('value-deliverables-list', entregaveis.map(item => `<li>${item}</li>`).join(''));
@@ -3426,6 +3510,7 @@ ${dica}`;
             const tipo = ['venda_entrega', 'venda_sem_entrega', 'investidor', 'comodato'].includes(tipoRaw) ? tipoRaw : 'venda_entrega';
             const isInvestidor = tipo === 'investidor';
             const isComodato = tipo === 'comodato';
+            const participacaoLucroBrutoPct = window.parsePercentual(data.participacaoLucroBrutoPct || data.comodatoLucroBrutoPct || 0);
             const incluiInstalacao = window.isVendaSemEntrega(tipo) ? false : (data.incluiInstalacao === undefined ? true : window.isInstalacaoAtiva(data.incluiInstalacao));
             const investimentoNumero = window.moneyToNumber(data.investimento || data.total || '0');
             const meses = Math.max(1, parseInt(data.prazoMeses || 12, 10) || 12);
@@ -3438,7 +3523,9 @@ ${dica}`;
             document.getElementById('p-cnpj').textContent = multiDeliveryPreview ? [data.cnpj, data.cnpj2].filter(Boolean).join(' / ') : (data.cnpj || '');
             document.getElementById('p-doc-eyebrow').textContent = isInvestidor ? 'Proposta para investidores' : (isComodato ? 'Proposta de comodato' : 'Proposta comercial');
             document.getElementById('p-doc-title').textContent = isInvestidor ? 'Investimento FullCharge' : (isComodato ? 'Comodato FullCharge' : 'Orçamento');
-            document.getElementById('p-total-label').textContent = isInvestidor ? 'Investimento Total' : (isComodato ? 'Total do Comodato' : 'Investimento Total');
+            document.getElementById('p-total-label').textContent = isInvestidor ? 'Investimento Total' : 'Investimento Total';
+            const pTotalWrap = document.querySelector('#screen-preview .p-total-wrap');
+            if (pTotalWrap) pTotalWrap.style.display = isComodato ? 'none' : 'flex';
             
             const endCompleto = [data.end, data.bairro, data.cidade].filter(Boolean).join(', ');
             const endCompleto2 = [data.end2, data.bairro2, data.cidade2].filter(Boolean).join(', ');
@@ -3451,7 +3538,7 @@ ${dica}`;
             const cotacaoValor = window.parseCotacaoDolar(data.cotacaoDolarValor || data.cotacaoDolar || 0);
             const totalNumeroCambio = window.moneyToNumber(data.total || data.investimento || 0);
             const pExchangeSection = document.getElementById('p-exchange-section');
-            if (pExchangeSection) pExchangeSection.hidden = !cotacaoValor;
+            if (pExchangeSection) pExchangeSection.hidden = isComodato || !cotacaoValor;
             if (cotacaoValor) {
                 const cotacaoObj = {
                     valor: cotacaoValor,
@@ -3493,15 +3580,20 @@ ${dica}`;
             const itensCapa = data.items || [];
             const primeiroItemCapa = itensCapa[0] || {};
             if (coverProduct1) coverProduct1.textContent = primeiroItemCapa.g ? `${primeiroItemCapa.q || 1}x ${primeiroItemCapa.g}` : (isInvestidor ? 'Rentabilidade mensal projetada de 2,25%' : 'Soluções de recarga FullCharge');
-            if (coverProduct2) coverProduct2.textContent = primeiroItemCapa.g ? (window.getProductShortSummary(primeiroItemCapa.g) || primeiroItemCapa.d || 'Solução FullCharge') : (itensCapa[1]?.g ? `${itensCapa[1].q || 1}x ${itensCapa[1].g}` : (isInvestidor ? `Projeção para ${meses} meses` : 'Alta performance para mobilidade elétrica'));
+            if (coverProduct2) coverProduct2.textContent = isComodato && participacaoLucroBrutoPct > 0
+                ? `Participação: ${window.formatPercentual(participacaoLucroBrutoPct)} do lucro bruto`
+                : (primeiroItemCapa.g ? (window.getProductShortSummary(primeiroItemCapa.g) || primeiroItemCapa.d || 'Solução FullCharge') : (itensCapa[1]?.g ? `${itensCapa[1].q || 1}x ${itensCapa[1].g}` : (isInvestidor ? `Projeção para ${meses} meses` : 'Alta performance para mobilidade elétrica')));
             if (coverTotal) coverTotal.textContent = data.total || data.investimento || window.formatBRL(investimentoNumero) || 'R$ 0,00';
             
             const itensResumo = data.items || [];
-            const totalEquipamentos = itensResumo.reduce((acc, item) => acc + (parseFloat(String(item.q || 0).replace(',', '.')) || 0), 0);
+            // Na 2ª página, somente estações de recarga entram como equipamentos.
+            const estacoesResumo = itensResumo.filter(item => window.isChargingStationItem(item));
+            const totalEquipamentos = estacoesResumo.reduce((acc, item) => acc + (parseFloat(String(item.q || 0).replace(',', '.')) || 0), 0);
             let potenciaTotalKw = 0;
-            itensResumo.forEach(item => {
+            estacoesResumo.forEach(item => {
                 const qtd = parseFloat(String(item.q || 1).replace(',', '.')) || 1;
-                const textoItem = `${item.g || ''} ${item.d || ''}`;
+                const spec = window.findStationSpec(item.codigo || item.g || '');
+                const textoItem = `${spec?.potencia || ''} ${item.g || ''} ${item.d || ''}`;
                 const matches = [...textoItem.matchAll(/(\d+(?:[.,]\d+)?)\s*kW\b/gi)];
                 if (matches.length) {
                     const maior = Math.max(...matches.map(m => parseFloat(m[1].replace(',', '.')) || 0));
@@ -3514,11 +3606,12 @@ ${dica}`;
                 : (incluiInstalacao ? `${modalidadeBase} com instalação` : `${modalidadeBase} com entrega`);
             const setTextPremium = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
             setTextPremium('p-resumo-modalidade', modalidadeLabel);
-            setTextPremium('p-resumo-equipamentos', `${totalEquipamentos || itensResumo.length || 0} ${(totalEquipamentos || itensResumo.length) === 1 ? 'unidade' : 'unidades'}`);
+            setTextPremium('p-resumo-equipamentos', `${totalEquipamentos} ${totalEquipamentos === 1 ? 'unidade' : 'unidades'}`);
             setTextPremium('p-resumo-potencia', potenciaTotalKw > 0 ? `${potenciaTotalKw.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} kW` : 'Conforme projeto');
             setTextPremium('p-resumo-implantacao', data.implantacao || '15 dias úteis');
             setTextPremium('p-resumo-garantia', data.garantia || '12 meses');
-            setTextPremium('p-resumo-investimento', data.total || data.investimento || window.formatBRL(investimentoNumero));
+            setTextPremium('p-resumo-investimento-label', isComodato ? 'Participação no lucro bruto' : 'Investimento');
+            setTextPremium('p-resumo-investimento', isComodato ? window.formatPercentual(participacaoLucroBrutoPct) : (data.total || data.investimento || window.formatBRL(investimentoNumero)));
             setTextPremium('p-resumo-cliente', data.cli || 'o cliente');
             setTextPremium('value-page-lead', window.isVendaSemEntrega(tipo)
                 ? `Para ${data.cli || 'este pedido'}, a FullCharge reúne equipamentos, conferência e liberação em uma jornada de retirada simples e organizada.`
@@ -3533,9 +3626,11 @@ ${dica}`;
 
             const pItemsWrap = document.getElementById('p-items-wrap');
             const pInvestorSection = document.getElementById('p-investor-section');
+            const pComodatoSection = document.getElementById('p-comodato-section');
             const itemsPreview = data.items || [];
             if (pItemsWrap) pItemsWrap.hidden = itemsPreview.length === 0;
             if (pInvestorSection) pInvestorSection.hidden = !isInvestidor;
+            if (pComodatoSection) pComodatoSection.hidden = !isComodato;
 
             if (isInvestidor) {
                 document.getElementById('p-investimento').textContent = data.investimento || data.total || window.formatBRL(investimentoNumero);
@@ -3543,11 +3638,15 @@ ${dica}`;
                 document.getElementById('p-renda-mensal').textContent = rendaMensal;
                 document.getElementById('p-renda-periodo').textContent = `${rendaPeriodo} em ${meses} meses`;
             }
+            if (isComodato) {
+                const pctEl = document.getElementById('p-comodato-lucro-pct');
+                if (pctEl) pctEl.textContent = window.formatPercentual(participacaoLucroBrutoPct);
+            }
 
             const pThPreco = document.getElementById('p-th-preco');
             if (pThPreco) {
                 pThPreco.textContent = window.getPrecoLabelTipoProposta(tipo).replace('Unit.', '');
-                pThPreco.style.display = '';
+                pThPreco.style.display = isComodato ? 'none' : '';
             }
             document.getElementById('p-items').innerHTML = itemsPreview.map(i => {
                 // Sempre mostra uma imagem na pré-visualização. Se o produto não tiver foto cadastrada
@@ -3565,10 +3664,10 @@ ${dica}`;
                     <td><div class="p-item-image-wrap"><img src="${window.escapeAttr(imgUrl)}" class="p-img-thumb" data-pdf-product-img="1" data-product-name="${window.escapeAttr(i.g)}" alt="${window.escapeAttr(i.g)}" onerror="this.onerror=null; this.removeAttribute('crossorigin'); this.removeAttribute('referrerpolicy'); this.src=window.PDF_PRODUCT_FALLBACK_IMAGE;"></div></td>
                     <td class="p-item-qty">${window.escapeHtml(i.q)}</td>
                     <td class="p-item-product"><strong class="p-item-product-name">${window.escapeHtml(i.g)}</strong><span class="p-item-product-subtitle">${window.escapeHtml(destinationLabel)}</span></td>
-                    <td class="p-item-price">${window.escapeHtml(i.p || '-')}</td>
+                    ${isComodato ? '' : `<td class="p-item-price">${window.escapeHtml(i.p || '-')}</td>`}
                 </tr>
                 <tr class="p-item-specs-row">
-                    <td colspan="4">${window.renderProposalSpecs(i.d)}</td>
+                    <td colspan="${isComodato ? '3' : '4'}">${window.renderProposalSpecs(i.d)}</td>
                 </tr>`;
             }).join('');
             
@@ -4670,7 +4769,7 @@ ${dica}`;
         window.addItemRow = function(q = 1, g = '', d = '', p = '', destino = '1') {
             const tbody = document.getElementById('items-body');
             if(!tbody) return;
-            const displayStyle = '';
+            const displayStyle = window.getTipoProposta() === 'comodato' ? 'display:none;' : '';
             const multiDelivery = !!document.getElementById('f-multi-delivery')?.checked;
 
             const tr = tbody.insertRow();
@@ -4706,6 +4805,7 @@ ${dica}`;
         window.f_gerar_visual = async function() {
             const tipoProposta = window.getTipoProposta();
             const isInvestidor = tipoProposta === 'investidor';
+            const isComodato = tipoProposta === 'comodato';
             window.calcularTotal();
             if (isInvestidor) window.calcularInvestimento();
 
@@ -4713,7 +4813,7 @@ ${dica}`;
                 q: tr.querySelector('.i-q').value,
                 g: tr.querySelector('.i-g-select').value === GRUPO_OUTRO ? tr.querySelector('.i-g-outro').value : tr.querySelector('.i-g-select').value,
                 d: tr.querySelector('.i-d').value,
-                p: tr.querySelector('.i-p').value,
+                p: isComodato ? '' : tr.querySelector('.i-p').value,
                 destino: tr.querySelector('.i-destino')?.value || '1'
             }));
             const multiDelivery = !!document.getElementById('f-multi-delivery')?.checked;
@@ -4737,22 +4837,34 @@ ${dica}`;
             const prazoMeses = parseInt(document.getElementById('f-invest-meses')?.value || '12', 10) || 12;
             const rendaMensal = document.getElementById('f-renda-mensal')?.value || '';
             const retornoProjetadoPeriodo = document.getElementById('f-renda-periodo')?.value || '';
-            const totalProposta = isInvestidor ? investimento : document.getElementById('f-total').value;
-            let cotacaoDolar = await window.atualizarCotacaoDolar(false);
-            if (!cotacaoDolar) {
-                const cotacaoManual = window.parseCotacaoDolar(document.getElementById('f-cotacao-dolar')?.value);
-                if (cotacaoManual) {
-                    cotacaoDolar = { valor: cotacaoManual, dataHoraISO: new Date().toISOString(), dataHoraTexto: window.dataHoraCambioTexto(), fonte: 'Cotação informada manualmente', origem: 'manual' };
-                }
-            }
-            if (!cotacaoDolar || !window.parseCotacaoDolar(cotacaoDolar.valor)) {
-                alert('Não foi possível obter a cotação do dólar. Digite manualmente o valor de US$ 1,00 em reais no campo de referência cambial.');
-                document.getElementById('f-cotacao-dolar')?.focus();
+            const participacaoLucroBrutoPct = isComodato ? window.parsePercentual(document.getElementById('f-comodato-lucro-pct')?.value || 0) : 0;
+            if (isComodato && (participacaoLucroBrutoPct <= 0 || participacaoLucroBrutoPct > 100)) {
+                alert('Informe a participação no lucro bruto da proposta de comodato. O percentual deve ser maior que 0% e no máximo 100%.');
+                document.getElementById('f-comodato-lucro-pct')?.focus();
                 return;
             }
-            const totalNumeroCambio = window.moneyToNumber(totalProposta);
-            const valorEquivalenteUsd = totalNumeroCambio > 0 ? window.formatUSD(totalNumeroCambio / cotacaoDolar.valor) : window.formatUSD(0);
-            const clausulaCambial = window.montarClausulaCambial(cotacaoDolar, totalNumeroCambio);
+            const totalProposta = isComodato ? '' : (isInvestidor ? investimento : document.getElementById('f-total').value);
+            let cotacaoDolar = null;
+            let totalNumeroCambio = 0;
+            let valorEquivalenteUsd = '';
+            let clausulaCambial = '';
+            if (!isComodato) {
+                cotacaoDolar = await window.atualizarCotacaoDolar(false);
+                if (!cotacaoDolar) {
+                    const cotacaoManual = window.parseCotacaoDolar(document.getElementById('f-cotacao-dolar')?.value);
+                    if (cotacaoManual) {
+                        cotacaoDolar = { valor: cotacaoManual, dataHoraISO: new Date().toISOString(), dataHoraTexto: window.dataHoraCambioTexto(), fonte: 'Cotação informada manualmente', origem: 'manual' };
+                    }
+                }
+                if (!cotacaoDolar || !window.parseCotacaoDolar(cotacaoDolar.valor)) {
+                    alert('Não foi possível obter a cotação do dólar. Digite manualmente o valor de US$ 1,00 em reais no campo de referência cambial.');
+                    document.getElementById('f-cotacao-dolar')?.focus();
+                    return;
+                }
+                totalNumeroCambio = window.moneyToNumber(totalProposta);
+                valorEquivalenteUsd = totalNumeroCambio > 0 ? window.formatUSD(totalNumeroCambio / cotacaoDolar.valor) : window.formatUSD(0);
+                clausulaCambial = window.montarClausulaCambial(cotacaoDolar, totalNumeroCambio);
+            }
             const incluiInstalacao = !window.isVendaSemEntrega(tipoProposta) && !!document.getElementById('f-inclui-instalacao')?.checked;
             let observacoesProposta = document.getElementById('f-obs').value;
             if (window.isVendaSemEntrega(tipoProposta)) {
@@ -4764,6 +4876,14 @@ ${dica}`;
                     '• Serviços Inclusos: O valor desta proposta já contempla a mão de obra de instalação e as melhorias necessárias na rede elétrica.',
                     '• Serviços Inclusos: O valor desta proposta contempla os equipamentos e acessórios descritos, com entrega conforme condições informadas.'
                 );
+            }
+
+            if (isComodato) {
+                observacoesProposta = String(observacoesProposta || '')
+                    .replace(/^• Participação no lucro bruto:.*$/gmi, '')
+                    .replace(/^• Participação no lucro bruto da operação:.*$/gmi, '')
+                    .trim();
+                observacoesProposta += `\n• Participação no lucro bruto da operação: ${window.formatPercentual(participacaoLucroBrutoPct)}.`;
             }
 
             if (isInvestidor && !window.moneyToNumber(investimento)) {
@@ -4790,12 +4910,12 @@ ${dica}`;
                 bairro: document.getElementById('f-bairro').value,
                 cidade: document.getElementById('f-cidade').value,
                 total: totalProposta,
-                cotacaoDolarValor: Number(cotacaoDolar.valor),
-                cotacaoDolarTexto: window.formatCotacaoDolar(cotacaoDolar.valor),
-                cotacaoDolarDataHora: cotacaoDolar.dataHoraTexto || window.dataHoraCambioTexto(),
-                cotacaoDolarDataISO: cotacaoDolar.dataHoraISO || new Date().toISOString(),
-                cotacaoDolarFonte: cotacaoDolar.fonte || 'Cotação informada',
-                cotacaoDolarOrigem: cotacaoDolar.origem || 'online',
+                cotacaoDolarValor: isComodato ? '' : Number(cotacaoDolar.valor),
+                cotacaoDolarTexto: isComodato ? '' : window.formatCotacaoDolar(cotacaoDolar.valor),
+                cotacaoDolarDataHora: isComodato ? '' : (cotacaoDolar.dataHoraTexto || window.dataHoraCambioTexto()),
+                cotacaoDolarDataISO: isComodato ? '' : (cotacaoDolar.dataHoraISO || new Date().toISOString()),
+                cotacaoDolarFonte: isComodato ? '' : (cotacaoDolar.fonte || 'Cotação informada'),
+                cotacaoDolarOrigem: isComodato ? '' : (cotacaoDolar.origem || 'online'),
                 valorEquivalenteUsd,
                 clausulaCambial,
                 investimento: isInvestidor ? investimento : '',
@@ -4803,6 +4923,7 @@ ${dica}`;
                 prazoMeses: isInvestidor ? prazoMeses : '',
                 rendaMensal: isInvestidor ? rendaMensal : '',
                 retornoProjetadoPeriodo: isInvestidor ? retornoProjetadoPeriodo : '',
+                participacaoLucroBrutoPct: isComodato ? participacaoLucroBrutoPct : '',
                 email: document.getElementById('f-email').value,
                 tel: document.getElementById('f-tel').value,
                 incluiInstalacao,
@@ -4984,6 +5105,10 @@ ${dica}`;
                 document.getElementById('f-obs').value = p.obs || '';
                 document.getElementById('items-body').innerHTML = '';
                 window.setTipoProposta(p.tipoProposta || 'venda');
+                if (document.getElementById('f-comodato-lucro-pct')) {
+                    const pct = window.parsePercentual(p.participacaoLucroBrutoPct || p.comodatoLucroBrutoPct || 0);
+                    document.getElementById('f-comodato-lucro-pct').value = pct > 0 ? pct.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '';
+                }
 
                 (p.items || []).forEach(i => window.addItemRow(i.q, i.g, i.d, i.p, i.destino || '1'));
                 window.toggleMultiDeliveryUI(false);
