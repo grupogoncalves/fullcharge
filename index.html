@@ -1290,6 +1290,73 @@
             .catalog-image-preview { width:100%; height:180px; }
         }
 
+    
+        /* ——— Catálogo: ações sempre visíveis ——— */
+        .catalog-table th.catalog-actions-col,
+        .catalog-table td.catalog-actions-col {
+            position: sticky;
+            right: 0;
+            z-index: 3;
+            background: #ffffff;
+            box-shadow: -10px 0 18px rgba(15,23,42,.06);
+        }
+        .catalog-table thead th.catalog-actions-col {
+            z-index: 5;
+            background: #f8fafc;
+        }
+        .catalog-actions {
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:7px;
+            min-width:142px;
+        }
+        .catalog-action-edit,
+        .catalog-action-delete {
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:6px;
+            min-height:34px;
+            padding:7px 10px;
+            border-radius:8px;
+            cursor:pointer;
+            font-family:inherit;
+            font-size:.76rem;
+            font-weight:800;
+            white-space:nowrap;
+        }
+        .catalog-action-edit {
+            border:1px solid #bfdbfe;
+            background:#eff6ff;
+            color:#0056ff;
+        }
+        .catalog-action-edit:hover { background:#dbeafe; }
+        .catalog-action-delete {
+            width:34px;
+            padding:7px;
+            border:1px solid #fecaca;
+            background:#fff1f2;
+            color:#dc2626;
+        }
+        .catalog-action-delete:hover { background:#fee2e2; }
+
+        .catalog-inline-edit {
+            display:inline-flex;
+            align-items:center;
+            gap:5px;
+            margin-top:7px;
+            padding:5px 8px;
+            border:1px solid #bfdbfe;
+            border-radius:7px;
+            background:#eff6ff;
+            color:#0056ff;
+            font-size:.70rem;
+            font-weight:800;
+            cursor:pointer;
+        }
+        .catalog-inline-edit:hover { background:#dbeafe; }
+
     </style>
 </head>
 <body>
@@ -3686,22 +3753,34 @@ ${dica}`;
                 return; 
             }
 
-            let html = '<table class="items-table" style="min-width: 1450px;"><thead><tr><th style="width:70px; text-align:center;">Foto</th><th style="width:230px;">Equipamento</th><th style="width:170px;">Categoria</th><th>Escopo técnico</th><th>Preço venda</th><th>Preço investimento</th><th>Preço comodato</th><th style="text-align:center; width:90px;">Ações</th></tr></thead><tbody>';
+            let html = '<table class="items-table catalog-table" style="min-width: 1180px;"><thead><tr><th style="width:70px; text-align:center;">Foto</th><th style="width:220px;">Equipamento</th><th style="width:145px;">Categoria</th><th>Escopo técnico</th><th style="width:120px;">Preço venda</th><th style="width:130px;">Preço investimento</th><th style="width:120px;">Preço comodato</th><th class="catalog-actions-col" style="text-align:center; width:160px;">Ações</th></tr></thead><tbody>';
             
             Object.entries(obj).forEach(([key, p]) => {
                 const imgSafe = p.img ? window.escapeAttr(p.img) : 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
                 
                 html += `<tr>
                     <td style="text-align:center;"><img src="${imgSafe}" style="width: 40px; height: 40px; object-fit: contain; border: 1px solid #e2e8f0; border-radius: 4px;" onerror="this.style.display='none'"></td>
-                    <td><strong>${window.escapeHtml(p.nome)}</strong>${p.codigo ? `<span class="catalog-code-chip">${window.escapeHtml(p.codigo)}</span>` : ''}</td>
+                    <td>
+                        <strong>${window.escapeHtml(p.nome)}</strong>
+                        ${p.codigo ? `<span class="catalog-code-chip">${window.escapeHtml(p.codigo)}</span>` : ''}
+                        <button type="button" class="catalog-inline-edit catalog-edit-btn" data-key="${window.escapeAttr(key)}">
+                            <i class="fa fa-pen"></i> Editar
+                        </button>
+                    </td>
                     <td><span style="font-size: 0.8125rem; color: var(--text-muted);">${window.escapeHtml(p.cat)}</span></td>
                     <td><span class="catalog-scope-text">${window.escapeHtml(p.escopo || window.getProductScope(p) || 'Escopo não cadastrado')}</span></td>
                     <td><strong style="color:var(--primary);">${window.escapeHtml(p.precoVenda || p.preco || '-')}</strong></td>
                     <td><strong style="color:var(--primary);">${window.escapeHtml(p.precoInvestimento || '-')}</strong></td>
                     <td><strong style="color:var(--primary);">${window.escapeHtml(p.precoComodato || '-')}</strong></td>
-                    <td style="text-align:center; white-space: nowrap;">
-                        <button type="button" class="btn-icon-edit catalog-edit-btn" data-key="${window.escapeAttr(key)}" title="Editar produto"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn-icon-remove catalog-delete-btn" data-key="${window.escapeAttr(key)}" title="Excluir produto"><i class="fa fa-trash"></i></button>
+                    <td class="catalog-actions-col" style="text-align:center; white-space:nowrap;">
+                        <div class="catalog-actions">
+                            <button type="button" class="catalog-action-edit catalog-edit-btn" data-key="${window.escapeAttr(key)}" title="Editar produto">
+                                <i class="fa fa-pen"></i> Editar
+                            </button>
+                            <button type="button" class="catalog-action-delete catalog-delete-btn" data-key="${window.escapeAttr(key)}" title="Excluir produto">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>`;
             });
@@ -3710,10 +3789,10 @@ ${dica}`;
             el.innerHTML = html;
 
             el.querySelectorAll('.catalog-edit-btn').forEach(btn => {
-                btn.addEventListener('click', () => window.editarProdutoCatalogo(btn.dataset.key));
+                btn.onclick = () => window.editarProdutoCatalogo(btn.dataset.key);
             });
             el.querySelectorAll('.catalog-delete-btn').forEach(btn => {
-                btn.addEventListener('click', () => window.excluirProdutoCatalogo(btn.dataset.key));
+                btn.onclick = () => window.excluirProdutoCatalogo(btn.dataset.key);
             });
             window.inicializarUploadImagemCatalogo();
         }
