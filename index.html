@@ -139,6 +139,8 @@
         .items-table input, .items-table select { margin-bottom: 0; }
         .items-table .i-g-select { width: 100%; max-width: 280px; padding: 9px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.875rem; background: var(--surface); }
         .items-table .i-g-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-muted); }
+        .items-table .i-variante { width:100%; max-width:280px; margin-top:6px; padding:8px 10px; border:1px solid #bfdbfe; border-radius:var(--radius-sm); background:#eff6ff; color:#0f2e58; font-family:inherit; font-size:0.80rem; font-weight:700; }
+        .items-table .i-variante:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-muted); }
 
         /* ——— Dois CNPJs / duas entregas na mesma proposta e contrato ——— */
         .dual-delivery-card { margin: 2px 0 20px; border: 1px solid #bfdbfe; border-radius: 14px; overflow: hidden; background: linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%); box-shadow: 0 8px 24px rgba(0, 86, 255, 0.06); }
@@ -2719,6 +2721,9 @@ ${dica}`;
                 const produtosBrutos = snap.val() || {};
                 window.produtosCatalogo = typeof window.enrichCatalogObject === 'function' ? window.enrichCatalogObject(produtosBrutos) : produtosBrutos;
                 window.renderCatalog(window.produtosCatalogo);
+                if (typeof window.ensureAutotransformadorCatalogProduct === 'function') {
+                    window.ensureAutotransformadorCatalogProduct();
+                }
                 if (typeof window.atualizarDropdownProdutos === 'function') {
                     window.atualizarDropdownProdutos();
                 }
@@ -3906,6 +3911,7 @@ ${dica}`;
                     <td>
                         <strong>${window.escapeHtml(p.nome)}</strong>
                         ${p.codigo ? `<span class="catalog-code-chip">${window.escapeHtml(p.codigo)}</span>` : ''}
+                        ${Array.isArray(p.variantes) && p.variantes.length ? `<span class="catalog-code-chip">${p.variantes.length} variações de potência</span>` : ''}
                         <button type="button" class="catalog-inline-edit catalog-edit-btn" data-key="${window.escapeAttr(key)}">
                             <i class="fa fa-pen"></i> Editar
                         </button>
@@ -3949,12 +3955,71 @@ ${dica}`;
                     escopo: spec.escopo, resumo: spec.resumo,
                     fichaTecnica: { potencia:spec.potencia, tensao:spec.tensao, corrente:spec.corrente, disjuntor:spec.disjuntor, cabeamento:spec.cabeamento, dr:spec.dr, cabo:spec.cabo, conector:spec.conector, protecao:spec.protecao, comunicacao:spec.comunicacao, demanda:spec.demanda, garantia:spec.garantia, plataforma:spec.plataforma }
                 })),
+                window.getAutotransformadorProduto(),
                 { nome: 'Cabo com Conector Tipo 2', cat: 'Acessórios', preco: '', precoVenda: '', precoInvestimento: '', precoComodato: '', img: '', escopo: 'Cabo de recarga com conector Tipo 2, conforme comprimento e capacidade indicados na proposta.' },
                 { nome: 'Mão de Obra de Instalação', cat: 'Serviços', preco: '', precoVenda: '', precoInvestimento: '', precoComodato: '', img: '', escopo: 'Mão de obra conforme escopo técnico, projeto, distância de cabeamento e condições do local descritos na proposta.' }
             ];
             for (const p of iniciais) {
                 const key = p.nome.replace(/[.#$\[\]]/g, '').replace(/\//g, '-');
                 try { await window.dbSet(window.dbRef(window.db, 'produtos/' + key), p); } catch(e){}
+            }
+        };
+
+        // ——— Autotransformador Pólux com variações de potência ———
+        window.AUTOTRANSFORMADOR_NOME = 'Autotransformador Trifásico Solar Pólux';
+        window.AUTOTRANSFORMADOR_VARIANTES = [
+            { potencia:'30 kVA',  codigo:'5.03.02.3913', precoVenda:'R$ 2.848,74', descricao:'Autotransformador trifásico solar 30 kVA 60 Hz 0-380 V / 0-220 V A-IP21' },
+            { potencia:'40 kVA',  codigo:'5.03.02.3910', precoVenda:'R$ 3.227,31', descricao:'Autotransformador trifásico solar 40 kVA 60 Hz 0-380 V / 0-220 V A-IP21' },
+            { potencia:'50 kVA',  codigo:'5.03.02.3908', precoVenda:'R$ 3.540,61', descricao:'Autotransformador trifásico solar 50 kVA 60 Hz 0-380 V / 0-220 V A-IP21' },
+            { potencia:'60 kVA',  codigo:'5.03.02.3907', precoVenda:'R$ 4.564,46', descricao:'Autotransformador trifásico solar 60 kVA 60 Hz 0-380 V / 0-220 V A-IP21' },
+            { potencia:'75 kVA',  codigo:'5.03.02.3906', precoVenda:'R$ 5.320,23', descricao:'Autotransformador trifásico solar 75 kVA 60 Hz 0-380 V / 0-220 V A-IP21' },
+            { potencia:'80 kVA',  codigo:'5.03.02.4258', precoVenda:'R$ 5.863,37', descricao:'Autotransformador trifásico solar 80 kVA 60 Hz 0-380 V / 0-220 V A-IP21' },
+            { potencia:'90 kVA',  codigo:'5.03.02.3905', precoVenda:'R$ 6.023,41', descricao:'Autotransformador trifásico solar 90 kVA 60 Hz 0-380 V / 0-220 V A-IP21' },
+            { potencia:'120 kVA', codigo:'5.03.02.4259', precoVenda:'R$ 7.267,15', descricao:'Autotransformador trifásico solar 120 kVA 60 Hz 0-380 V / 0-220 V A-IP21' },
+            { potencia:'130 kVA', codigo:'5.03.02.4416', precoVenda:'R$ 8.191,97', descricao:'Autotransformador trifásico solar 130 kVA 60 Hz 0-380 V / 0-220 V A-IP21' },
+            { potencia:'150 kVA', codigo:'5.03.02.4421', precoVenda:'R$ 10.224,80', descricao:'Autotransformador trifásico solar 150 kVA 60 Hz 0-380 V / 0-220 V A-IP21' }
+        ];
+
+        window.getAutotransformadorProduto = function() {
+            return {
+                nome: window.AUTOTRANSFORMADOR_NOME,
+                codigo: 'POLUX-AUTO-SOLAR',
+                cat: 'Autotransformadores',
+                preco: '', precoVenda: '', precoInvestimento: '', precoComodato: '', precoLocacao: '', img: '',
+                escopo: 'Autotransformador trifásico solar Pólux, 60 Hz, entrada 0-380 V e saída 0-220 V, grau de proteção A-IP21. Selecione a potência no item da proposta. Garantia: 24 meses. Frete FOB.',
+                variantes: window.AUTOTRANSFORMADOR_VARIANTES
+            };
+        };
+
+        window.isAutotransformadorProduto = function(nome) {
+            return String(nome || '').trim() === window.AUTOTRANSFORMADOR_NOME;
+        };
+
+        window.getAutotransformadorVariante = function(potencia) {
+            return window.AUTOTRANSFORMADOR_VARIANTES.find(v => v.potencia === String(potencia || '').trim()) || null;
+        };
+
+        window.getAutotransformadorDescricao = function(variante) {
+            if (!variante) return window.getAutotransformadorProduto().escopo;
+            return `${variante.descricao}; código Pólux ${variante.codigo}; garantia de 24 meses; frete FOB.`;
+        };
+
+        window.getAutotransformadorPreco = function(variante, tipo = window.getTipoProposta()) {
+            if (!variante) return '';
+            // Valores de venda já acrescidos de PIS 0,65% + COFINS 3,00% (Lucro Presumido), sobre a tabela fornecida.
+            if (tipo === 'venda' || tipo === 'venda_entrega' || tipo === 'venda_sem_entrega') return variante.precoVenda || '';
+            return variante.precoVenda || '';
+        };
+
+        window.ensureAutotransformadorCatalogProduct = async function() {
+            const produto = window.getAutotransformadorProduto();
+            const key = produto.nome.replace(/[.#$\[\]]/g, '').replace(/\//g, '-');
+            const existente = window.produtosCatalogo?.[key] || Object.values(window.produtosCatalogo || {}).find(p => p?.nome === produto.nome);
+            if (existente && Array.isArray(existente.variantes) && existente.variantes.length === produto.variantes.length) return;
+            try {
+                await window.dbSet(window.dbRef(window.db, 'produtos/' + key), { ...(existente || {}), ...produto, img: existente?.img || '' });
+            } catch(e) {
+                console.warn('Não foi possível adicionar automaticamente o autotransformador ao catálogo.', e);
             }
         };
 
@@ -4244,7 +4309,7 @@ ${dica}`;
             if (coverProductsTitle) coverProductsTitle.textContent = isInvestidor ? 'Resumo da proposta' : 'Pedido da proposta';
             const itensCapa = data.items || [];
             const primeiroItemCapa = itensCapa[0] || {};
-            if (coverProduct1) coverProduct1.textContent = primeiroItemCapa.g ? `${primeiroItemCapa.q || 1}x ${primeiroItemCapa.g}` : (isInvestidor ? 'Rentabilidade mensal projetada de 2,25%' : 'Soluções de recarga FullCharge');
+            if (coverProduct1) coverProduct1.textContent = primeiroItemCapa.g ? `${primeiroItemCapa.q || 1}x ${primeiroItemCapa.g}${primeiroItemCapa.variante ? ` — ${primeiroItemCapa.variante}` : ''}` : (isInvestidor ? 'Rentabilidade mensal projetada de 2,25%' : 'Soluções de recarga FullCharge');
             if (coverProduct2) coverProduct2.textContent = isComodato && participacaoLucroBrutoPct > 0
                 ? `Participação: ${window.formatPercentual(participacaoLucroBrutoPct)} do lucro bruto`
                 : (primeiroItemCapa.g ? (window.getProductShortSummary(primeiroItemCapa.g) || primeiroItemCapa.d || 'Solução FullCharge') : (itensCapa[1]?.g ? `${itensCapa[1].q || 1}x ${itensCapa[1].g}` : (isInvestidor ? `Projeção para ${meses} meses` : 'Alta performance para mobilidade elétrica')));
@@ -4328,7 +4393,7 @@ ${dica}`;
                 return `<tr class="p-item-main-row">
                     <td><div class="p-item-image-wrap"><img src="${window.escapeAttr(imgUrl)}" class="p-img-thumb" data-pdf-product-img="1" data-product-name="${window.escapeAttr(i.g)}" alt="${window.escapeAttr(i.g)}" onerror="this.onerror=null; this.removeAttribute('crossorigin'); this.removeAttribute('referrerpolicy'); this.src=window.PDF_PRODUCT_FALLBACK_IMAGE;"></div></td>
                     <td class="p-item-qty">${window.escapeHtml(i.q)}</td>
-                    <td class="p-item-product"><strong class="p-item-product-name">${window.escapeHtml(i.g)}</strong><span class="p-item-product-subtitle">${window.escapeHtml(destinationLabel)}</span></td>
+                    <td class="p-item-product"><strong class="p-item-product-name">${window.escapeHtml(i.variante ? `${i.g} — ${i.variante}` : i.g)}</strong><span class="p-item-product-subtitle">${window.escapeHtml(destinationLabel)}</span></td>
                     ${isComodato ? '' : `<td class="p-item-price">${window.escapeHtml(i.p || '-')}</td>`}
                 </tr>
                 <tr class="p-item-specs-row">
@@ -5431,12 +5496,36 @@ ${dica}`;
 
                 const prod = Object.values(window.produtosCatalogo).find(p => p.nome === sel.value);
                 if (prod) {
-                    if (desc) desc.value = prod.escopo || window.getProductScope(prod) || prod.cat || '';
-                    precoInput.value = window.getPrecoProdutoPorTipo(prod);
+                    const varianteSelect = tr.querySelector('.i-variante');
+                    const variante = window.isAutotransformadorProduto(prod.nome) ? window.getAutotransformadorVariante(varianteSelect?.value) : null;
+                    if (desc) desc.value = variante ? window.getAutotransformadorDescricao(variante) : (prod.escopo || window.getProductScope(prod) || prod.cat || '');
+                    precoInput.value = variante ? window.getAutotransformadorPreco(variante) : window.getPrecoProdutoPorTipo(prod);
                 }
             });
             window.calcularTotal();
         }
+
+        window.atualizarVariantesItem = function(tr, valorSelecionado = '') {
+            if (!tr) return;
+            const sel = tr.querySelector('.i-g-select');
+            const varianteSelect = tr.querySelector('.i-variante');
+            if (!sel || !varianteSelect) return;
+            const ativo = window.isAutotransformadorProduto(sel.value);
+            varianteSelect.style.display = ativo ? 'block' : 'none';
+            varianteSelect.innerHTML = '<option value="">Selecione a potência...</option>' + window.AUTOTRANSFORMADOR_VARIANTES.map(v => `<option value="${window.escapeAttr(v.potencia)}">${window.escapeHtml(v.potencia)} — ${window.escapeHtml(v.codigo)}</option>`).join('');
+            if (ativo && valorSelecionado && window.getAutotransformadorVariante(valorSelecionado)) varianteSelect.value = valorSelecionado;
+            if (!ativo) varianteSelect.value = '';
+        };
+
+        window.onItemVarianteChange = function(select) {
+            const tr = select.closest('tr');
+            const variante = window.getAutotransformadorVariante(select.value);
+            const desc = tr?.querySelector('.i-d');
+            const precoInput = tr?.querySelector('.i-p');
+            if (desc) desc.value = window.getAutotransformadorDescricao(variante);
+            if (precoInput) precoInput.value = window.getAutotransformadorPreco(variante);
+            window.calcularTotal();
+        };
 
         window.toggleGrupoOutro = function(sel) {
             const tr = sel.closest('tr');
@@ -5446,13 +5535,15 @@ ${dica}`;
             
             if (sel.value === GRUPO_OUTRO) {
                 out.style.display = 'block';
+                window.atualizarVariantesItem(tr);
             } else {
                 out.style.display = 'none';
+                window.atualizarVariantesItem(tr);
                 if (sel.value && window.produtosCatalogo) {
                     const prod = Object.values(window.produtosCatalogo).find(p => p.nome === sel.value);
                     if(prod) {
                         desc.value = prod.escopo || window.getProductScope(prod) || prod.cat || '';
-                        if (precoInput) precoInput.value = window.getPrecoProdutoPorTipo(prod);
+                        if (precoInput) precoInput.value = window.isAutotransformadorProduto(prod.nome) ? '' : window.getPrecoProdutoPorTipo(prod);
                     }
                 } else if (!sel.value) {
                     desc.value = '';
@@ -5462,7 +5553,7 @@ ${dica}`;
             window.calcularTotal();
         }
 
-        window.addItemRow = function(q = 1, g = '', d = '', p = '', destino = '1') {
+        window.addItemRow = function(q = 1, g = '', d = '', p = '', destino = '1', variante = '') {
             const tbody = document.getElementById('items-body');
             if(!tbody) return;
             const displayStyle = window.getTipoProposta() === 'comodato' ? 'display:none;' : '';
@@ -5471,7 +5562,8 @@ ${dica}`;
             const tr = tbody.insertRow();
             tr.innerHTML = `<td><input type="number" class="i-q" value="${window.escapeAttr(q)}" style="width:64px; text-align:center;" oninput="window.calcularTotal()"></td>
                 <td><select class="i-g-select" onchange="window.toggleGrupoOutro(this)">${window.getGrupoSelectInnerHtml()}</select>
-                    <input type="text" class="i-g-outro" style="display:none;margin-top:5px" placeholder="Qual equipamento?"></td>
+                    <input type="text" class="i-g-outro" style="display:none;margin-top:5px" placeholder="Qual equipamento?">
+                    <select class="i-variante" style="display:none" onchange="window.onItemVarianteChange(this)"><option value="">Selecione a potência...</option></select></td>
                 <td><textarea class="i-d" rows="4">${window.escapeHtml(d)}</textarea></td>
                 <td><select class="i-destino" onchange="window.onItemDestinationChange(this)">
                     <option value="1">Entrega 1</option>
@@ -5490,6 +5582,14 @@ ${dica}`;
                 sel.value = GRUPO_OUTRO;
                 tr.querySelector('.i-g-outro').style.display = 'block';
                 tr.querySelector('.i-g-outro').value = g;
+            }
+            window.atualizarVariantesItem(tr, variante);
+            if (window.isAutotransformadorProduto(sel.value) && variante) {
+                const varObj = window.getAutotransformadorVariante(variante);
+                if (varObj) {
+                    tr.querySelector('.i-d').value = d || window.getAutotransformadorDescricao(varObj);
+                    tr.querySelector('.i-p').value = p || window.getAutotransformadorPreco(varObj);
+                }
             }
             const destinationSelect = tr.querySelector('.i-destino');
             destinationSelect.value = String(destino) === '2' ? '2' : '1';
@@ -5511,6 +5611,7 @@ ${dica}`;
                 g: tr.querySelector('.i-g-select').value === GRUPO_OUTRO ? tr.querySelector('.i-g-outro').value : tr.querySelector('.i-g-select').value,
                 d: tr.querySelector('.i-d').value,
                 p: isComodato ? '' : tr.querySelector('.i-p').value,
+                variante: tr.querySelector('.i-variante')?.value || '',
                 destino: tr.querySelector('.i-destino')?.value || '1'
             }));
             const multiDelivery = !!document.getElementById('f-multi-delivery')?.checked;
@@ -5818,7 +5919,7 @@ ${dica}`;
                     document.getElementById('f-comodato-lucro-pct').value = pct > 0 ? pct.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '';
                 }
 
-                (p.items || []).forEach(i => window.addItemRow(i.q, i.g, i.d, i.p, i.destino || '1'));
+                (p.items || []).forEach(i => window.addItemRow(i.q, i.g, i.d, i.p, i.destino || '1', i.variante || i.v || ''));
                 window.toggleMultiDeliveryUI(false);
                 window.calcularTotal();
 
