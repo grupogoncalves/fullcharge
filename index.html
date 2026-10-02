@@ -1045,6 +1045,42 @@
         .p-spec-value { display:block; color:#334155; font-size:.66rem; font-weight:750; line-height:1.2; overflow-wrap:anywhere; }
         .p-spec-empty { color:#64748b; font-size:.72rem; }
 
+        /* Especificações técnicas no orçamento: texto simples, sem cards/chips */
+        .p-spec-panel.p-spec-panel--text {
+            padding: 8px 0 2px;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+        }
+        .p-spec-text-title {
+            margin: 0 0 5px;
+            color: #64748b;
+            font-size: .50rem;
+            font-weight: 900;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            line-height: 1.15;
+        }
+        .p-spec-text-body {
+            color: #334155;
+            font-size: .64rem;
+            font-weight: 500;
+            line-height: 1.36;
+            white-space: normal;
+        }
+        .p-spec-text-line {
+            display: block;
+            margin: 0 0 1px;
+            overflow-wrap: anywhere;
+        }
+        .preview-container.p-fit-a4[data-fit-density="compact"] .p-spec-panel.p-spec-panel--text { padding-top: 5px; }
+        .preview-container.p-fit-a4[data-fit-density="compact"] .p-spec-text-title { font-size: .46rem; margin-bottom: 3px; }
+        .preview-container.p-fit-a4[data-fit-density="compact"] .p-spec-text-body { font-size: .57rem; line-height: 1.28; }
+        .preview-container.p-fit-a4[data-fit-density="ultra"] .p-spec-panel.p-spec-panel--text { padding-top: 3px; }
+        .preview-container.p-fit-a4[data-fit-density="ultra"] .p-spec-text-title { font-size: .40rem; margin-bottom: 2px; }
+        .preview-container.p-fit-a4[data-fit-density="ultra"] .p-spec-text-body { font-size: .50rem; line-height: 1.20; }
+
+
         .preview-container.p-fit-a4[data-fit-density="compact"] #p-items .p-item-main-row td { padding:8px 9px 6px !important; }
         .preview-container.p-fit-a4[data-fit-density="compact"] #p-items .p-item-image-wrap { min-height:58px; }
         .preview-container.p-fit-a4[data-fit-density="compact"] #p-items .p-item-image-wrap .p-img-thumb { width:56px !important; height:56px !important; }
@@ -1912,7 +1948,7 @@
                                 </div>
                                 <div class="cover-product-list">
                                     <div class="cover-product-item" id="cover-product-1">1x Full Charge Swift 30 kW</div>
-                                    <div class="cover-product-item" id="cover-product-2">Linha Swift (Comercial)</div>
+                                    <div class="cover-product-item" id="cover-product-2" style="display:none"></div>
                                 </div>
                             </div>
                             <div class="cover-footer-panel">
@@ -4203,31 +4239,22 @@ ${dica}`;
 
         window.renderProposalSpecs = function(value) {
             const text = String(value || '').trim();
-            if (!text) {
-                return `<section class="p-spec-panel"><div class="p-spec-panel-head"><span>Especificações técnicas</span></div><div class="p-spec-empty">Conforme especificação da proposta.</div></section>`;
-            }
+            if (!text) return '';
 
-            const parts = text.split(/\s*;\s*/).map(v => v.trim()).filter(Boolean);
-            let code = '';
-            if (parts.length && !parts[0].includes(':')) code = parts.shift();
+            // No orçamento, as especificações devem aparecer como texto simples,
+            // seguindo o visual da referência enviada pelo usuário.
+            const parts = text
+                .split(/(?:\r?\n|\s*;\s*)/)
+                .map(v => v.trim())
+                .filter(Boolean);
 
-            const cards = parts.map(part => {
-                const idx = part.indexOf(':');
-                if (idx < 0) {
-                    return `<div class="p-spec-card p-spec-card--wide"><span class="p-spec-value">${window.escapeHtml(part)}</span></div>`;
-                }
-                const label = window.prettySpecLabel(part.slice(0, idx));
-                const specValue = part.slice(idx + 1).trim();
-                const isWide = /comunica|plataforma/i.test(label) || specValue.length > 24;
-                return `<div class="p-spec-card${isWide ? ' p-spec-card--wide' : ''}"><span class="p-spec-label">${window.escapeHtml(label)}</span><span class="p-spec-value">${window.escapeHtml(specValue)}</span></div>`;
-            }).join('');
+            const lines = parts.map(part =>
+                `<div class="p-spec-text-line">${window.escapeHtml(part)}</div>`
+            ).join('');
 
-            return `<section class="p-spec-panel">
-                <div class="p-spec-panel-head">
-                    <span>Especificações técnicas</span>
-                    ${code ? `<strong>${window.escapeHtml(code)}</strong>` : ''}
-                </div>
-                <div class="p-spec-grid">${cards || '<span class="p-spec-empty">Conforme especificação da proposta.</span>'}</div>
+            return `<section class="p-spec-panel p-spec-panel--text">
+                <div class="p-spec-text-title">ESPECIFICAÇÕES TÉCNICAS</div>
+                <div class="p-spec-text-body">${lines}</div>
             </section>`;
         };
 
@@ -4310,9 +4337,18 @@ ${dica}`;
             const itensCapa = data.items || [];
             const primeiroItemCapa = itensCapa[0] || {};
             if (coverProduct1) coverProduct1.textContent = primeiroItemCapa.g ? `${primeiroItemCapa.q || 1}x ${primeiroItemCapa.g}${primeiroItemCapa.variante ? ` — ${primeiroItemCapa.variante}` : ''}` : (isInvestidor ? 'Rentabilidade mensal projetada de 2,25%' : 'Soluções de recarga FullCharge');
-            if (coverProduct2) coverProduct2.textContent = isComodato && participacaoLucroBrutoPct > 0
-                ? `Participação: ${window.formatPercentual(participacaoLucroBrutoPct)} do lucro bruto`
-                : (primeiroItemCapa.g ? (window.getProductShortSummary(primeiroItemCapa.g) || primeiroItemCapa.d || 'Solução FullCharge') : (itensCapa[1]?.g ? `${itensCapa[1].q || 1}x ${itensCapa[1].g}` : (isInvestidor ? `Projeção para ${meses} meses` : 'Alta performance para mobilidade elétrica')));
+            if (coverProduct2) {
+                // A capa deve apresentar somente informações comerciais dos itens.
+                // Não puxar resumo, descrição ou especificações técnicas do produto para a capa.
+                const segundoItemCapa = itensCapa[1] || {};
+                const textoSecundarioCapa = isComodato && participacaoLucroBrutoPct > 0
+                    ? `Participação: ${window.formatPercentual(participacaoLucroBrutoPct)} do lucro bruto`
+                    : (segundoItemCapa.g
+                        ? `${segundoItemCapa.q || 1}x ${segundoItemCapa.g}${segundoItemCapa.variante ? ` — ${segundoItemCapa.variante}` : ''}`
+                        : (isInvestidor ? `Projeção para ${meses} meses` : ''));
+                coverProduct2.textContent = textoSecundarioCapa;
+                coverProduct2.style.display = textoSecundarioCapa ? '' : 'none';
+            }
             if (coverTotal) coverTotal.textContent = data.total || data.investimento || window.formatBRL(investimentoNumero) || 'R$ 0,00';
             
             const itensResumo = data.items || [];
