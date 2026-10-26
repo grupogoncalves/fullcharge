@@ -142,6 +142,17 @@
         .items-table .i-variante { width:100%; max-width:280px; margin-top:6px; padding:8px 10px; border:1px solid #bfdbfe; border-radius:var(--radius-sm); background:#eff6ff; color:#0f2e58; font-family:inherit; font-size:0.80rem; font-weight:700; }
         .items-table .i-variante:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-muted); }
 
+        /* Opção manual por campo: moeda ou texto livre. */
+        .valor-modo-grid { display:grid; grid-template-columns: minmax(0, 1fr) 150px; gap:10px; align-items:end; }
+        .valor-modo-grid .valor-modo-seletor { font-size:.82rem; font-weight:650; }
+        .valor-modo-grid .valor-modo-seletor label { color:#64748b; }
+        .i-preco-wrap { display:flex; flex-direction:column; gap:5px; min-width:120px; }
+        .i-preco-wrap .i-preco-modo { padding:5px 7px; font-size:.74rem; background:#f8fafc; }
+        .i-preco-wrap .i-p { min-width:120px; }
+        #p-items .p-item-price { white-space:normal; overflow-wrap:anywhere; }
+        .p-total-box strong, .cover-total-chip, .value-summary-number { overflow-wrap:anywhere; }
+        @media (max-width:560px) { .valor-modo-grid { grid-template-columns:1fr; } }
+
         /* ——— Dois CNPJs / duas entregas na mesma proposta e contrato ——— */
         .dual-delivery-card { margin: 2px 0 20px; border: 1px solid #bfdbfe; border-radius: 14px; overflow: hidden; background: linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%); box-shadow: 0 8px 24px rgba(0, 86, 255, 0.06); }
         .dual-delivery-toggle { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:16px 18px; }
@@ -1329,6 +1340,25 @@
         }
 
     
+        /* Pesquisa central de propostas */
+        .fc-proposta-search { position:relative; padding:15px 18px; margin:0 0 20px; background:#fff; border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow-sm); }
+        .fc-proposta-search label { color:#475569; font-weight:800; margin-bottom:8px; }
+        .fc-proposta-search-field { display:flex; align-items:center; gap:10px; }
+        .fc-proposta-search-field > i { color:var(--accent); font-size:17px; }
+        .fc-proposta-search-field input { flex:1; min-width:0; border:0; padding:8px 0; box-shadow:none !important; }
+        .fc-proposta-search-clear { width:auto; min-width:32px; height:32px; padding:4px; border:0; border-radius:8px; background:#f1f5f9; color:#475569; cursor:pointer; }
+        .fc-proposta-search-results { margin-top:12px; border-top:1px solid #e2e8f0; padding-top:8px; max-height:310px; overflow:auto; }
+        .fc-proposta-search-results[hidden] { display:none !important; }
+        .fc-proposta-search-item { width:100%; display:flex; align-items:center; justify-content:space-between; text-align:left; gap:14px; border:0; border-radius:8px; background:transparent; color:var(--text); padding:10px; cursor:pointer; }
+        .fc-proposta-search-item:hover, .fc-proposta-search-item:focus-visible { background:#eff6ff; outline:none; }
+        .fc-proposta-search-item strong { display:block; font-size:.86rem; overflow-wrap:anywhere; }
+        .fc-proposta-search-item small { display:block; color:#64748b; font-size:.74rem; margin-top:3px; overflow-wrap:anywhere; }
+        .fc-proposta-search-item > i { color:var(--accent); }
+        .fc-proposta-search-counter { display:block; padding:6px 10px; font-size:.71rem; color:#64748b; }
+        .catalog-price-field label { margin-bottom:5px; }
+        .catalog-price-field .cat-price-mode { font-size:.75rem; font-weight:700; padding:7px 9px; margin-bottom:6px; background:#f8fafc; }
+        .catalog-price-field .cat-price-input[data-value-mode="texto"] { border-color:#93c5fd; background:#eff6ff; }
+
         /* ——— Catálogo: ações sempre visíveis ——— */
         .catalog-table th.catalog-actions-col,
         .catalog-table td.catalog-actions-col {
@@ -1611,6 +1641,15 @@
         </aside>
 
         <main class="main-content" id="main-app">
+            <div class="fc-proposta-search no-print" id="fc-proposta-search" role="search" aria-label="Pesquisar propostas salvas">
+                <label for="fc-proposta-search-input"><i class="fa fa-search" aria-hidden="true"></i> Pesquisar proposta</label>
+                <div class="fc-proposta-search-field">
+                    <i class="fa fa-file-alt" aria-hidden="true"></i>
+                    <input type="search" id="fc-proposta-search-input" autocomplete="off" placeholder="Busque por número, cliente, CNPJ/CPF ou cidade..." oninput="window.pesquisarPropostasRapido()" onkeydown="window.teclaPesquisaRapida(event)">
+                    <button type="button" class="fc-proposta-search-clear" title="Limpar pesquisa" aria-label="Limpar pesquisa" onclick="window.limparPesquisaRapida()"><i class="fa fa-times"></i></button>
+                </div>
+                <div class="fc-proposta-search-results" id="fc-proposta-search-results" aria-live="polite" hidden></div>
+            </div>
             <div id="screen-form" class="screen active">
                 <div class="card no-print">
                     <h2 class="page-title" id="form-title-proposta">Gerar proposta</h2>
@@ -1772,8 +1811,20 @@
                         </div>
                     </div>
                     <div class="field" id="f-total-field">
-                        <label for="f-total" id="f-total-label">Total Calculado (R$)</label>
-                        <input type="text" id="f-total" inputmode="decimal" oninput="window.maskMoney(this); window.calcularTotal(); window.atualizarResumoCotacaoDolar();" placeholder="R$ 0,00" style="font-size:1.2rem; font-weight:bold; color:var(--accent);">
+                        <div class="valor-modo-grid">
+                            <div>
+                                <label for="f-total" id="f-total-label">Total Calculado (R$)</label>
+                                <input type="text" id="f-total" inputmode="decimal" data-value-mode="moeda" oninput="window.aoEditarValorTotal(this)" placeholder="R$ 0,00" style="font-size:1.2rem; font-weight:bold; color:var(--accent);">
+                            </div>
+                            <div class="valor-modo-seletor">
+                                <label for="f-total-mode">Formato do valor</label>
+                                <select id="f-total-mode" aria-label="Exibir valor total como moeda ou texto livre" onchange="window.alternarModoValor(this)">
+                                    <option value="moeda">R$ (numérico)</option>
+                                    <option value="texto">Texto livre</option>
+                                </select>
+                            </div>
+                        </div>
+                        <small style="display:block; margin-top:6px; color:#64748b; font-size:.73rem;">Em Texto livre, escreva a condição desejada (ex.: Sob consulta). O texto aparecerá na proposta e no contrato.</small>
                     </div>
                     <div class="exchange-card" id="exchange-card">
                         <div class="exchange-card-main">
@@ -2501,21 +2552,37 @@
                             <label for="cat-cat">Categoria</label>
                             <input type="text" id="cat-cat" placeholder="Ex: Linha Swift">
                         </div>
-                        <div class="field">
-                            <label for="cat-preco-venda">Preço de venda (R$)</label>
-                            <input type="text" id="cat-preco-venda" placeholder="R$ 0,00" oninput="window.maskMoney(this)">
+                        <div class="field catalog-price-field">
+                            <label for="cat-preco-venda">Preço de venda</label>
+                            <select id="cat-preco-venda-modo" class="cat-price-mode" aria-label="Formato do preço de venda" onchange="window.alternarModoPrecoCatalogo(this)">
+                                <option value="moeda">R$ (numérico)</option>
+                                <option value="texto">Texto livre</option>
+                            </select>
+                            <input type="text" id="cat-preco-venda" class="cat-price-input" data-value-mode="moeda" inputmode="decimal" placeholder="R$ 0,00" oninput="window.aoEditarPrecoCatalogo(this)">
                         </div>
-                        <div class="field">
-                            <label for="cat-preco-investimento">Preço de investimento (R$)</label>
-                            <input type="text" id="cat-preco-investimento" placeholder="R$ 0,00" oninput="window.maskMoney(this)">
+                        <div class="field catalog-price-field">
+                            <label for="cat-preco-investimento">Preço de investimento</label>
+                            <select id="cat-preco-investimento-modo" class="cat-price-mode" aria-label="Formato do preço de investimento" onchange="window.alternarModoPrecoCatalogo(this)">
+                                <option value="moeda">R$ (numérico)</option>
+                                <option value="texto">Texto livre</option>
+                            </select>
+                            <input type="text" id="cat-preco-investimento" class="cat-price-input" data-value-mode="moeda" inputmode="decimal" placeholder="R$ 0,00" oninput="window.aoEditarPrecoCatalogo(this)">
                         </div>
-                        <div class="field">
-                            <label for="cat-preco-comodato">Preço de comodato (R$)</label>
-                            <input type="text" id="cat-preco-comodato" placeholder="R$ 0,00" oninput="window.maskMoney(this)">
+                        <div class="field catalog-price-field">
+                            <label for="cat-preco-comodato">Preço de comodato</label>
+                            <select id="cat-preco-comodato-modo" class="cat-price-mode" aria-label="Formato do preço de comodato" onchange="window.alternarModoPrecoCatalogo(this)">
+                                <option value="moeda">R$ (numérico)</option>
+                                <option value="texto">Texto livre</option>
+                            </select>
+                            <input type="text" id="cat-preco-comodato" class="cat-price-input" data-value-mode="moeda" inputmode="decimal" placeholder="R$ 0,00" oninput="window.aoEditarPrecoCatalogo(this)">
                         </div>
-                        <div class="field">
-                            <label for="cat-preco-locacao">Locação mensal (R$)</label>
-                            <input type="text" id="cat-preco-locacao" placeholder="R$ 0,00" oninput="window.maskMoney(this)">
+                        <div class="field catalog-price-field">
+                            <label for="cat-preco-locacao">Locação mensal</label>
+                            <select id="cat-preco-locacao-modo" class="cat-price-mode" aria-label="Formato do locação mensal" onchange="window.alternarModoPrecoCatalogo(this)">
+                                <option value="moeda">R$ (numérico)</option>
+                                <option value="texto">Texto livre</option>
+                            </select>
+                            <input type="text" id="cat-preco-locacao" class="cat-price-input" data-value-mode="moeda" inputmode="decimal" placeholder="R$ 0,00" oninput="window.aoEditarPrecoCatalogo(this)">
                         </div>
                         <div class="catalog-image-box">
                             <div>
@@ -2804,11 +2871,170 @@ ${dica}`;
             i.value = "R$ " + v;
         }
 
+        // Cada valor pode ser editado como moeda ou como texto, sem aplicação de máscara ao texto.
+        window.ajustarCampoModoValor = function(input, modo) {
+            if (!input) return;
+            input.dataset.valueMode = modo;
+            input.inputMode = modo === 'texto' ? 'text' : 'decimal';
+            input.placeholder = modo === 'texto' ? 'Ex.: Sob consulta / A negociar' : 'R$ 0,00';
+            input.setAttribute('aria-label', modo === 'texto' ? 'Valor em texto livre' : 'Valor em reais');
+        };
+
+        window.alternarModoValor = function(select) {
+            const input = select.id === 'f-total-mode'
+                ? document.getElementById('f-total')
+                : select.closest('tr')?.querySelector('.i-p');
+            if (!input) return;
+            const modoAnterior = input.dataset.valueMode || 'moeda';
+            const novoModo = select.value === 'texto' ? 'texto' : 'moeda';
+            if (modoAnterior !== novoModo) {
+                input.dataset[modoAnterior === 'texto' ? 'ultimoTexto' : 'ultimoMoeda'] = input.value;
+                input.value = input.dataset[novoModo === 'texto' ? 'ultimoTexto' : 'ultimoMoeda'] || '';
+            }
+            window.ajustarCampoModoValor(input, novoModo);
+            if (select.classList.contains('i-preco-modo')) select.closest('tr').dataset.priceOrigin = 'manual';
+            if (novoModo === 'moeda' && !input.value.trim()) input.value = 'R$ 0,00';
+            // Restaurar o cálculo somente quando o total for exibido em moeda.
+            window.calcularTotal();
+            if (typeof window.atualizarResumoCotacaoDolar === 'function') window.atualizarResumoCotacaoDolar();
+            input.focus();
+        };
+
+        // Preços do catálogo: cada modalidade guarda seu próprio formato no banco.
+        window.inferirModoPrecoCatalogo = function(valor, modoGravado) {
+            if (modoGravado === 'texto' || modoGravado === 'moeda') return modoGravado;
+            const v = String(valor == null ? '' : valor).trim();
+            if (v && !/^(?:R\$\s*)?[\d.,\s]+$/i.test(v)) return 'texto';
+            return 'moeda';
+        };
+
+        window.configurarPrecoCatalogo = function(id, valor, modo) {
+            const input = document.getElementById(id);
+            const select = document.getElementById(id + '-modo');
+            if (!input || !select) return;
+            const resolved = window.inferirModoPrecoCatalogo(valor, modo);
+            select.value = resolved;
+            input.value = valor == null ? '' : String(valor);
+            input.dataset.ultimoTexto = resolved === 'texto' ? input.value : '';
+            input.dataset.ultimoMoeda = resolved === 'moeda' ? input.value : '';
+            window.ajustarCampoModoValor(input, resolved);
+        };
+
+        window.alternarModoPrecoCatalogo = function(select) {
+            const input = document.getElementById(select.id.replace(/-modo$/, ''));
+            if (!input) return;
+            const antes = input.dataset.valueMode || 'moeda';
+            const depois = select.value === 'texto' ? 'texto' : 'moeda';
+            if (antes !== depois) {
+                input.dataset[antes === 'texto' ? 'ultimoTexto' : 'ultimoMoeda'] = input.value;
+                input.value = input.dataset[depois === 'texto' ? 'ultimoTexto' : 'ultimoMoeda'] || '';
+            }
+            window.ajustarCampoModoValor(input, depois);
+            input.focus();
+        };
+        window.aoEditarPrecoCatalogo = function(input) {
+            if (document.getElementById(input.id + '-modo')?.value !== 'texto') window.maskMoney(input);
+        };
+
+        window.getModoPrecoProdutoPorTipo = function(prod, tipo = window.getTipoProposta()) {
+            if (!prod) return 'moeda';
+            let valor, modo;
+            if (tipo === 'investidor') {
+                valor = prod.precoInvestimento || prod.preco || prod.precoVenda || '';
+                modo = prod.precoInvestimento ? prod.precoInvestimentoModo : prod.precoVendaModo;
+            } else if (tipo === 'comodato') {
+                valor = prod.precoComodato || prod.preco || prod.precoVenda || '';
+                modo = prod.precoComodato ? prod.precoComodatoModo : prod.precoVendaModo;
+            } else if (tipo === 'locacao') {
+                valor = prod.precoLocacao || prod.precoMensal || '';
+                modo = prod.precoLocacaoModo;
+            } else {
+                valor = prod.precoVenda || prod.preco || '';
+                modo = prod.precoVendaModo;
+            }
+            return window.inferirModoPrecoCatalogo(valor, modo);
+        };
+
+        window.aplicarPrecoCatalogoItem = function(tr, produto, tipo = window.getTipoProposta()) {
+            const inp = tr?.querySelector('.i-p');
+            const seletor = tr?.querySelector('.i-preco-modo');
+            if (!inp || !seletor || !produto) return;
+            const valor = window.getPrecoProdutoPorTipo(produto, tipo);
+            const modo = window.getModoPrecoProdutoPorTipo(produto, tipo);
+            seletor.value = modo;
+            inp.value = valor || '';
+            inp.dataset.ultimoTexto = modo === 'texto' ? inp.value : '';
+            inp.dataset.ultimoMoeda = modo === 'moeda' ? inp.value : '';
+            window.ajustarCampoModoValor(inp, modo);
+            tr.dataset.priceOrigin = 'catalog';
+        };
+
+        // Pesquisa acessível no topo do portal, independentemente da tela ativa.
+        window.normalizarPesquisaProposta = function(texto) {
+            return String(texto == null ? '' : texto).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+        };
+        window.pesquisarPropostasRapido = function() {
+            const entrada = document.getElementById('fc-proposta-search-input');
+            const resultados = document.getElementById('fc-proposta-search-results');
+            if (!entrada || !resultados) return;
+            const termo = window.normalizarPesquisaProposta(entrada.value);
+            if (!termo) { resultados.hidden = true; resultados.innerHTML = ''; return; }
+            const propostas = Object.entries(window.todasPropostas || {});
+            const matches = propostas.filter(([key, p]) => {
+                if (!p || typeof p !== 'object') return false;
+                return window.normalizarPesquisaProposta([
+                    p.id || key, p.cli, p.cli2, p.cnpj, p.cnpj2, p.cidade, p.cidade2,
+                    p.end, p.data, p.consultor, p.total
+                ].filter(Boolean).join(' ')).includes(termo);
+            }).reverse();
+            resultados.hidden = false;
+            if (!matches.length) {
+                resultados.innerHTML = '<span class="fc-proposta-search-counter">Nenhuma proposta encontrada para a pesquisa.</span>';
+                return;
+            }
+            const shown = matches.slice(0, 12);
+            resultados.innerHTML = `<span class="fc-proposta-search-counter">${matches.length} proposta${matches.length === 1 ? '' : 's'} encontrada${matches.length === 1 ? '' : 's'}${matches.length > 12 ? ' (mostrando 12)' : ''}</span>` + shown.map(([key, p]) => {
+                const status = window.normProposalStatus(p.propostaStatus) === 'aprovado' ? 'Aprovada' : 'Pendente';
+                return `<button type="button" class="fc-proposta-search-item" data-proposta-key="${window.escapeAttr(key)}"><span><strong>#${window.escapeHtml(p.id || key)} · ${window.escapeHtml(p.cli || 'Cliente não informado')}</strong><small>${window.escapeHtml([p.cnpj, p.cidade, p.data, status].filter(Boolean).join(' · '))}</small></span><i class="fa fa-arrow-right" aria-hidden="true"></i></button>`;
+            }).join('');
+            resultados.querySelectorAll('.fc-proposta-search-item').forEach(button => {
+                button.addEventListener('click', () => window.abrirPropostaPesquisaRapida(button.dataset.propostaKey));
+            });
+        };
+        window.abrirPropostaPesquisaRapida = function(chave) {
+            window.limparPesquisaRapida();
+            if (typeof window.reabrir === 'function') window.reabrir(chave);
+        };
+        window.limparPesquisaRapida = function() {
+            const input = document.getElementById('fc-proposta-search-input');
+            if (input) input.value = '';
+            window.pesquisarPropostasRapido();
+        };
+        window.teclaPesquisaRapida = function(event) {
+            if (event.key === 'Escape') { window.limparPesquisaRapida(); return; }
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                document.querySelector('#fc-proposta-search-results .fc-proposta-search-item')?.click();
+            }
+        };
+
+        window.aoEditarValorItem = function(input) {
+            if (input.closest('tr')) input.closest('tr').dataset.priceOrigin = 'manual';
+            if ((input.closest('tr')?.querySelector('.i-preco-modo')?.value || 'moeda') === 'moeda') window.maskMoney(input);
+            window.calcularTotal();
+        };
+
+        window.aoEditarValorTotal = function(input) {
+            if (document.getElementById('f-total-mode')?.value !== 'texto') window.maskMoney(input);
+            if (typeof window.atualizarResumoCotacaoDolar === 'function') window.atualizarResumoCotacaoDolar();
+        };
+
         window.calcularTotal = function() {
             let totalGeral = 0;
             let totalLinhas = 0;
             document.querySelectorAll('#items-body tr').forEach(tr => {
                 totalLinhas += 1;
+                if (tr.querySelector('.i-preco-modo')?.value === 'texto') return;
                 const q = parseFloat(tr.querySelector('.i-q').value) || 0;
                 const pInput = tr.querySelector('.i-p');
                 const pStr = pInput ? (pInput.value || '').replace(/\D/g, '') : '0';
@@ -2818,7 +3044,7 @@ ${dica}`;
             
             const valorFormatado = window.formatBRL ? window.formatBRL(totalGeral) : ("R$ " + totalGeral.toFixed(2).replace('.', ','));
             const fTotal = document.getElementById('f-total');
-            if(fTotal) fTotal.value = valorFormatado;
+            if (fTotal && document.getElementById('f-total-mode')?.value !== 'texto') fTotal.value = valorFormatado;
             if (typeof window.atualizarResumoCotacaoDolar === 'function') window.atualizarResumoCotacaoDolar();
 
             const tipo = typeof window.getTipoProposta === 'function' ? window.getTipoProposta() : 'venda_entrega';
@@ -2933,14 +3159,19 @@ ${dica}`;
         };
 
         // Padrão obrigatório no contrato: R$ 1.000,00 (mil reais).
+        window.isCampoValorMonetario = function(value) {
+            const texto = String(value ?? '').trim();
+            return /^(?:R\$\s*)?-?\d[\d.]*([,.]\d{1,2})?$/.test(texto);
+        };
         window.contractPriceWithWords = function(value) {
+            if (!window.isCampoValorMonetario(value)) return String(value ?? '').trim() || 'Conforme proposta';
             const numero = window.moneyToNumber(value);
             return `${window.formatBRL(numero)} (${window.valorPorExtensoBRL(numero)})`;
         };
 
         window.contractPriceWithWordsIfMonetary = function(value) {
             const texto = String(value ?? '').trim();
-            if (!texto || !/\d/.test(texto) || window.moneyToNumber(texto) <= 0) return texto || 'Conforme proposta';
+            if (!window.isCampoValorMonetario(texto) || window.moneyToNumber(texto) <= 0) return texto || 'Conforme proposta';
             return window.contractPriceWithWords(texto);
         };
 
@@ -3031,7 +3262,8 @@ ${dica}`;
             const display = document.getElementById('f-cotacao-display');
             const status = document.getElementById('f-cotacao-status');
             const valor = window.parseCotacaoDolar(input?.value);
-            const total = window.moneyToNumber(document.getElementById('f-total')?.value || document.getElementById('f-investimento')?.value || 0);
+            const totalEmTexto = document.getElementById('f-total-mode')?.value === 'texto';
+            const total = totalEmTexto ? 0 : window.moneyToNumber(document.getElementById('f-total')?.value || document.getElementById('f-investimento')?.value || 0);
 
             if (options.manual && valor) {
                 window.cotacaoDolarAtual = {
@@ -3053,7 +3285,7 @@ ${dica}`;
                 return null;
             }
 
-            const equivalente = total > 0 ? window.formatUSD(total / cotacao.valor) : 'equivalente calculado após informar os itens';
+            const equivalente = totalEmTexto ? 'valor definido em texto (sem conversão)' : (total > 0 ? window.formatUSD(total / cotacao.valor) : 'equivalente calculado após informar os itens');
             if (display) display.textContent = `US$ 1,00 = ${window.formatCotacaoDolar(cotacao.valor)} · ${equivalente}`;
             if (status) {
                 status.classList.remove('is-error');
@@ -3204,7 +3436,7 @@ ${dica}`;
             if (rendaMensalInput) rendaMensalInput.value = window.formatBRL(rendaMensal);
             if (rendaPeriodoInput) rendaPeriodoInput.value = window.formatBRL(rendaPeriodo);
             const fTotal = document.getElementById('f-total');
-            if (syncTotal && window.getTipoProposta() === 'investidor' && fTotal) fTotal.value = window.formatBRL(investimento);
+            if (syncTotal && window.getTipoProposta() === 'investidor' && fTotal && document.getElementById('f-total-mode')?.value !== 'texto') fTotal.value = window.formatBRL(investimento);
         }
 
         window.defaultInvestorObs = function() {
@@ -3289,6 +3521,15 @@ ${dica}`;
             }
             if (totalLabel) {
                 totalLabel.textContent = isInvestidor ? 'Total calculado pelo preço de investimento (R$)' : (isLocacao ? 'Mensalidade total da locação (R$/mês)' : 'Total Calculado (R$)');
+            }
+            const totalMode = document.getElementById('f-total-mode');
+            if (totalMode) {
+                totalMode.disabled = isInvestidor;
+                // A simulação de investidor depende de um valor monetário para calcular o retorno.
+                if (isInvestidor && totalMode.value === 'texto') {
+                    totalMode.value = 'moeda';
+                    window.alternarModoValor(totalMode);
+                }
             }
             // No comodato, nenhum preço é exibido: a condição comercial é somente a participação no lucro bruto.
             if (totalField) totalField.style.display = isComodato ? 'none' : '';
@@ -3844,10 +4085,10 @@ ${dica}`;
             document.getElementById('cat-old-key').value = key; 
             document.getElementById('cat-nome').value = p.nome;
             document.getElementById('cat-cat').value = p.cat || '';
-            document.getElementById('cat-preco-venda').value = p.precoVenda || p.preco || '';
-            document.getElementById('cat-preco-investimento').value = p.precoInvestimento || '';
-            document.getElementById('cat-preco-comodato').value = p.precoComodato || '';
-            if (document.getElementById('cat-preco-locacao')) document.getElementById('cat-preco-locacao').value = p.precoLocacao || p.precoMensal || '';
+            window.configurarPrecoCatalogo('cat-preco-venda', p.precoVenda || p.preco || '', p.precoVendaModo);
+            window.configurarPrecoCatalogo('cat-preco-investimento', p.precoInvestimento || '', p.precoInvestimentoModo);
+            window.configurarPrecoCatalogo('cat-preco-comodato', p.precoComodato || '', p.precoComodatoModo);
+            window.configurarPrecoCatalogo('cat-preco-locacao', p.precoLocacao || p.precoMensal || '', p.precoLocacaoModo);
             document.getElementById('cat-img').value = p.img || '';
             document.getElementById('cat-escopo').value = p.escopo || window.getProductScope(p) || '';
             
@@ -3865,6 +4106,10 @@ ${dica}`;
             const precoInvestimento = document.getElementById('cat-preco-investimento').value.trim();
             const precoComodato = document.getElementById('cat-preco-comodato').value.trim();
             const precoLocacao = document.getElementById('cat-preco-locacao')?.value.trim() || '';
+            const precoVendaModo = document.getElementById('cat-preco-venda-modo')?.value || 'moeda';
+            const precoInvestimentoModo = document.getElementById('cat-preco-investimento-modo')?.value || 'moeda';
+            const precoComodatoModo = document.getElementById('cat-preco-comodato-modo')?.value || 'moeda';
+            const precoLocacaoModo = document.getElementById('cat-preco-locacao-modo')?.value || 'moeda';
             const imgData = document.getElementById('cat-img-data')?.value.trim() || '';
             const imgUrl = document.getElementById('cat-img')?.value.trim() || '';
             const img = imgData || imgUrl;
@@ -3891,6 +4136,10 @@ ${dica}`;
                     precoInvestimento,
                     precoComodato,
                     precoLocacao,
+                    precoVendaModo,
+                    precoInvestimentoModo,
+                    precoComodatoModo,
+                    precoLocacaoModo,
                     img,
                     escopo,
                     resumo: spec?.resumo || produtoAnterior.resumo || '',
@@ -3902,10 +4151,7 @@ ${dica}`;
                 
                 document.getElementById('cat-nome').value = '';
                 document.getElementById('cat-cat').value = '';
-                document.getElementById('cat-preco-venda').value = '';
-                document.getElementById('cat-preco-investimento').value = '';
-                document.getElementById('cat-preco-comodato').value = '';
-                if (document.getElementById('cat-preco-locacao')) document.getElementById('cat-preco-locacao').value = '';
+                ['cat-preco-venda', 'cat-preco-investimento', 'cat-preco-comodato', 'cat-preco-locacao'].forEach(id => window.configurarPrecoCatalogo(id, '', 'moeda'));
                 document.getElementById('cat-img').value = '';
                 if (document.getElementById('cat-img-data')) document.getElementById('cat-img-data').value = '';
                 if (document.getElementById('cat-img-file')) document.getElementById('cat-img-file').value = '';
@@ -4295,7 +4541,7 @@ ${dica}`;
             const cotacaoValor = window.parseCotacaoDolar(data.cotacaoDolarValor || data.cotacaoDolar || 0);
             const totalNumeroCambio = window.moneyToNumber(data.total || data.investimento || 0);
             const pExchangeSection = document.getElementById('p-exchange-section');
-            if (pExchangeSection) pExchangeSection.hidden = isComodato || !cotacaoValor;
+            if (pExchangeSection) pExchangeSection.hidden = isComodato || data.modoValor === 'texto' || !cotacaoValor;
             if (cotacaoValor) {
                 const cotacaoObj = {
                     valor: cotacaoValor,
@@ -4349,7 +4595,7 @@ ${dica}`;
                 coverProduct2.textContent = textoSecundarioCapa;
                 coverProduct2.style.display = textoSecundarioCapa ? '' : 'none';
             }
-            if (coverTotal) coverTotal.textContent = data.total || data.investimento || window.formatBRL(investimentoNumero) || 'R$ 0,00';
+            if (coverTotal) coverTotal.textContent = data.modoValor === 'texto' ? (data.total || 'A negociar') : (data.total || data.investimento || window.formatBRL(investimentoNumero) || 'R$ 0,00');
             
             const itensResumo = data.items || [];
             // Na 2ª página, somente estações de recarga entram como equipamentos.
@@ -4377,7 +4623,7 @@ ${dica}`;
             setTextPremium('p-resumo-implantacao', data.implantacao || '15 dias úteis');
             setTextPremium('p-resumo-garantia', data.garantia || '12 meses');
             setTextPremium('p-resumo-investimento-label', isComodato ? 'Participação no lucro bruto' : (isLocacao ? 'Mensalidade' : 'Investimento'));
-            setTextPremium('p-resumo-investimento', isComodato ? window.formatPercentual(participacaoLucroBrutoPct) : (isLocacao ? `${data.total || 'R$ 0,00'} / mês` : (data.total || data.investimento || window.formatBRL(investimentoNumero))));
+            setTextPremium('p-resumo-investimento', isComodato ? window.formatPercentual(participacaoLucroBrutoPct) : (isLocacao ? (data.modoValor === 'texto' ? (data.total || 'A negociar') : `${data.total || 'R$ 0,00'} / mês`) : (data.total || data.investimento || window.formatBRL(investimentoNumero))));
             setTextPremium('p-resumo-cliente', data.cli || 'o cliente');
             setTextPremium('value-page-lead', window.isVendaSemEntrega(tipo)
                 ? `Para ${data.cli || 'este pedido'}, a FullCharge reúne equipamentos, conferência e liberação em uma jornada de retirada simples e organizada.`
@@ -4461,7 +4707,7 @@ ${dica}`;
                 const prazoLoc = parseInt(data.locacaoPrazoMeses || 24, 10) || 24;
                 const vencLoc = Math.min(28, Math.max(1, parseInt(data.locacaoVencimentoDia || 10, 10) || 10));
                 setRent('rent-contract-id', data.id || '—');
-                setRent('rent-contract-monthly', `${data.total || 'R$ 0,00'} / mês`);
+                setRent('rent-contract-monthly', data.modoValor === 'texto' ? (data.total || 'A negociar') : `${data.total || 'R$ 0,00'} / mês`);
                 setRent('rent-contract-term', `${prazoLoc} meses`);
                 setRent('rent-contract-due', `Dia ${vencLoc} de cada mês`);
                 setRent('rent-contract-adjustment', data.locacaoReajuste || 'INPC, a cada 12 meses');
@@ -4476,7 +4722,7 @@ ${dica}`;
                         <td>${window.escapeHtml(i.q || '1')}</td>
                         <td><strong>${window.escapeHtml(i.g || 'Equipamento')}</strong></td>
                         <td>${window.escapeHtml(i.d || 'Conforme proposta comercial')}</td>
-                        <td>${window.escapeHtml(i.p || '-')} / mês</td>
+                        <td>${window.escapeHtml(i.p || '-')}${i.modoPreco === 'texto' ? '' : ' / mês'}</td>
                     </tr>`).join('') || '<tr><td colspan="4">Equipamentos conforme proposta comercial.</td></tr>';
                 }
             }
@@ -5535,7 +5781,14 @@ ${dica}`;
                     const varianteSelect = tr.querySelector('.i-variante');
                     const variante = window.isAutotransformadorProduto(prod.nome) ? window.getAutotransformadorVariante(varianteSelect?.value) : null;
                     if (desc) desc.value = variante ? window.getAutotransformadorDescricao(variante) : (prod.escopo || window.getProductScope(prod) || prod.cat || '');
-                    precoInput.value = variante ? window.getAutotransformadorPreco(variante) : window.getPrecoProdutoPorTipo(prod);
+                    if (tr.dataset.priceOrigin !== 'manual') {
+                        if (variante) {
+                            tr.querySelector('.i-preco-modo').value = 'moeda';
+                            window.ajustarCampoModoValor(precoInput, 'moeda');
+                            precoInput.value = window.getAutotransformadorPreco(variante);
+                            tr.dataset.priceOrigin = 'catalog';
+                        } else window.aplicarPrecoCatalogoItem(tr, prod);
+                    }
                 }
             });
             window.calcularTotal();
@@ -5559,7 +5812,7 @@ ${dica}`;
             const desc = tr?.querySelector('.i-d');
             const precoInput = tr?.querySelector('.i-p');
             if (desc) desc.value = window.getAutotransformadorDescricao(variante);
-            if (precoInput) precoInput.value = window.getAutotransformadorPreco(variante);
+            if (precoInput && tr?.querySelector('.i-preco-modo')?.value !== 'texto') precoInput.value = window.getAutotransformadorPreco(variante);
             window.calcularTotal();
         };
 
@@ -5579,17 +5832,24 @@ ${dica}`;
                     const prod = Object.values(window.produtosCatalogo).find(p => p.nome === sel.value);
                     if(prod) {
                         desc.value = prod.escopo || window.getProductScope(prod) || prod.cat || '';
-                        if (precoInput) precoInput.value = window.isAutotransformadorProduto(prod.nome) ? '' : window.getPrecoProdutoPorTipo(prod);
+                        if (precoInput) {
+                            if (window.isAutotransformadorProduto(prod.nome)) {
+                                precoInput.value = '';
+                                tr.querySelector('.i-preco-modo').value = 'moeda';
+                                window.ajustarCampoModoValor(precoInput, 'moeda');
+                                tr.dataset.priceOrigin = 'catalog';
+                            } else window.aplicarPrecoCatalogoItem(tr, prod);
+                        }
                     }
                 } else if (!sel.value) {
                     desc.value = '';
-                    if (precoInput) precoInput.value = '';
+                    if (precoInput) { precoInput.value = ''; tr.dataset.priceOrigin = 'catalog'; }
                 }
             }
             window.calcularTotal();
         }
 
-        window.addItemRow = function(q = 1, g = '', d = '', p = '', destino = '1', variante = '') {
+        window.addItemRow = function(q = 1, g = '', d = '', p = '', destino = '1', variante = '', modoPreco = 'moeda') {
             const tbody = document.getElementById('items-body');
             if(!tbody) return;
             const displayStyle = window.getTipoProposta() === 'comodato' ? 'display:none;' : '';
@@ -5605,14 +5865,28 @@ ${dica}`;
                     <option value="1">Entrega 1</option>
                     <option value="2">Entrega 2</option>
                 </select></td>
-                <td class="td-preco" style="${displayStyle}"><input type="text" class="i-p" value="${window.escapeAttr(p)}" oninput="window.maskMoney(this); window.calcularTotal()" placeholder="R$ 0,00"></td>
+                <td class="td-preco" style="${displayStyle}"><div class="i-preco-wrap">
+                    <select class="i-preco-modo" aria-label="Formato do preço do item" onchange="window.alternarModoValor(this)">
+                        <option value="moeda">R$ (numérico)</option>
+                        <option value="texto">Texto livre</option>
+                    </select>
+                    <input type="text" class="i-p" value="${window.escapeAttr(p)}" oninput="window.aoEditarValorItem(this)" placeholder="R$ 0,00">
+                </div></td>
                 <td style="text-align:center;"><button type="button" class="btn-icon-remove" onclick="this.closest('tr').remove(); window.calcularTotal()"><i class="fa fa-times"></i></button></td>`;
+            const precoModo = modoPreco === 'texto' ? 'texto' : 'moeda';
+            tr.querySelector('.i-preco-modo').value = precoModo;
+            window.ajustarCampoModoValor(tr.querySelector('.i-p'), precoModo);
+            tr.dataset.priceOrigin = p ? 'manual' : 'catalog';
             const sel = tr.querySelector('.i-g-select');
             if (g && Array.from(sel.options).some(o => o.value === g)) {
                 sel.value = g;
                 if (!d) {
                     const prod = Object.values(window.produtosCatalogo || {}).find(p => p.nome === g);
                     tr.querySelector('.i-d').value = prod?.escopo || window.getProductScope(g) || '';
+                }
+                if (!p) {
+                    const prod = Object.values(window.produtosCatalogo || {}).find(p => p.nome === g);
+                    if (prod && !window.isAutotransformadorProduto(g)) window.aplicarPrecoCatalogoItem(tr, prod);
                 }
             } else if (g) {
                 sel.value = GRUPO_OUTRO;
@@ -5624,7 +5898,7 @@ ${dica}`;
                 const varObj = window.getAutotransformadorVariante(variante);
                 if (varObj) {
                     tr.querySelector('.i-d').value = d || window.getAutotransformadorDescricao(varObj);
-                    tr.querySelector('.i-p').value = p || window.getAutotransformadorPreco(varObj);
+                    if (precoModo !== 'texto') tr.querySelector('.i-p').value = p || window.getAutotransformadorPreco(varObj);
                 }
             }
             const destinationSelect = tr.querySelector('.i-destino');
@@ -5647,6 +5921,7 @@ ${dica}`;
                 g: tr.querySelector('.i-g-select').value === GRUPO_OUTRO ? tr.querySelector('.i-g-outro').value : tr.querySelector('.i-g-select').value,
                 d: tr.querySelector('.i-d').value,
                 p: isComodato ? '' : tr.querySelector('.i-p').value,
+                modoPreco: tr.querySelector('.i-preco-modo')?.value || 'moeda',
                 variante: tr.querySelector('.i-variante')?.value || '',
                 destino: tr.querySelector('.i-destino')?.value || '1'
             }));
@@ -5677,12 +5952,19 @@ ${dica}`;
                 document.getElementById('f-comodato-lucro-pct')?.focus();
                 return;
             }
-            const totalProposta = isComodato ? '' : (isInvestidor ? investimento : document.getElementById('f-total').value);
+            const modoValor = !isComodato && !isInvestidor && document.getElementById('f-total-mode')?.value === 'texto' ? 'texto' : 'moeda';
+            const totalEmTexto = modoValor === 'texto';
+            const totalProposta = isComodato ? '' : (isInvestidor ? investimento : document.getElementById('f-total').value.trim());
+            if (totalEmTexto && !totalProposta) {
+                alert('Preencha o texto do valor total da proposta.');
+                document.getElementById('f-total')?.focus();
+                return;
+            }
             let cotacaoDolar = null;
             let totalNumeroCambio = 0;
             let valorEquivalenteUsd = '';
             let clausulaCambial = '';
-            if (!isComodato) {
+            if (!isComodato && !totalEmTexto) {
                 cotacaoDolar = await window.atualizarCotacaoDolar(false);
                 if (!cotacaoDolar) {
                     const cotacaoManual = window.parseCotacaoDolar(document.getElementById('f-cotacao-dolar')?.value);
@@ -5744,12 +6026,13 @@ ${dica}`;
                 bairro: document.getElementById('f-bairro').value,
                 cidade: document.getElementById('f-cidade').value,
                 total: totalProposta,
-                cotacaoDolarValor: isComodato ? '' : Number(cotacaoDolar.valor),
-                cotacaoDolarTexto: isComodato ? '' : window.formatCotacaoDolar(cotacaoDolar.valor),
-                cotacaoDolarDataHora: isComodato ? '' : (cotacaoDolar.dataHoraTexto || window.dataHoraCambioTexto()),
-                cotacaoDolarDataISO: isComodato ? '' : (cotacaoDolar.dataHoraISO || new Date().toISOString()),
-                cotacaoDolarFonte: isComodato ? '' : (cotacaoDolar.fonte || 'Cotação informada'),
-                cotacaoDolarOrigem: isComodato ? '' : (cotacaoDolar.origem || 'online'),
+                modoValor,
+                cotacaoDolarValor: (isComodato || totalEmTexto) ? '' : Number(cotacaoDolar.valor),
+                cotacaoDolarTexto: (isComodato || totalEmTexto) ? '' : window.formatCotacaoDolar(cotacaoDolar.valor),
+                cotacaoDolarDataHora: (isComodato || totalEmTexto) ? '' : (cotacaoDolar.dataHoraTexto || window.dataHoraCambioTexto()),
+                cotacaoDolarDataISO: (isComodato || totalEmTexto) ? '' : (cotacaoDolar.dataHoraISO || new Date().toISOString()),
+                cotacaoDolarFonte: (isComodato || totalEmTexto) ? '' : (cotacaoDolar.fonte || 'Cotação informada'),
+                cotacaoDolarOrigem: (isComodato || totalEmTexto) ? '' : (cotacaoDolar.origem || 'online'),
                 valorEquivalenteUsd,
                 clausulaCambial,
                 investimento: isInvestidor ? investimento : '',
@@ -5791,6 +6074,7 @@ ${dica}`;
 
         window.renderHistory = function(obj) {
             window.todasPropostas = obj || {}; 
+            if (document.getElementById('fc-proposta-search-input')?.value.trim()) window.pesquisarPropostasRapido();
             if (window.clienteSelecionadoKey && typeof window.renderClienteDetalhe === 'function') {
                 try { window.renderClienteDetalhe(window.clienteSelecionadoKey); } catch(e) {}
             }
@@ -5917,7 +6201,12 @@ ${dica}`;
                 if (document.getElementById('f-implantacao2')) document.getElementById('f-implantacao2').value = p.implantacao2 || p.implantacao || '';
                 if (document.getElementById('f-frete2')) document.getElementById('f-frete2').value = p.frete2 || '';
                 window.toggleMultiDeliveryUI(false);
-                document.getElementById('f-total').value = p.total;
+                document.getElementById('f-total').value = p.total || '';
+                const totalModeSaved = document.getElementById('f-total-mode');
+                if (totalModeSaved) {
+                    totalModeSaved.value = p.modoValor === 'texto' ? 'texto' : 'moeda';
+                    window.ajustarCampoModoValor(document.getElementById('f-total'), totalModeSaved.value);
+                }
                 if (document.getElementById('f-cotacao-dolar') && window.parseCotacaoDolar(p.cotacaoDolarValor || p.cotacaoDolar)) {
                     document.getElementById('f-cotacao-dolar').value = Number(window.parseCotacaoDolar(p.cotacaoDolarValor || p.cotacaoDolar)).toLocaleString('pt-BR', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
                     window.cotacaoDolarAtual = {
@@ -5955,7 +6244,7 @@ ${dica}`;
                     document.getElementById('f-comodato-lucro-pct').value = pct > 0 ? pct.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '';
                 }
 
-                (p.items || []).forEach(i => window.addItemRow(i.q, i.g, i.d, i.p, i.destino || '1', i.variante || i.v || ''));
+                (p.items || []).forEach(i => window.addItemRow(i.q, i.g, i.d, i.p, i.destino || '1', i.variante || i.v || '', i.modoPreco || 'moeda'));
                 window.toggleMultiDeliveryUI(false);
                 window.calcularTotal();
 
@@ -6511,7 +6800,7 @@ ${dica}`;
                     <td>${window.contractEscape(power)}</td>
                     <td>${window.contractEscape(connectors)}</td>
                     <td>A preencher na entrega / nota fiscal</td>
-                    <td>${window.contractEscape(window.contractPriceWithWordsIfMonetary(item.p || 'Conforme proposta'))}</td>
+                    <td>${window.contractEscape((item.modoPreco === 'texto' ? (item.p || 'Conforme proposta') : window.contractPriceWithWordsIfMonetary(item.p || 'Conforme proposta')))}</td>
                 </tr>`;
             }).join('') : `<tr><td colspan="7"><strong>Nenhum equipamento foi localizado.</strong> O contrato não deve ser assinado até que os itens da proposta sejam recuperados ou preenchidos.</td></tr>`;
 
@@ -7325,7 +7614,7 @@ ${dica}`;
                 const group = String(item.g || data.product?.nome || data.station?.nome || 'Equipamento').trim();
                 const code = String(item.codigo || data.product?.codigo || data.station?.codigo || 'Não informado').trim();
                 const identity = [technical.tensao ? `Tensão: ${technical.tensao}` : '', technical.corrente ? `Corrente: ${technical.corrente}` : '', technical.protecao ? `Proteção: ${technical.protecao}` : ''].filter(Boolean).join(' · ');
-                return `<tr><td>${index + 1}</td><td>${window.contractEscape(item.q || '1')}</td><td><strong>${window.contractEscape(group)}</strong><span>Código/modelo: ${window.contractEscape(code)}</span>${description ? `<span>${window.contractEscape(description)}</span>` : ''}${identity ? `<span>${window.contractEscape(identity)}</span>` : ''}</td><td>${window.contractEscape(window.contractPowerFromItem(item))}</td><td>${window.contractEscape(window.contractConnectorFromItem(item))}</td><td>A preencher na entrega / nota fiscal</td><td>${window.contractEscape(window.contractPriceWithWordsIfMonetary(item.p || 'Conforme proposta'))}</td></tr>`;
+                return `<tr><td>${index + 1}</td><td>${window.contractEscape(item.q || '1')}</td><td><strong>${window.contractEscape(group)}</strong><span>Código/modelo: ${window.contractEscape(code)}</span>${description ? `<span>${window.contractEscape(description)}</span>` : ''}${identity ? `<span>${window.contractEscape(identity)}</span>` : ''}</td><td>${window.contractEscape(window.contractPowerFromItem(item))}</td><td>${window.contractEscape(window.contractConnectorFromItem(item))}</td><td>A preencher na entrega / nota fiscal</td><td>${window.contractEscape((item.modoPreco === 'texto' ? (item.p || 'Conforme proposta') : window.contractPriceWithWordsIfMonetary(item.p || 'Conforme proposta')))}</td></tr>`;
             }).join('') : '<tr><td colspan="7">Nenhum item vinculado a esta entrega.</td></tr>';
             const groupTables = d.deliveryGroups.map(group => `<section class="contract-delivery-group"><h3>${window.contractEscape(group.label)} · ${window.contractEscape(group.client.nome)} · ${window.contractEscape(group.client.documento)}</h3><p><strong>Local:</strong> ${window.contractEscape(group.location)}</p><p><strong>Frete / prazo:</strong> ${window.contractEscape(group.freight)} · ${window.contractEscape(group.deadline)}</p></section><div class="contract-table-wrap"><table class="contract-table contract-items-table"><thead><tr><th>Item</th><th>Qtd.</th><th>Equipamento / modelo adquirido</th><th>Potência</th><th>Conector</th><th>Nº de série</th><th>Valor</th></tr></thead><tbody>${renderRows(group.items || [])}</tbody></table></div>`).join('');
             return `<section class="contract-page">
