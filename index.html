@@ -1516,7 +1516,9 @@
             .rental-contract-footer { position:static; margin-top:25px; }
         }
 
-    </style>
+    
+.fc-tabs{display:flex;gap:8px;margin:20px 0 16px;border-bottom:1px solid #dbe5f0;padding-bottom:9px;flex-wrap:wrap}.fc-tab{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:9px;padding:11px 15px;font:700 .87rem Inter,sans-serif;color:#334155;cursor:pointer}.fc-tab.active{background:#0056ff;color:white;border-color:#0056ff}#fc-service-panel[hidden],#fc-equip-panel[hidden],#fc-preview-services[hidden],#p-items-wrap[hidden]{display:none!important}.fc-service-intro{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:17px;margin-bottom:18px;color:#001f40}.fc-service-intro p{margin:7px 0 12px;font-size:.83rem;color:#475569}.fc-check{display:flex;gap:8px;align-items:center;color:#334155;text-transform:none;letter-spacing:0;font-size:.84rem}.fc-check input{width:auto}.fc-service-table{min-width:830px}.fc-service-table input,.fc-service-table select{min-width:65px}.fc-service-table .fc-s-desc{min-width:220px}.fc-service-table .fc-s-type{min-width:125px}.fc-service-table .fc-s-total{font-weight:800;white-space:nowrap}.fc-service-summary{max-width:460px;margin:15px 0 22px auto;border:1px solid #dbe5f0;border-radius:12px;overflow:hidden}.fc-service-summary>div{display:flex;justify-content:space-between;gap:15px;padding:11px 15px;border-bottom:1px solid #e2e8f0}.fc-service-summary .fc-service-grand{background:#001f40;color:white;font-weight:800;border:0}.fc-preview-services{margin:0 0 20px;break-inside:avoid}.fc-preview-service-table{width:100%;border-collapse:collapse;font-size:.72rem}.fc-preview-service-table th{background:#001f40;color:white;text-align:left;padding:9px}.fc-preview-service-table td{padding:8px;border-bottom:1px solid #e2e8f0;overflow-wrap:anywhere}.fc-preview-service-totals{text-align:right;font-size:.73rem;font-weight:800;padding:10px;color:#001f40}.fc-client-note{font-size:.74rem;color:#475569;white-space:pre-wrap;margin:5px 0 10px}@media(max-width:650px){.fc-tab{flex:1 1 100%}} 
+</style>
 </head>
 <body>
     <a class="skip-link" href="#main-app">Ir para o conteúdo principal</a>
@@ -1925,7 +1927,8 @@
                         </textarea>
                     </div>
 
-                    <div class="items-table-wrap" id="itens-proposta-wrap">
+                    <div class="fc-tabs" role="tablist" aria-label="Itens da proposta"><button type="button" class="fc-tab active" id="fc-tab-equips" onclick="window.fcTrocarAbaServicos(false)"><i class="fa fa-charging-station"></i> Equipamentos</button><button type="button" class="fc-tab" id="fc-tab-services" onclick="window.fcTrocarAbaServicos(true)"><i class="fa fa-screwdriver-wrench"></i> Serviços e materiais elétricos</button></div>
+                    <div id="fc-equip-panel"><div class="items-table-wrap" id="itens-proposta-wrap">
                         <table class="items-table">
                             <thead>
                                 <tr>
@@ -1940,7 +1943,22 @@
                             <tbody id="items-body"></tbody>
                         </table>
                     </div>
-                    <button type="button" class="btn-add-item" id="btn-add-item-venda" onclick="window.addItemRow()">+ Adicionar item</button>
+                    <button type="button" class="btn-add-item" id="btn-add-item-venda" onclick="window.addItemRow()">+ Adicionar equipamento</button></div>
+                    <div id="fc-service-panel" hidden>
+                      <div class="fc-service-intro"><strong>Instalação de carregador já pertencente ao cliente</strong><p>Orçamento exclusivo para fornecimento de materiais elétricos, execução e instalação. O carregador não está incluso no fornecimento.</p><label class="fc-check"><input type="checkbox" id="fc-customer-charger" checked> Carregador fornecido pelo cliente</label></div>
+                      <div class="field light-label"><label for="fc-service-scope">Escopo e condições técnicas</label><textarea id="fc-service-scope" placeholder="Ex.: Instalação elétrica do quadro até a vaga; passagem de cabos; montagem das proteções; testes e comissionamento."></textarea></div>
+                      <div class="items-table-wrap"><table class="items-table fc-service-table"><thead><tr><th>Tipo</th><th>Descrição do material / serviço</th><th>Un.</th><th>Qtd.</th><th>Preço unitário</th><th>Total</th><th></th></tr></thead><tbody id="fc-services-body"></tbody></table></div>
+                      <button type="button" class="btn-add-item" onclick="window.fcAddServiceRow()">+ Adicionar material ou mão de obra</button>
+                      <div class="fc-travel-card" id="fc-travel-editor" style="padding:20px;margin:16px 0 20px;border:2px solid #93c5fd;border-radius:12px;background:#eff6ff">
+  <h3 style="margin:0 0 7px;color:#001f40;font-size:1rem"><i class="fa fa-truck"></i> Deslocamento da equipe</h3>
+  <p style="margin:0 0 15px;color:#475569;font-size:.83rem">Preencha as informações e o valor de deslocamento que serão apresentados na proposta.</p>
+  <div class="form-grid-equal">
+    <div class="field light-label"><label for="fc-deslocamento-desc">Informações do deslocamento</label><input id="fc-deslocamento-desc" type="text" placeholder="Ex.: Ida e volta da equipe até o local de instalação"></div>
+    <div class="field light-label"><label for="fc-deslocamento">Valor do deslocamento (R$)</label><input id="fc-deslocamento" type="text" inputmode="decimal" placeholder="Digite o valor, ex.: 250,00" value="" oninput="window.calcularTotal()" onblur="if(this.value.trim())this.value=window.formatBRL(window.moneyToNumber(this.value));window.calcularTotal()"></div>
+  </div>
+</div>
+                      <div class="fc-service-summary"><div>Materiais elétricos <strong id="fc-sub-materiais">R$ 0,00</strong></div><div>Mão de obra e serviços <strong id="fc-sub-mao">R$ 0,00</strong></div><div>Deslocamento <strong id="fc-sub-deslocamento">R$ 0,00</strong></div><div class="fc-service-grand">Total de serviços <strong id="fc-sub-total">R$ 0,00</strong></div></div>
+                    </div>
                     <button type="button" class="btn btn-primary" onclick="window.f_gerar_visual()">Gerar visualização da proposta</button>
                 </div>
             </div>
@@ -2173,6 +2191,7 @@
                                     <tbody id="p-items"></tbody>
                                 </table>
                             </div>
+                            <section class="fc-preview-services" id="fc-preview-services" hidden><h3 class="p-section-title">MATERIAIS ELÉTRICOS E SERVIÇOS DE INSTALAÇÃO</h3><p id="fc-preview-client-equip" class="fc-client-note"></p><p id="fc-preview-scope" class="fc-client-note"></p><table class="fc-preview-service-table"><thead><tr><th>Descrição</th><th>Qtd.</th><th>Preço unitário</th><th>Valor final</th></tr></thead><tbody id="fc-preview-services-body"></tbody></table><div class="fc-preview-service-totals" id="fc-preview-service-totals"></div></section>
                             <div class="p-total-wrap">
                                 <div class="p-total-box">
                                     <small id="p-total-label">Investimento Total</small>
@@ -3029,6 +3048,31 @@ ${dica}`;
             if (typeof window.atualizarResumoCotacaoDolar === 'function') window.atualizarResumoCotacaoDolar();
         };
 
+
+// Serviços e materiais elétricos (orçamento para carregadores já adquiridos).
+window.fcTrocarAbaServicos = function(servicos){
+  window.fcAbaServicosSelecionada = !!servicos;
+  document.getElementById('fc-service-panel').hidden=!servicos;
+  document.getElementById('fc-equip-panel').hidden=servicos;
+  document.getElementById('fc-tab-services').classList.toggle('active',servicos);
+  document.getElementById('fc-tab-equips').classList.toggle('active',!servicos);
+};
+window.fcAddServiceRow = function(item={}){
+  const tbody=document.getElementById('fc-services-body'); if(!tbody)return;
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><select class="fc-s-type"><option value="material">Material elétrico</option><option value="mao">Mão de obra / serviço</option></select></td><td><input class="fc-s-desc" type="text" placeholder="Ex.: Cabo de cobre 16 mm² / instalação" value="${window.escapeAttr(item.descricao||'')}"></td><td><select class="fc-s-unit"><option>un</option><option>m</option><option>m²</option><option>kit</option><option>h</option><option>serv.</option></select></td><td><input class="fc-s-qty" type="number" min="0" step="0.01" value="${Number(item.quantidade??1)||0}"></td><td><input class="fc-s-price" type="text" inputmode="decimal" placeholder="R$ 0,00" value="${window.escapeAttr(item.preco||'')}"></td><td class="fc-s-total">R$ 0,00</td><td><button type="button" class="btn-icon-remove" aria-label="Remover item" onclick="this.closest('tr').remove();window.calcularTotal()"><i class="fa fa-trash"></i></button></td>`;
+  tr.querySelector('.fc-s-type').value=item.tipo==='mao'?'mao':'material';
+  tr.querySelector('.fc-s-unit').value=item.unidade||'un';
+  tr.querySelector('.fc-s-price').addEventListener('blur',e=>{e.target.value=window.formatBRL(window.moneyToNumber(e.target.value));window.calcularTotal()});
+  tr.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',()=>window.calcularTotal()));
+  tbody.appendChild(tr);window.calcularTotal();
+};
+window.fcReadServices=function(){return [...document.querySelectorAll('#fc-services-body tr')].map(tr=>({tipo:tr.querySelector('.fc-s-type').value,descricao:tr.querySelector('.fc-s-desc').value.trim(),unidade:tr.querySelector('.fc-s-unit').value,quantidade:parseFloat(tr.querySelector('.fc-s-qty').value)||0,preco:tr.querySelector('.fc-s-price').value})).filter(x=>x.descricao)};
+window.fcCalculateServices=function(){let mat=0,mao=0;document.querySelectorAll('#fc-services-body tr').forEach(tr=>{const q=parseFloat(tr.querySelector('.fc-s-qty').value)||0,p=window.moneyToNumber(tr.querySelector('.fc-s-price').value),val=q*p;tr.querySelector('.fc-s-total').textContent=window.formatBRL(val);if(tr.querySelector('.fc-s-type').value==='mao')mao+=val;else mat+=val});[['fc-sub-materiais',mat],['fc-sub-mao',mao],['fc-sub-deslocamento',window.moneyToNumber(document.getElementById('fc-deslocamento')?.value||'0')],['fc-sub-total',mat+mao+window.moneyToNumber(document.getElementById('fc-deslocamento')?.value||'0')]].forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.textContent=window.formatBRL(val)});return mat+mao+window.moneyToNumber(document.getElementById('fc-deslocamento')?.value||'0')};
+window.fcLoadServices=function(data={}){const tbody=document.getElementById('fc-services-body');if(!tbody)return;tbody.innerHTML='';document.getElementById('fc-service-scope').value=data.servicosEscopo||'';document.getElementById('fc-deslocamento').value=data.servicosDeslocamento ? window.formatBRL(window.moneyToNumber(data.servicosDeslocamento)) : '';document.getElementById('fc-deslocamento-desc').value=data.servicosDeslocamentoDescricao||'';document.getElementById('fc-customer-charger').checked=data.carregadorDoCliente===undefined?true:!!data.carregadorDoCliente;(data.servicosItens||[]).forEach(item=>window.fcAddServiceRow(item));window.calcularTotal();window.fcTrocarAbaServicos(!!data.propostaDeServicos || (!!(data.servicosItens||[]).length && !(data.items||[]).length))};
+window.fcPreviewServices=function(data){const section=document.getElementById('fc-preview-services');if(!section)return;const rows=data.servicosItens||[];const scope=data.servicosEscopo||'';section.hidden=!data.propostaDeServicos || (rows.length===0&&!scope&&!window.moneyToNumber(data.servicosDeslocamento||'0'));if(section.hidden)return;document.getElementById('fc-preview-client-equip').textContent=data.carregadorDoCliente?'Carregador fornecido pelo cliente — não incluso neste orçamento.':'';document.getElementById('fc-preview-scope').textContent=scope;let m=0,s=0;document.getElementById('fc-preview-services-body').innerHTML=rows.map(x=>{const v=(Number(x.quantidade)||0)*window.moneyToNumber(x.preco);if(x.tipo==='mao')s+=v;else m+=v;return `<tr><td>${window.escapeHtml((x.tipo==='mao'?'Serviço: ':'Material: ')+(x.descricao||''))}</td><td>${window.escapeHtml(String(x.quantidade||0))} ${window.escapeHtml(x.unidade||'un')}</td><td>${x.tipo==='mao'?window.escapeHtml(window.formatBRL(window.moneyToNumber(x.preco))):'R$'}</td><td>${x.tipo==='mao'?window.escapeHtml(window.formatBRL(v)):'Composto no kit'}</td></tr>`}).join('');const desloc=window.moneyToNumber(data.servicosDeslocamento||'0');document.getElementById('fc-preview-service-totals').textContent=`Materiais: ${window.formatBRL(m)}  |  Serviços: ${window.formatBRL(s)}  |  Deslocamento${data.servicosDeslocamentoDescricao ? ' ('+data.servicosDeslocamentoDescricao+')' : ''}: ${window.formatBRL(desloc)}  |  Total: ${window.formatBRL(m+s+desloc)}`};
+document.addEventListener('DOMContentLoaded',()=>{const s=document.getElementById('fc-service-scope');if(s)s.addEventListener('input',()=>{});});
+
         window.calcularTotal = function() {
             let totalGeral = 0;
             let totalLinhas = 0;
@@ -3042,6 +3086,7 @@ ${dica}`;
                 totalGeral += (q * pFloat);
             });
             
+            if (typeof window.fcCalculateServices === 'function') totalGeral += window.fcCalculateServices();
             const valorFormatado = window.formatBRL ? window.formatBRL(totalGeral) : ("R$ " + totalGeral.toFixed(2).replace('.', ','));
             const fTotal = document.getElementById('f-total');
             if (fTotal && document.getElementById('f-total-mode')?.value !== 'texto') fTotal.value = valorFormatado;
@@ -4631,16 +4676,67 @@ ${dica}`;
                     ? `Para ${data.cli || 'este projeto'}, a FullCharge reúne equipamento, implantação, configuração e suporte em uma única jornada comercial.`
                     : `Para ${data.cli || 'este pedido'}, a FullCharge reúne equipamentos, preparação, expedição e suporte em uma jornada de entrega organizada.`));
             window.aplicarProcessoNaProposta(incluiInstalacao, tipo);
+            // Página 2 específica para a prestação de serviços de instalação.
+            const propostaServico = !!data.propostaDeServicos || (!!(data.servicosItens || []).length && !(data.items || []).length);
+            const paginaValor = document.querySelector('.proposal-value-page');
+            if (paginaValor) paginaValor.classList.toggle('fc-page-servico', propostaServico);
+            if (propostaServico) {
+                const serviceRows = data.servicosItens || [];
+                const materiais = serviceRows.filter(x => x.tipo !== 'mao');
+                const maoObra = serviceRows.filter(x => x.tipo === 'mao');
+                const setServico = (id, value) => { const el = document.getElementById(id); if(el) el.textContent = value; };
+                const titulo = document.querySelector('.proposal-value-page .value-page-title');
+                if (titulo) titulo.textContent = 'Instalação elétrica e preparação da infraestrutura para o carregador do cliente.';
+                setServico('value-page-lead', `A FullCharge executa os serviços de instalação e adequações elétricas expressamente previstos nesta proposta para ${data.cli || 'o cliente'}. ${data.carregadorDoCliente ? 'O carregador já pertence ao cliente e não integra o fornecimento.' : 'O fornecimento de equipamentos limita-se aos itens discriminados no orçamento.'}`);
+                setServico('p-resumo-modalidade', 'Prestação de serviços');
+                const labels = document.querySelectorAll('.proposal-value-page .value-summary-label');
+                if (labels[1]) labels[1].textContent = 'Materiais elétricos';
+                if (labels[2]) labels[2].textContent = 'Itens de mão de obra';
+                setServico('p-resumo-equipamentos', `${materiais.length} ${materiais.length === 1 ? 'item' : 'itens'}`);
+                setServico('p-resumo-potencia', `${maoObra.length} ${maoObra.length === 1 ? 'serviço' : 'serviços'}`);
+                setServico('p-resumo-prazo-label', 'Prazo de execução');
+                setServico('p-resumo-implantacao', data.implantacao || 'A confirmar');
+                setServico('p-resumo-investimento-label', 'Valor da instalação');
+                setServico('journey-title', 'Etapas da prestação de serviços');
+                const etapas = [
+                    ['01', 'Avaliação técnica', 'Verificação do local e das condições existentes para execução do escopo contratado.'],
+                    ['02', 'Planejamento', 'Conferência dos materiais elétricos, definição de rota dos cabos e programação da equipe.'],
+                    ['03', 'Infraestrutura elétrica', 'Execução das instalações elétricas e adequações descritas no orçamento aprovado.'],
+                    ['04', 'Instalação e testes', 'Conexão do carregador do cliente e testes pertinentes, quando previstos no escopo.'],
+                    ['05', 'Entrega técnica', 'Conferência final dos trabalhos executados e orientações iniciais de utilização.']
+                ];
+                const grid = document.getElementById('journey-grid');
+                if (grid) grid.innerHTML = etapas.map(([n,t,d]) => `<div class="journey-step"><span class="journey-index">${n}</span><strong>${t}</strong><span>${d}</span></div>`).join('');
+                const entregas = [
+                    'Materiais elétricos e quantidades discriminados na proposta, quando contratados.',
+                    'Mão de obra de instalação e adequações expressamente incluídas no escopo.',
+                    'Conexões, verificações e testes conforme o serviço contratado e condições técnicas do local.',
+                    data.carregadorDoCliente ? 'O carregador é fornecido pelo cliente; sua aquisição não está incluída no valor.' : 'Equipamentos somente quando expressamente relacionados no orçamento.'
+                ];
+                const lista = document.getElementById('value-deliverables-list');
+                if (lista) lista.innerHTML = entregas.map(x => `<li>${window.escapeHtml(x)}</li>`).join('');
+                setServico('value-diff-integrada', 'Equipe preparada para executar o escopo elétrico aprovado.');
+                setServico('value-diff-suporte', 'Orientações e acompanhamento relativos ao serviço contratado.');
+                const nota = document.getElementById('p-resumo-nota');
+                if (nota) nota.textContent = `Escopo de instalação: ${data.servicosEscopo || 'conforme itens discriminados na proposta'}. Serviços adicionais ou condições não previstas dependem de avaliação e aprovação de orçamento complementar.`;
+            } else {
+                const titulo = document.querySelector('.proposal-value-page .value-page-title');
+                if (titulo) titulo.textContent = 'Uma solução completa para transformar recarga em experiência, conveniência e valor.';
+                const labels = document.querySelectorAll('.proposal-value-page .value-summary-label');
+                if (labels[1]) labels[1].textContent = 'Estações de recarga';
+                if (labels[2]) labels[2].textContent = 'Potência identificada';
+            }
             setTextPremium('final-validade', `Proposta válida por ${data.validade || '5 dias'}`);
             setTextPremium('final-consultor', data.consultor || 'Equipe FullCharge');
             setTextPremium('final-contato', [data.whatsapp, data.email, 'www.fullcharge.com.br'].filter(Boolean).join(' · '));
             setTextPremium('final-proposta', `${data.id || 'Proposta'} · ${data.cli || 'Cliente'}`);
 
+            window.fcPreviewServices(data);
             const pItemsWrap = document.getElementById('p-items-wrap');
             const pInvestorSection = document.getElementById('p-investor-section');
             const pComodatoSection = document.getElementById('p-comodato-section');
             const itemsPreview = data.items || [];
-            if (pItemsWrap) pItemsWrap.hidden = itemsPreview.length === 0;
+            if (pItemsWrap) pItemsWrap.hidden = !!data.propostaDeServicos || itemsPreview.length === 0;
             if (pInvestorSection) pInvestorSection.hidden = !isInvestidor;
             if (pComodatoSection) pComodatoSection.hidden = !isComodato;
 
@@ -5909,6 +6005,13 @@ ${dica}`;
         }
 
         window.f_gerar_visual = async function() {
+            // Captura os itens de serviços no escopo correto da geração.
+            const fcServiceItems = window.fcReadServices();
+            const fcServiceScope = document.getElementById('fc-service-scope')?.value || '';
+            const fcServiceTravel = document.getElementById('fc-deslocamento')?.value || 'R$ 0,00';
+            const fcServiceTravelDescription = document.getElementById('fc-deslocamento-desc')?.value.trim() || '';
+            const fcCustomerCharger = !!document.getElementById('fc-customer-charger')?.checked;
+            const fcServiceMode = !!window.fcAbaServicosSelecionada;
             const tipoProposta = window.getTipoProposta();
             const isInvestidor = tipoProposta === 'investidor';
             const isComodato = tipoProposta === 'comodato';
@@ -5916,7 +6019,7 @@ ${dica}`;
             window.calcularTotal();
             if (isInvestidor) window.calcularInvestimento();
 
-            const items = Array.from(document.querySelectorAll('#items-body tr')).map(tr => ({
+            const items = (fcServiceMode ? [] : Array.from(document.querySelectorAll('#items-body tr'))).map(tr => ({
                 q: tr.querySelector('.i-q').value,
                 g: tr.querySelector('.i-g-select').value === GRUPO_OUTRO ? tr.querySelector('.i-g-outro').value : tr.querySelector('.i-g-select').value,
                 d: tr.querySelector('.i-d').value,
@@ -6055,7 +6158,7 @@ ${dica}`;
                 whatsapp: document.getElementById('f-whatsapp')?.value || '',
                 obs: observacoesProposta,
                 data: new Date().toLocaleDateString('pt-BR'),
-                items, propostaStatus: window.normProposalStatus(window.todasPropostas?.[document.getElementById('f-id').value]?.propostaStatus || 'pendente')
+                items, servicosItens: fcServiceItems, servicosEscopo: fcServiceScope, servicosDeslocamento: fcServiceTravel, servicosDeslocamentoDescricao: fcServiceTravelDescription, carregadorDoCliente: fcCustomerCharger, propostaDeServicos: fcServiceMode, propostaStatus: window.normProposalStatus(window.todasPropostas?.[document.getElementById('f-id').value]?.propostaStatus || 'pendente')
             };
 
             try {
@@ -6244,6 +6347,7 @@ ${dica}`;
                     document.getElementById('f-comodato-lucro-pct').value = pct > 0 ? pct.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '';
                 }
 
+                window.fcLoadServices(p);
                 (p.items || []).forEach(i => window.addItemRow(i.q, i.g, i.d, i.p, i.destino || '1', i.variante || i.v || '', i.modoPreco || 'moeda'));
                 window.toggleMultiDeliveryUI(false);
                 window.calcularTotal();
